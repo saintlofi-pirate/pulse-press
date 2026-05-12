@@ -16,6 +16,12 @@ it('autoloads the core application class via Composer', function () {
     expect(class_exists(\PulsePress\Core\ServiceProvider::class, true))->toBeTrue();
 });
 
+it('autoloads the database schema and migrator classes', function () {
+    expect(class_exists(\PulsePress\Database\Schema::class, true))->toBeTrue();
+    expect(class_exists(\PulsePress\Database\Migrator::class, true))->toBeTrue();
+    expect(class_exists(\PulsePress\Providers\DatabaseServiceProvider::class, true))->toBeTrue();
+});
+
 it('does not retain starter strings in PulsePress-owned files', function () {
     $root = dirname(__DIR__, 2);
     $paths = [

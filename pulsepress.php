@@ -38,19 +38,27 @@ if (PHP_VERSION_ID < 80100 || version_compare($GLOBALS['wp_version'] ?? '0', PUL
     return;
 }
 
+if (file_exists(PULSEPRESS_DIR . 'vendor/autoload.php')) {
+    require_once PULSEPRESS_DIR . 'vendor/autoload.php';
+}
+
 register_activation_hook(__FILE__, static function (): void {
     if (get_option('pulsepress_db_version') === false) {
         update_option('pulsepress_db_version', '0', false);
     }
+    if (get_option('pulsepress_delete_on_uninstall') === false) {
+        update_option('pulsepress_delete_on_uninstall', '0', false);
+    }
+    if (get_option('pulsepress_retention_days') === false) {
+        update_option('pulsepress_retention_days', '0', false);
+    }
+
+    \PulsePress\Core\Application::boot(PULSEPRESS_FILE);
 });
 
 register_deactivation_hook(__FILE__, static function (): void {
     // Reserved for future cleanup. Intentionally empty in v0.1.
 });
-
-if (file_exists(PULSEPRESS_DIR . 'vendor/autoload.php')) {
-    require_once PULSEPRESS_DIR . 'vendor/autoload.php';
-}
 
 add_action('plugins_loaded', static function (): void {
     \PulsePress\Core\Application::boot(PULSEPRESS_FILE);
