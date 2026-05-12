@@ -1,0 +1,44 @@
+<?php
+declare(strict_types=1);
+
+namespace PulsePress\Core;
+
+class Config
+{
+    /** @var array<string, mixed> */
+    protected array $config = [];
+
+    public function load(string $file): void
+    {
+        $filePath = PULSEPRESS_DIR . 'app/Config/' . $file . '.php';
+        if (!file_exists($filePath)) {
+            return;
+        }
+        $config = require $filePath;
+        if (is_array($config)) {
+            $this->config[$file] = $config;
+        }
+    }
+
+    public function get(string $key, mixed $default = null): mixed
+    {
+        $parts = explode('.', $key);
+        $file  = array_shift($parts);
+
+        if (!isset($this->config[$file])) {
+            $this->load($file);
+        }
+        if (!isset($this->config[$file])) {
+            return $default;
+        }
+
+        $value = $this->config[$file];
+        foreach ($parts as $part) {
+            if (!is_array($value) || !array_key_exists($part, $value)) {
+                return $default;
+            }
+            $value = $value[$part];
+        }
+        return $value;
+    }
+}

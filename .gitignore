@@ -1,0 +1,13 @@
+vendor/
+node_modules/
+dist/
+.claude/settings.local.json
+.idea/
+.vscode/
+.DS_Store
+.phpunit.result.cache
+.phpunit.cache/
+coverage/
+test-results/
+playwright-report/
+*.log
