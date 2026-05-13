@@ -280,6 +280,20 @@ namespace PulsePress\Providers {
             return $text;
         }
     }
+
+    if (!function_exists(__NAMESPACE__ . '\is_email')) {
+        function is_email(string $email): string|false
+        {
+            return filter_var($email, FILTER_VALIDATE_EMAIL) === false ? false : $email;
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\apply_filters')) {
+        function apply_filters(string $hook, mixed $value, mixed ...$args): mixed
+        {
+            return \Tests\Stubs\FilterRegistry::apply($hook, $value, $args);
+        }
+    }
 }
 
 namespace PulsePress\View {
@@ -296,6 +310,26 @@ namespace PulsePress\View {
         {
             \Tests\Stubs\TransientStore::set($key, $value, $ttl);
             return true;
+        }
+    }
+}
+
+namespace PulsePress\Captures {
+
+    if (!function_exists(__NAMESPACE__ . '\apply_filters')) {
+        function apply_filters(string $hook, mixed $value, mixed ...$args): mixed
+        {
+            return \Tests\Stubs\FilterRegistry::apply($hook, $value, $args);
+        }
+    }
+}
+
+namespace PulsePress\Reactions {
+
+    if (!function_exists(__NAMESPACE__ . '\sanitize_email')) {
+        function sanitize_email(string $value): string
+        {
+            return strtolower(trim($value));
         }
     }
 }

@@ -36,6 +36,16 @@ it('autoloads the widget manifest and provider', function () {
     expect(class_exists(\PulsePress\Providers\WidgetServiceProvider::class, true))->toBeTrue();
 });
 
+it('autoloads the capture domain, controller, and provider', function () {
+    expect(class_exists(\PulsePress\Captures\Captures::class, true))->toBeTrue();
+    expect(class_exists(\PulsePress\Captures\CaptureInput::class, true))->toBeTrue();
+    expect(class_exists(\PulsePress\Captures\CaptureRecord::class, true))->toBeTrue();
+    expect(class_exists(\PulsePress\Captures\CaptureRepository::class, true))->toBeTrue();
+    expect(class_exists(\PulsePress\Captures\FraudPurger::class, true))->toBeTrue();
+    expect(class_exists(\PulsePress\Http\Controllers\CaptureController::class, true))->toBeTrue();
+    expect(class_exists(\PulsePress\Providers\CaptureServiceProvider::class, true))->toBeTrue();
+});
+
 it('does not retain starter strings in PulsePress-owned files', function () {
     $root = dirname(__DIR__, 2);
     $paths = [

@@ -6,6 +6,7 @@ if (!class_exists('wpdb', false)) {
     {
         public string $prefix = '';
         public string $options = '';
+        public int $insert_id = 0;
 
         public function get_charset_collate(): string
         {
@@ -30,6 +31,16 @@ if (!class_exists('wpdb', false)) {
         public function get_col(string $sql): array
         {
             return [];
+        }
+
+        public function get_results(string $sql, string $output = 'OBJECT'): array
+        {
+            return [];
+        }
+
+        public function insert(string $table, array $data, array|string $format = ''): false|int
+        {
+            return false;
         }
 
         public function esc_like(string $text): string

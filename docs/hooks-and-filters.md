@@ -12,6 +12,9 @@ Catalog of every PulsePress action and filter, kept in sync with the code as Ses
 | `pulsepress_widget_auto_insert` | `(bool $default, string $postType)` | `true` for `post`, `false` otherwise | Session 3 | Auto-append the widget container to `the_content` for a given post type. |
 | `pulsepress_widget_data` | `(array $payload)` | `{root, nonce, postId, reactions, i18n}` | Session 3 | Adjust the `window.PulsePressData` payload before `wp_localize_script`. |
 | `pulsepress_widget_icons` | `(array $iconMap, string $preset)` | Classic SVG map | Session 6.5 (planned) | Override the icon set for a preset; lets Pro add presets without code. |
+| `pulsepress_capture_sources` | `(string[] $sources)` | `['inline', 'block', 'shortcode']` | Session 4 | Extend or restrict the allowed `source` values on `POST /capture`. |
+| `pulsepress_consent_text_version` | `(string $version)` | `'v1'` | Session 4 | The consent-text version stamp written into every new capture row. Existing rows are not retroactively updated. |
+| `pulsepress_capture_email` | `(string $normalisedEmail, WP_REST_Request $request)` | already lowercased + trimmed input | Session 4 | Transform the email before validation/storage (e.g. strip `+tag` aliases). Receives the already-normalised email. |
 
 ## Actions
 
@@ -19,8 +22,9 @@ Catalog of every PulsePress action and filter, kept in sync with the code as Ses
 | --- | --- | --- | --- |
 | `pulsepress_before_react` | `(int $postId, string $reactionType, string $userHash, WP_REST_Request $request)` | Session 2 | Pre-write extension point. A handler MAY throw `PulsePress\Http\RestException` to abort the write with a `WP_Error`. |
 | `pulsepress_after_react` | `(int $postId, string $reactionType, string $userHash, string $status)` | Session 2 | Post-write extension point. `$status` is `'inserted'` or `'updated'`. Aggregators, webhooks, ESP sync attach here. |
-| `pulsepress_before_capture` | `(int $postId, string $email, string $reactionType, WP_REST_Request $request)` | Session 4 (planned) | Pre-store hook for the capture endpoint. |
-| `pulsepress_after_capture` | `(int $captureId, int $postId, string $email, string $reactionType, string $consentVersion)` | Session 4 (planned) | Post-store hook. ESP sync, double opt-in mail, webhooks attach here. |
+| `pulsepress_before_capture` | `(int $postId, string $email, string $reactionType, WP_REST_Request $request)` | Session 4 | Pre-store hook for the capture endpoint. Throw `RestException` to short-circuit with a `WP_Error`. |
+| `pulsepress_after_capture` | `(int $captureId, int $postId, string $email, string $reactionType, string $consentVersion)` | Session 4 | Post-store hook. Fires only on `'inserted'` (not on `'already_exists'`). ESP sync, double opt-in mail, webhooks attach here. |
+| `pulsepress_purge_fraud_metadata` | `()` | Session 4 (WP-Cron event) | Daily cron event that runs `FraudPurger::run()` to null hashes whose `fraud_metadata_purge_at` has passed. Hookable, but the default handler is registered in `CaptureServiceProvider::boot()`. |
 | `pulsepress_settings_saved` | `(array $changed, array $previous)` | Session 6 (planned) | Fires after the settings page persists changes. |
 
 ## Naming Conventions

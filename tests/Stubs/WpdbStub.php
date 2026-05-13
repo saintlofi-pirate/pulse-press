@@ -75,6 +75,21 @@ class WpdbStub extends \wpdb
         return [];
     }
 
+    /** @var list<array{table: string, data: array, format: array|string}> */
+    public array $inserts = [];
+    public bool $simulateDuplicate = false;
+
+    public function insert(string $table, array $data, array|string $format = ''): false|int
+    {
+        if ($this->simulateDuplicate) {
+            $this->last_error = "Duplicate entry for key 'uniq_email_post'";
+            return false;
+        }
+        $this->inserts[] = ['table' => $table, 'data' => $data, 'format' => $format];
+        $this->insert_id = count($this->inserts);
+        return 1;
+    }
+
     public function esc_like(string $text): string
     {
         return addcslashes($text, '_%\\');

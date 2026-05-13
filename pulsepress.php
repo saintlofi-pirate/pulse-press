@@ -54,10 +54,17 @@ register_activation_hook(__FILE__, static function (): void {
     }
 
     \PulsePress\Core\Application::boot(PULSEPRESS_FILE);
+
+    if (!wp_next_scheduled(\PulsePress\Providers\CaptureServiceProvider::PURGE_HOOK)) {
+        wp_schedule_event(time() + HOUR_IN_SECONDS, 'daily', \PulsePress\Providers\CaptureServiceProvider::PURGE_HOOK);
+    }
 });
 
 register_deactivation_hook(__FILE__, static function (): void {
-    // Reserved for future cleanup. Intentionally empty in v0.1.
+    $next = wp_next_scheduled(\PulsePress\Providers\CaptureServiceProvider::PURGE_HOOK);
+    if ($next !== false) {
+        wp_unschedule_event($next, \PulsePress\Providers\CaptureServiceProvider::PURGE_HOOK);
+    }
 });
 
 add_action('plugins_loaded', static function (): void {
