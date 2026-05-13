@@ -11,6 +11,76 @@ PulsePress is a WordPress plugin for reactions that grow an email list, with ana
 - Price target: `$49/year`.
 - Design bar: polished, calm, generous spacing, strong hierarchy, one primary accent, sentence case, and a visual feel inspired by Adham Dannaway-style product polish.
 
+## Code Quality Principles
+
+Every line of PulsePress is held to the same bar. These principles are checked at PR time and during OpenSpec design review; failures are returned for revision rather than merged with a "we'll clean it up later" promise.
+
+**Clean:**
+
+- Names earn their length. A class called `ReactionRepository` does reaction-row reads and writes — nothing else, nothing surprising. A method named `replace` does exactly what MySQL `ON DUPLICATE KEY UPDATE` does.
+- No dead code. Removed features are removed cleanly — not commented out, not gated behind a permanent feature flag.
+- Comments explain **why**, never **what**. The code says what; a comment is reserved for the non-obvious constraint (a workaround, a subtle invariant, a domain rule that isn't visible in the diff).
+- No premature abstractions. Three similar lines beat a clever helper that hides one of them. If a second use case ever appears, extract then — not before.
+- No dead error handling. Don't catch exceptions you can't act on; don't validate input that the framework or the type system already guards.
+
+**Modular:**
+
+- One responsibility per file. `Schema.php` declares table SQL; `Migrator.php` runs it; `DatabaseServiceProvider.php` wires them up. None of those three does the others' job.
+- Constructor injection over service location. A class takes its collaborators in `__construct`; tests pass stubs; production passes real instances via the service provider.
+- Static helpers are reserved for value objects (`Reactions::isValid`, `UserHash::compute`). Anything with state, side effects, or DB access is an instance class so it can be swapped in tests.
+- Service providers are the wiring layer. Feature code never news-up its own dependencies — `app/Providers/*` does.
+- Small files. A class over ~200 lines is a smell; split before it grows.
+
+**Maintainable:**
+
+- Test the contract, not the implementation. Pest specs assert "the migrator writes the version exactly once when current < latest" — not "the migrator calls `dbDelta` exactly three times". The implementation detail is free to change; the behaviour isn't.
+- Type everything that PHP 8.1 lets us type — parameters, returns, properties (with `readonly` where possible). `mixed` is a code smell unless we genuinely don't know.
+- Use `final class` for everything that isn't deliberately designed for extension (e.g., service providers). Inheritance is a contract; declare it only when you mean it.
+- Reuse existing helpers before writing new ones. `Schema::tableName($wpdb, ...)` already exists for every prefixed table name; don't string-concatenate `$wpdb->prefix . 'pulsepress_…'` in a controller.
+- Migrations and option keys are append-only. Renaming or removing either is a breaking change with a deprecation cycle.
+
+**Easy to extend:**
+
+- Every decision point gets a WordPress filter; every side effect gets a WordPress action. See the next section ("Extensibility — Hooks and Filters First") for the full spec.
+- Public methods of repositories/services are the API surface for both internal code and (where reasonable) Pro plugins. Private methods are free to refactor; public ones aren't, once shipped.
+- Feature flags are temporary by design. If a flag survives two releases without flipping, it becomes the default and the flag is removed.
+- Settings keys, post-meta keys, transient keys, and option keys are all namespaced under `pulsepress_` / `_pulsepress_` and are part of the documented contract.
+
+These principles are not aspirational. A PR that violates them goes back for changes; an OpenSpec design that violates them gets rewritten before code starts.
+
+## Extensibility — Hooks and Filters First
+
+Every decision point and every side-effect in PulsePress is exposed as a WordPress action or filter. This is non-negotiable and applies to Free, Pro, and every future module.
+
+**The principle:**
+
+- **Decision points** (which post types, which reactions, which IPs, where to render, what to show, who can act) are wrapped in `apply_filters('pulsepress_<noun>', $value, ...$context)`.
+- **Side effects** (a reaction was cast, a capture was stored, a setting was saved, the schema was migrated) fire `do_action('pulsepress_<noun>_<verb>', ...$context)` immediately after they happen.
+- **Defaults stay sensible.** A site that installs Free and never writes a snippet must still get a complete, generous product. Filters exist to *adjust*, not to *complete*.
+- **Hooks are the Pro contract.** Pro never modifies Free internals; it attaches through hooks/filters and through the `pulsepress_widget_data` and `pulsepress_widget_icons` extension seams already wired into Sessions 2 and 6.
+
+**Naming conventions:**
+
+- Filters: `pulsepress_<thing>` — returns a value (e.g., `pulsepress_reaction_types`, `pulsepress_client_ip`, `pulsepress_widget_data`).
+- Actions: `pulsepress_<noun>_<verb>` or `pulsepress_before_<noun>` / `pulsepress_after_<noun>` — fires a side effect (e.g., `pulsepress_before_react`, `pulsepress_after_react`, `pulsepress_capture_saved`).
+- Always pass enough context arguments to be useful (post id, reaction type, user hash, full request when applicable) so the hook is meaningful without a follow-up query.
+
+**What this looks like in practice:**
+
+- Reaction set is a constant *plus* `pulsepress_reaction_types` filter (Session 2).
+- Client IP is `$_SERVER['REMOTE_ADDR']` *plus* `pulsepress_client_ip` filter for CDN/proxy overrides (Session 2).
+- Auto-insert is on for `post` *plus* `pulsepress_widget_auto_insert` filter for other post types (Session 3).
+- Asset enqueue gates on `is_singular('post')` *plus* `pulsepress_widget_enqueue` filter (Session 3).
+- Localized JS payload is filtered through `pulsepress_widget_data` before emission (Session 3).
+- Every reaction write fires `pulsepress_before_react` (lets rate-limit / abuse modules short-circuit by throwing `RestException`) and `pulsepress_after_react` (lets aggregators, webhooks, ESP sync hook in) (Session 2).
+
+**Rules for new code:**
+
+- Every Session that adds a feature MUST document the new hooks in its OpenSpec spec under "ADDED Requirements" and in `readme.txt` under "Hooks and filters".
+- Every Session that adds a settings option MUST decide whether the option is also a filter target (so programmatic overrides are first-class, not bolted on later).
+- Removing or renaming a hook is a breaking change and requires a major version bump.
+- Adding a filter that wraps an existing decision is a non-breaking improvement and should land in the same session as the feature, not deferred.
+
 ## Admin UI Design Direction
 
 Every admin surface (settings page, post meta box, analytics dashboard, upgrade card) follows the same bar:
