@@ -324,6 +324,38 @@ namespace PulsePress\Captures {
     }
 }
 
+namespace PulsePress\Settings {
+
+    if (!function_exists(__NAMESPACE__ . '\get_option')) {
+        function get_option(string $key, mixed $default = false): mixed
+        {
+            return \Tests\Stubs\OptionStore::get($key, $default);
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\update_option')) {
+        function update_option(string $key, mixed $value, bool $autoload = true): bool
+        {
+            \Tests\Stubs\OptionStore::set($key, $value);
+            return true;
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\apply_filters')) {
+        function apply_filters(string $hook, mixed $value, mixed ...$args): mixed
+        {
+            return \Tests\Stubs\FilterRegistry::apply($hook, $value, $args);
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\do_action')) {
+        function do_action(string $hook, mixed ...$args): void
+        {
+            \Tests\Stubs\FilterRegistry::doAction($hook, $args);
+        }
+    }
+}
+
 namespace PulsePress\Reactions {
 
     if (!function_exists(__NAMESPACE__ . '\sanitize_email')) {

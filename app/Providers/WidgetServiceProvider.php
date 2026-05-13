@@ -5,6 +5,8 @@ namespace PulsePress\Providers;
 
 use PulsePress\Core\ServiceProvider;
 use PulsePress\Reactions\Reactions;
+use PulsePress\Settings\Settings;
+use PulsePress\Settings\SettingsRepository;
 use PulsePress\View\Manifest;
 
 final class WidgetServiceProvider extends ServiceProvider
@@ -53,13 +55,21 @@ final class WidgetServiceProvider extends ServiceProvider
 
         wp_register_script(self::SCRIPT_HANDLE, $urls['js'], [], PULSEPRESS_VERSION, true);
 
-        $postId  = is_singular() ? (int) get_the_ID() : 0;
+        $postId   = is_singular() ? (int) get_the_ID() : 0;
+        $settings = $this->app->has(SettingsRepository::class)
+            ? $this->app->get(SettingsRepository::class)->get()
+            : Settings::DEFAULTS;
         $payload = [
             'root'              => esc_url_raw(rest_url('pulsepress/v1/')),
             'nonce'             => wp_create_nonce('wp_rest'),
             'postId'            => $postId,
             'reactions'         => array_values((array) apply_filters('pulsepress_reaction_types', Reactions::TYPES)),
-            'positiveReactions' => array_values((array) apply_filters('pulsepress_positive_reactions', Reactions::DEFAULT_POSITIVE)),
+            'positiveReactions' => array_values((array) apply_filters('pulsepress_positive_reactions', $settings['positive_reactions'] ?? Reactions::DEFAULT_POSITIVE)),
+            'iconStyle'         => (string) ($settings['icon_style'] ?? Settings::DEFAULTS['icon_style']),
+            'themeMode'         => (string) ($settings['theme_mode'] ?? Settings::DEFAULTS['theme_mode']),
+            'widgetDesign'      => (string) ($settings['widget_design'] ?? Settings::DEFAULTS['widget_design']),
+            'countVisibility'   => (string) ($settings['count_visibility'] ?? Settings::DEFAULTS['count_visibility']),
+            'countThreshold'    => (int) ($settings['count_threshold'] ?? Settings::DEFAULTS['count_threshold']),
             'i18n'              => [
                 'loading'         => __('Loading reactions…', 'pulsepress'),
                 'error'           => __('Sorry, your reaction could not be saved. Please try again.', 'pulsepress'),

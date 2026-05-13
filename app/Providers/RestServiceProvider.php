@@ -7,6 +7,7 @@ use PulsePress\Core\ServiceProvider;
 use PulsePress\Http\Controllers\ReactionController;
 use PulsePress\Reactions\ReactionRepository;
 use PulsePress\Reactions\Reactions;
+use PulsePress\Settings\SettingsRepository;
 
 final class RestServiceProvider extends ServiceProvider
 {
@@ -28,12 +29,31 @@ final class RestServiceProvider extends ServiceProvider
             /** @var ReactionController $controller */
             $controller = $this->app->get(ReactionController::class);
 
+            $settingsRepo = $this->app->has(SettingsRepository::class)
+                ? $this->app->get(SettingsRepository::class)
+                : null;
+
             register_rest_route(self::REST_NAMESPACE, '/react', [
                 'methods'             => 'POST',
                 'callback'            => [$controller, 'react'],
-                'permission_callback' => static function ($request): bool {
+                'permission_callback' => static function ($request) use ($settingsRepo) {
                     $nonce = (string) ($request->get_header('X-WP-Nonce') ?? '');
-                    return wp_verify_nonce($nonce, 'wp_rest') !== false;
+                    if (wp_verify_nonce($nonce, 'wp_rest') === false) {
+                        return false;
+                    }
+                    $allowGuests = true;
+                    if ($settingsRepo !== null) {
+                        $settings    = $settingsRepo->get();
+                        $allowGuests = (bool) ($settings['allow_guest_reactions'] ?? true);
+                    }
+                    if (!$allowGuests && !is_user_logged_in()) {
+                        return new \WP_Error(
+                            'pulsepress_login_required',
+                            __('Please sign in to react.', 'pulsepress'),
+                            ['status' => 401]
+                        );
+                    }
+                    return true;
                 },
                 'args'                => [
                     'post_id' => [

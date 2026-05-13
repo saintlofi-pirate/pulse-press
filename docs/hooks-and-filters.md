@@ -16,6 +16,8 @@ Catalog of every PulsePress action and filter, kept in sync with the code as Ses
 | `pulsepress_consent_text_version` | `(string $version)` | `'v1'` | Session 4 | The consent-text version stamp written into every new capture row. Existing rows are not retroactively updated. |
 | `pulsepress_capture_email` | `(string $normalisedEmail, WP_REST_Request $request)` | already lowercased + trimmed input | Session 4 | Transform the email before validation/storage (e.g. strip `+tag` aliases). Receives the already-normalised email. |
 | `pulsepress_positive_reactions` | `(string[] $types)` | `['love', 'insightful', 'funny']` | Session 5 | Which reaction types trigger the inline capture form on the front end. Empty array disables inline capture entirely. |
+| `pulsepress_settings` | `(array $settings)` | `Settings::DEFAULTS` merged with stored option | Session 6 | Final filter pass on the full settings array. Pro can layer extra fields here; admin-saved values still take precedence over defaults but lose to this filter. |
+| `pulsepress_settings_default` | `(array $defaults)` | `Settings::DEFAULTS` | Session 6 | Override the defaults map (e.g., to pre-seed a different positive set on first install). |
 
 ## Actions
 
@@ -26,7 +28,7 @@ Catalog of every PulsePress action and filter, kept in sync with the code as Ses
 | `pulsepress_before_capture` | `(int $postId, string $email, string $reactionType, WP_REST_Request $request)` | Session 4 | Pre-store hook for the capture endpoint. Throw `RestException` to short-circuit with a `WP_Error`. |
 | `pulsepress_after_capture` | `(int $captureId, int $postId, string $email, string $reactionType, string $consentVersion)` | Session 4 | Post-store hook. Fires only on `'inserted'` (not on `'already_exists'`). ESP sync, double opt-in mail, webhooks attach here. |
 | `pulsepress_purge_fraud_metadata` | `()` | Session 4 (WP-Cron event) | Daily cron event that runs `FraudPurger::run()` to null hashes whose `fraud_metadata_purge_at` has passed. Hookable, but the default handler is registered in `CaptureServiceProvider::boot()`. |
-| `pulsepress_settings_saved` | `(array $changed, array $previous)` | Session 6 (planned) | Fires after the settings page persists changes. |
+| `pulsepress_settings_saved` | `(array $new, array $previous)` | Session 6 | Fires after the settings repository persists changes. ESP credential sync, telemetry, cache invalidation attach here. |
 
 ## Naming Conventions
 
