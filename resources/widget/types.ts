@@ -16,6 +16,9 @@ export interface PulsePressData {
     loading: string;
     error: string;
     activeSuffix: string;
+    groupLabel: string;
+    announceReacted: string;
+    announceUpdated: string;
   };
 }
 

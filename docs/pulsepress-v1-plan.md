@@ -81,6 +81,61 @@ Every decision point and every side-effect in PulsePress is exposed as a WordPre
 - Removing or renaming a hook is a breaking change and requires a major version bump.
 - Adding a filter that wraps an existing decision is a non-breaking improvement and should land in the same session as the feature, not deferred.
 
+## Accessibility — WCAG 2.1 AA First
+
+Accessibility is not a Session 11 cleanup; it is a constraint on every UI slice that ships. The bar:
+
+**Semantics:**
+
+- Every interactive element is a real `<button>`, `<a>`, `<input>`, `<select>`, or `<dialog>` — never a `<div>` with a click handler.
+- Form fields always have an associated `<label>`. Placeholder text is never the only label.
+- State changes that aren't visually obvious announce via `aria-live` (polite for counts, assertive for errors).
+- Active and toggled state uses `aria-pressed`, `aria-expanded`, `aria-selected` — semantic, not just visual.
+- Disabled state uses `disabled` (which blocks focus) or `aria-disabled="true"` (which keeps focus) depending on whether the user needs to know the control *exists* but can't be used right now.
+
+**Keyboard:**
+
+- Every interaction works from the keyboard alone. If you can do it with a mouse, you can do it with Tab + Enter + Space + arrow keys.
+- Tab order matches visual order. No `tabindex` greater than 0.
+- Focus is always visible. `:focus-visible` styling shows a ring; `outline: none` is forbidden unless replaced by an equally visible alternative.
+- Modals, popovers, and drawers manage focus: focus moves in on open, returns to the trigger on close, and is trapped while open.
+- Escape closes anything that opens.
+
+**Colour and motion:**
+
+- Text contrast ≥ 4.5:1 against its background (WCAG AA). Large text ≥ 3:1.
+- Non-text UI contrast ≥ 3:1 (icon strokes, borders, focus rings).
+- Colour is never the only cue. Active reactions are also `aria-pressed="true"`; errors are also iconographed; required fields are also labelled "required".
+- Honour `prefers-reduced-motion: reduce` — transitions disabled, motion stripped, transforms zeroed. Already wired into `widget.css`; every later component does the same.
+- No auto-play media, no auto-advancing carousels, no flashing > 3 Hz.
+
+**Screen reader UX:**
+
+- Icon-only buttons always carry `aria-label`. Decorative icons are `aria-hidden="true"`.
+- Form errors are described by `aria-describedby` pointing at an error message with `role="alert"`.
+- Page titles, headings, and landmark regions (`<main>`, `<nav>`, `<aside>`) match the visual structure.
+- Loading states announce ("Loading reactions…") rather than spinning silently.
+- Validation messages are full sentences, not codes ("Email address is required to continue", not "ERR_REQUIRED").
+
+**Testing:**
+
+- Every shipped UI slice runs through keyboard-only navigation before the OpenSpec change is marked complete.
+- Every shipped UI slice is tested with VoiceOver on macOS (or the equivalent on the contributor's OS) for the golden path and one error path.
+- Automated tests assert ARIA attributes where applicable (`aria-pressed`, `aria-label`, `aria-invalid`).
+- Session 11's accessibility pass becomes a *regression-prevention* check, not a *find-and-fix-everything* slog.
+
+**What this looks like in practice today:**
+
+- Widget buttons are real `<button>` with `aria-pressed` and `aria-label` (Session 3).
+- Counts announce via `aria-live="polite"` (Session 3).
+- `:focus-visible` styling renders a 2px accent ring on every interactive element (Session 3).
+- `prefers-reduced-motion` disables the 200 ms transform (Session 3).
+- The settings page (Session 6) will be navigable Tab-only with WCAG AA contrast on every state.
+- The inline capture form (Session 5) will use `<label>`/`<input>` pairs, `aria-describedby` for the consent helper text, and `role="alert"` for validation errors.
+- The admin dashboard (Session 9) will use semantic table markup with `<caption>`/`<th scope>`/`<tbody>` for the top-posts table.
+
+If a contributor or model is about to ship a UI change and can't tick every relevant box above, the change goes back for revision before merge.
+
 ## Admin UI Design Direction
 
 Every admin surface (settings page, post meta box, analytics dashboard, upgrade card) follows the same bar:

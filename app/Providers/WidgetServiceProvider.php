@@ -60,9 +60,12 @@ final class WidgetServiceProvider extends ServiceProvider
             'postId'    => $postId,
             'reactions' => array_values((array) apply_filters('pulsepress_reaction_types', Reactions::TYPES)),
             'i18n'      => [
-                'loading'      => __('Loading…', 'pulsepress'),
-                'error'        => __('Please try again.', 'pulsepress'),
-                'activeSuffix' => __(' (selected)', 'pulsepress'),
+                'loading'         => __('Loading reactions…', 'pulsepress'),
+                'error'           => __('Sorry, your reaction could not be saved. Please try again.', 'pulsepress'),
+                'activeSuffix'    => __(', selected', 'pulsepress'),
+                'groupLabel'      => __('Reactions', 'pulsepress'),
+                'announceReacted' => __('Reacted with {type}.', 'pulsepress'),
+                'announceUpdated' => __('Updated reaction to {type}.', 'pulsepress'),
             ],
         ];
 

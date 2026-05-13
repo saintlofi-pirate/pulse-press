@@ -75,6 +75,20 @@ Commit messages should include a short uppercase-prefixed subject line and the s
 - Validate changes with `openspec validate <change-id> --strict --no-interactive` before calling the plan complete.
 - Treat OpenSpec telemetry or PostHog network errors as non-blocking unless the actual validation command fails.
 
+## Accessibility
+
+Full spec: `docs/pulsepress-v1-plan.md` §Accessibility — WCAG 2.1 AA First. Summary:
+
+- Real semantic elements only — `<button>`, `<a>`, `<input>`, `<label>`, `<dialog>` — never `<div>` with onclick.
+- Keyboard works for everything; visible focus rings via `:focus-visible`; modals manage focus + close on Escape.
+- WCAG AA contrast: 4.5:1 text, 3:1 non-text UI. Colour is never the only cue. Active state is `aria-pressed`, not just visual.
+- `prefers-reduced-motion: reduce` honoured everywhere; no auto-play, no flashing.
+- Icon-only buttons have `aria-label`; decorative icons are `aria-hidden`. Form errors point via `aria-describedby` to `role="alert"`.
+- Every shipped UI slice is keyboard-tested **and** screen-reader-spot-tested before its OpenSpec change can close.
+- Automated tests assert ARIA attributes where applicable. Session 11's a11y pass is regression prevention, not a fix-everything slog.
+
+A UI PR that can't tick the relevant boxes goes back for revision before merge.
+
 ## Code Quality
 
 Full spec: `docs/pulsepress-v1-plan.md` §Code Quality Principles. Summary:

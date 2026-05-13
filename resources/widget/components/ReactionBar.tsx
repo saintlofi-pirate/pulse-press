@@ -16,7 +16,13 @@ export function ReactionBar({ postId, data }: Props) {
   const [activeType, setActiveType] = useState<ReactionType | null>(() => getStoredReaction(postId));
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const [announcement, setAnnouncement] = useState<string>('');
   const errorTimerRef = useRef<number | null>(null);
+
+  const announce = useCallback((message: string) => {
+    setAnnouncement('');
+    window.setTimeout(() => setAnnouncement(message), 50);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -77,6 +83,8 @@ export function ReactionBar({ postId, data }: Props) {
       try {
         const response = await postReaction({ root: data.root, nonce: data.nonce, postId }, type);
         setCounts(response.counts ?? optimistic);
+        const template = response.status === 'inserted' ? data.i18n.announceReacted : data.i18n.announceUpdated;
+        announce(template.replace('{type}', labelFor(type)));
       } catch (err) {
         setActiveType(prevActive);
         setCounts(prevCounts);
@@ -87,14 +95,15 @@ export function ReactionBar({ postId, data }: Props) {
         setPending(false);
       }
     },
-    [activeType, counts, data, pending, postId, showError]
+    [activeType, announce, counts, data, pending, postId, showError]
   );
 
   return (
     <div class="pulsepress-bar" data-loading={pending ? 'true' : 'false'}>
-      <div class="pulsepress-buttons" role="group" aria-label="Reactions">
+      <div class="pulsepress-buttons" role="group" aria-label={data.i18n.groupLabel}>
         {data.reactions.map((type) => {
           const isActive = activeType === type;
+          const count = counts[type] ?? 0;
           return (
             <button
               key={type}
@@ -102,17 +111,18 @@ export function ReactionBar({ postId, data }: Props) {
               class="pulsepress-reaction"
               data-active={isActive ? 'true' : 'false'}
               aria-pressed={isActive ? 'true' : 'false'}
-              aria-label={`${labelFor(type)}${isActive ? data.i18n.activeSuffix : ''}`}
+              aria-label={`${labelFor(type)}, ${count}${isActive ? data.i18n.activeSuffix : ''}`}
               onClick={() => handleClick(type)}
             >
               <span class="pulsepress-icon" dangerouslySetInnerHTML={{ __html: iconFor(type) }} />
-              <span class="pulsepress-count" aria-live="polite">{counts[type] ?? 0}</span>
+              <span class="pulsepress-count" aria-hidden="true">{count}</span>
             </button>
           );
         })}
       </div>
+      <p class="pulsepress-sr-only" role="status" aria-live="polite" aria-atomic="true">{announcement}</p>
       {error !== null && (
-        <p class="pulsepress-error" role="status">{error}</p>
+        <p class="pulsepress-error" role="alert">{error}</p>
       )}
     </div>
   );
