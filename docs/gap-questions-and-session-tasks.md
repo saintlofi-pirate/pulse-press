@@ -296,28 +296,57 @@ Verification:
 
 ### Session 6: Settings Page
 
-Goal: expose core Free settings.
+Goal: expose core Free settings through a modern, sleek, minimal admin page.
+
+Design bar (re-stated from `pulsepress-v1-plan.md` §Admin UI Design Direction): clean layout, generous spacing, one accent, sentence case, system font, 150–200 ms motion, `prefers-reduced-motion` respected, WordPress-native components reskinned via CSS variables, designed empty/loading states, accessible focus rings, no dark patterns.
 
 Scope:
 
-- Count visibility.
-- Threshold.
-- Design style.
-- Positive reactions.
-- Auto-insert post types.
-- Theme mode.
-- Data retention/uninstall options.
-- Use the starter admin menu/page pattern only if it stays lighter than building a custom WP admin page.
-- Prefer WordPress-native components over Element Plus unless we intentionally choose the starter's Vue admin stack.
+- Count visibility (always / never / threshold).
+- Threshold value.
+- Widget design preset (Minimal / Expressive).
+- **Icon style preset (Classic outline / Emoji)** — exposed to JS via `pulsepress_widget_icons` filter so Pro can plug in additional presets without code changes.
+- Positive reactions (which types trigger the future capture UI).
+- Auto-insert post types (checkbox list of public post types).
+- Auto-insert position (above / below / both).
+- Theme mode (light / dark / auto via `prefers-color-scheme`).
+- Data retention / uninstall options (already-reserved option keys).
+- **Allow guest reactions toggle** — when off, `/react` permission callback adds `is_user_logged_in()`.
+- **Per-post override meta box** on the post editor (Auto / Force on / Force off). Saved as `_pulsepress_widget_state` post meta. Display precedence: post-level wins over global auto-insert settings (gap 8 D1).
+- Reskin starter admin menu / page pattern is acceptable only if it lands lighter than a custom page. Otherwise build a custom page that honours the design bar.
+- Prefer WordPress-native components over Element Plus. Style via CSS variables, never inline overrides.
 
-OpenSpec: optional unless setting names become public contract.
+OpenSpec: yes — settings become part of the durable admin contract and the icon-style + per-post meta keys are filterable surfaces that Pro and 3rd parties will consume.
 
 Verification:
 
-- Settings save and reload.
-- Sanitization rejects invalid values.
-- Frontend respects settings.
-- Admin assets load only on PulsePress admin pages.
+- Settings save and reload across sessions.
+- Sanitization rejects invalid values (numeric ranges, allowlisted post types, allowlisted icon-style keys).
+- Per-post override beats global auto-insert in every combination.
+- Disabling "Allow guest reactions" causes anonymous `POST /react` to return 401.
+- Frontend respects every setting (theme, position, icon style, auto-insert post types).
+- Admin assets load only on PulsePress admin pages and on the post editor screen where the meta box renders.
+- Visible focus rings on every interactive control; tab order matches visual order; `prefers-reduced-motion` disables transitions.
+- Settings page renders cleanly at 1280px and 2560px widths; no horizontal scrollbars at common breakpoints.
+
+### Session 6.5: Icon Preset Wiring (folds into Session 6 if scope holds)
+
+Goal: ship the Emoji icon preset alongside Classic and let admins switch via Settings.
+
+Scope:
+
+- Extract `resources/widget/icons.ts` into a presets map: `{ classic: {love: '<svg…>', …}, emoji: {love: '❤️', …} }`.
+- Add a `pulsepress_widget_icons` filter that lets PHP override icon strings before they reach JS through `pulsepress_widget_data`. Pro plugs in two more presets here.
+- JS chooses preset based on `PulsePressData.iconStyle`, default `'classic'`.
+- Settings UI shows a card-based preset picker (visual preview thumbnails, not a dropdown) styled to the admin design bar.
+
+OpenSpec: covered under Session 6's settings change; no separate spec needed.
+
+Verification:
+
+- Switching the preset in Settings changes the rendered icons within one cached-asset cycle.
+- Emoji preset stays within the 15 KB JS budget (emoji glyphs are font-rendered, so this should be net negative bytes vs Classic).
+- Screen-reader labels survive the swap — icons stay `aria-hidden`; the button's `aria-label` comes from `i18n` regardless of preset.
 
 ### Session 7: Block And Shortcode
 

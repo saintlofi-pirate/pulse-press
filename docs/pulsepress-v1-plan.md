@@ -6,10 +6,25 @@ PulsePress is a WordPress plugin for reactions that grow an email list, with ana
 
 ## Positioning
 
-- Free: complete reactions, inline email capture with CSV export, 30-day analytics, top posts, sentiment insights, Gutenberg block, shortcode, privacy-safe defaults, and two polished widget designs.
-- Pro: ESP integrations, 12-month analytics, A/B tests, per-category or per-tag reaction sets, webhooks, white-labeling, and priority support.
+- Free: complete reactions, inline email capture with CSV export, 30-day analytics, top posts, sentiment insights, Gutenberg block, shortcode, privacy-safe defaults, two icon presets (Classic + Emoji), two widget designs (Minimal + Expressive), per-post overrides, guest-reactions toggle.
+- Pro: ESP integrations, 12-month analytics, A/B tests, per-category or per-tag reaction sets, IP allowlist/blocklist, webhooks, white-labeling, and priority support.
 - Price target: `$49/year`.
 - Design bar: polished, calm, generous spacing, strong hierarchy, one primary accent, sentence case, and a visual feel inspired by Adham Dannaway-style product polish.
+
+## Admin UI Design Direction
+
+Every admin surface (settings page, post meta box, analytics dashboard, upgrade card) follows the same bar:
+
+- **Modern, sleek, minimal, clean.** No dense WordPress-default tables. No multi-column boxed layouts. White space is a feature, not a bug.
+- **One primary accent colour.** Same accent the widget uses on the front end so the product feels coherent. Reserved for the most important action on a page; nothing else is accent-coloured.
+- **Sentence case everywhere.** "Save changes", not "Save Changes". "Allow guest reactions", not "Allow Guest Reactions".
+- **Strong typographic hierarchy.** Three sizes max per page (page title, section title, body). System font stack; no custom web font.
+- **Generous spacing.** Section padding ≥ 1.5rem; field gap ≥ 1rem; never crowd inputs.
+- **Smooth, restrained motion.** 150–200 ms ease-in-out on hover/focus/active and on toggling sections. Respects `prefers-reduced-motion`. No bouncy springs, no decorative animation.
+- **WordPress-native components first.** Use `@wordpress/components` (Button, ToggleControl, RadioControl, Notice) where they fit; reskin via CSS variables when they don't match the bar. Avoid Element Plus, Bootstrap, or any framework whose look-and-feel pulls us off-bar.
+- **Empty and loading states are designed.** Never a blank panel — always a one-line explanation plus a clear next action.
+- **Accessibility is baked in.** Visible focus rings, ARIA-correct controls, keyboard-first interaction; never `outline: none` without a replacement.
+- **No dark patterns for the upgrade card.** A single restrained card at the bottom of the settings page with one CTA, never a modal, never above-the-fold blocking content.
 
 ## Free vs Pro Scope
 
@@ -18,7 +33,10 @@ PulsePress is a WordPress plugin for reactions that grow an email list, with ana
 | Six reaction types with custom labels | Yes | Yes |
 | Show or hide counts | Yes | Yes |
 | Threshold count visibility | Yes | Yes |
-| Widget designs | 2 designs | 4 designs |
+| Icon style preset (Classic outline + Emoji/Facebook-style) | 2 presets | 4 presets |
+| Widget designs (Minimal + Expressive) | 2 designs | 4 designs |
+| Per-post override (Auto / Force on / Force off) | Yes | Yes |
+| Allow guest reactions toggle | Yes | Yes |
 | Email capture after positive reactions | CSV export | ESP direct sync |
 | Built-in analytics | 30 days | 12 months |
 | Top posts by reaction | Yes | Yes |
@@ -30,6 +48,7 @@ PulsePress is a WordPress plugin for reactions that grow an email list, with ana
 | ESP integrations | No | Yes |
 | A/B widget testing | No | Yes |
 | Custom reaction sets by category/tag | No | Yes |
+| IP allowlist / blocklist for reactions | No | Yes |
 | Webhooks and Zapier | No | Yes |
 | White-labeling | No | Yes |
 | Priority support | No | Yes |
@@ -43,6 +62,8 @@ PulsePress is a WordPress plugin for reactions that grow an email list, with ana
 - Email capture appears inline after positive reactions only, never as a modal interruption.
 - Positive reactions are configurable, with Love, Insightful, and Funny as the default set.
 - Deduplication uses `localStorage`, a first-party cookie, and server-side soft deduplication.
+- Icon style is a preset, not freeform. Free ships two presets: **Classic** (current hand-curated outline SVGs) and **Emoji** (Facebook/Twitter-style filled emoji glyphs). Pro adds two more. Switching is one setting and a single `pulsepress_widget_icons` filter; reaction types and storage are untouched.
+- Guest reactions are allowed by default. Admins can require login via the "Allow guest reactions" toggle; when off, the `/react` permission callback also checks `is_user_logged_in()`.
 
 ## Technical Stack
 
