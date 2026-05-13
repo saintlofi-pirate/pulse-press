@@ -296,9 +296,11 @@ Verification:
 
 ### Session 6: Settings Page
 
-Goal: expose core Free settings through a modern, sleek, minimal admin page.
+Goal: expose core Free settings through a smooth SPA-style admin page on par with the best WP-ecosystem plugins, with a live widget preview that updates as the admin tunes settings.
 
-Design bar (re-stated from `pulsepress-v1-plan.md` §Admin UI Design Direction): clean layout, generous spacing, one accent, sentence case, system font, 150–200 ms motion, `prefers-reduced-motion` respected, WordPress-native components reskinned via CSS variables, designed empty/loading states, accessible focus rings, no dark patterns.
+Design bar (full spec in `pulsepress-v1-plan.md` §Admin UI Design Direction): Preact SPA shell mounted in wp-admin; hash-routed tabs; optimistic REST-based field saves with inline status; cards over tables; one accent; sentence case; system font; 150–200 ms motion; `prefers-reduced-motion` respected; `@wordpress/components` reskinned via CSS variables; designed empty/loading states; visible focus rings; WCAG 2.1 AA; no nag bars; restrained upgrade card.
+
+**Live widget preview is non-negotiable** — a side-by-side panel re-renders the `ReactionBar` component with the in-flight settings (icon preset, design preset, theme, reactions, labels, count visibility) on every change. The preview reuses the same Preact component the front-end ships, so configuration drift between admin and front end is impossible by construction. Preview interactions are muted (no REST write, no localStorage). Mock counts make the preview legible at all settings.
 
 Scope:
 

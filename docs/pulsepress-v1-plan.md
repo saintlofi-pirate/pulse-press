@@ -138,18 +138,73 @@ If a contributor or model is about to ship a UI change and can't tick every rele
 
 ## Admin UI Design Direction
 
-Every admin surface (settings page, post meta box, analytics dashboard, upgrade card) follows the same bar:
+Every admin surface (settings page, post meta box, analytics dashboard, upgrade card) follows the same bar. The settings page in particular must feel like a **smooth single-page app**, on par with the best plugins in the WordPress ecosystem (think: Yoast, RankMath, FluentCRM, GravityForms, MonsterInsights, Spectra, WP Migrate, WS Form). Visiting feels like opening a focused product, not landing on a wp-admin form.
+
+**Architecture:**
+
+- **SPA in `wp-admin`.** The PulsePress settings page mounts a single Preact app (sharing the runtime budget with the widget where practical) inside one server-rendered `<div id="pulsepress-admin">` shell. Tabs/sections route client-side via the URL hash (`#display`, `#reactions`, `#capture`, `#privacy`, `#advanced`). Browser back/forward, deep-linkable, bookmarkable.
+- **No full page reloads.** Saving any field triggers an inline REST write (no `<form action>` post-back). The whole page stays mounted.
+- **Optimistic settings updates.** Toggles + radios update local state immediately, fire the REST write in the background, roll back + show an inline error on failure (same pattern as the widget).
+- **Server-rendered shell is minimal.** PHP outputs a single `<div>` mount node plus the same `wp_localize_script` payload pattern the widget uses (`PulsePressAdminData = {root, nonce, settings, reactions, captures, …}`). All other rendering happens in JS.
+- **Tab + section navigation.** Left rail or top tabs depending on density; only one or two levels of hierarchy; no nested drawer-in-drawer.
+
+**Live widget preview:**
+
+- **Always-visible preview pane** on the settings page — a faithful render of the current widget configuration that updates *as the admin changes settings*. No "preview" button; no modal preview; preview is part of the page, side-by-side with the controls.
+- **Implementation reuses the front-end `ReactionBar` component.** Pass the in-flight settings as props (icon preset, reactions list, design preset, theme, label overrides) and re-render on every change. No second widget codebase; preview drift is impossible by construction.
+- **Preview reflects every relevant setting:** icon preset, design preset (Minimal / Expressive / Pro variants when present), theme mode (light / dark / auto), positive-reactions set, custom labels, count visibility threshold.
+- **Mock counts** so the preview always has something to render (Love 24 / Insightful 12 / Funny 6 / …) — clearly labelled as "Preview" so admins don't think they're real post counts.
+- **Interaction in the preview is muted.** Hover/focus states render; clicking shows the "selected" state but does not call the REST endpoint and does not write to localStorage. Tooltip on the preview reads "This is a preview. Real visitors will see the configured widget on your posts."
+
+**Visual:**
 
 - **Modern, sleek, minimal, clean.** No dense WordPress-default tables. No multi-column boxed layouts. White space is a feature, not a bug.
 - **One primary accent colour.** Same accent the widget uses on the front end so the product feels coherent. Reserved for the most important action on a page; nothing else is accent-coloured.
 - **Sentence case everywhere.** "Save changes", not "Save Changes". "Allow guest reactions", not "Allow Guest Reactions".
 - **Strong typographic hierarchy.** Three sizes max per page (page title, section title, body). System font stack; no custom web font.
 - **Generous spacing.** Section padding ≥ 1.5rem; field gap ≥ 1rem; never crowd inputs.
-- **Smooth, restrained motion.** 150–200 ms ease-in-out on hover/focus/active and on toggling sections. Respects `prefers-reduced-motion`. No bouncy springs, no decorative animation.
-- **WordPress-native components first.** Use `@wordpress/components` (Button, ToggleControl, RadioControl, Notice) where they fit; reskin via CSS variables when they don't match the bar. Avoid Element Plus, Bootstrap, or any framework whose look-and-feel pulls us off-bar.
-- **Empty and loading states are designed.** Never a blank panel — always a one-line explanation plus a clear next action.
-- **Accessibility is baked in.** Visible focus rings, ARIA-correct controls, keyboard-first interaction; never `outline: none` without a replacement.
-- **No dark patterns for the upgrade card.** A single restrained card at the bottom of the settings page with one CTA, never a modal, never above-the-fold blocking content.
+- **Cards over tables.** Settings are grouped into airy cards with a clear title + helper text. Tables only for data display (analytics, capture list), never for control layout.
+- **Inline help, not tooltips.** Helper text under every control explains what changes. Tooltips are reserved for icon-only buttons.
+
+**Motion:**
+
+- **Smooth, restrained motion.** 150–200 ms ease-in-out on hover/focus/active and on toggling sections. Tab transitions cross-fade at the same duration; no slide-in panels longer than 220 ms.
+- **`prefers-reduced-motion` honoured.** Transitions zero out; preview updates remain instant.
+- **No bouncy springs, no decorative animation.** A reaction's click animation in the preview matches the front-end widget exactly.
+
+**Components:**
+
+- **Preact + a thin CSS-variable layer** drives the SPA. `@wordpress/components` (Button, ToggleControl, RadioControl, Notice, FormToggle, SelectControl) provide the bones; we reskin via `:where(.pulsepress-admin .components-*) { … }` so the WP defaults still ship if our CSS fails to load (progressive enhancement).
+- **No second framework.** No Element Plus, no Material UI, no Bootstrap. Adding a second framework runtime to wp-admin is a non-starter.
+- **Icons match the widget.** Same Tabler-style SVG family as the front end; consistency is the point.
+
+**State:**
+
+- **Empty and loading states are designed.** Never a blank panel — always a one-line explanation plus a clear next action. Loading skeletons match the final layout's footprint to avoid CLS.
+- **Save status is visible.** A small "Saved" pill appears next to the field/section title after every successful REST write, fading after 1.5 s. Errors render inline with `role="alert"`.
+- **Unsaved-changes protection.** If a network failure leaves a setting unsynced, a small toast offers "Retry" / "Discard"; browser-close shows the standard `beforeunload` warning while unsaved.
+
+**Accessibility:**
+
+- **Same WCAG 2.1 AA bar as the front end** (see §Accessibility — WCAG 2.1 AA First). Tab navigation; visible focus rings; semantic landmarks; aria-pressed on toggles; `role="status"`/`role="alert"` for save and error feedback; live regions for preview-update announcements ("Preview updated to Emoji icon style").
+- **Keyboard-first nav.** Section tabs respond to ←/→ arrow keys (WAI-ARIA Tabs pattern); Enter activates; focus moves to the section heading on tab change.
+- **Contrast checked per accent**. The accent passes 4.5:1 against the page background.
+
+**No dark patterns:**
+
+- **The upgrade card is a single restrained card** at the bottom of the settings page with one CTA, never a modal, never blocking the page above the fold.
+- **No nag bars, no rating asks** in the first 30 days of activation. Session 12 (WordPress.org packaging) will calibrate the polite ask.
+- **Pro features visible but not noisy.** Disabled Pro toggles in the Free UI carry a small "Pro" badge next to the control and link to the upgrade card. They are not greyed-out-with-tooltip; they are visible, labelled, and skippable.
+
+**Reference plugins for the bar** (we should match or exceed these in feel):
+
+- FluentCRM (admin nav + save UX)
+- RankMath (section density + helper text discipline)
+- Spectra / Kadence Blocks (WordPress-native + custom blend)
+- WP Migrate DB (status feedback + state messaging)
+- Yoast (sentence case + clarity)
+
+If a contributor or model is about to ship admin UI that doesn't meet this bar, the change goes back for revision before merge.
 
 ## Free vs Pro Scope
 
