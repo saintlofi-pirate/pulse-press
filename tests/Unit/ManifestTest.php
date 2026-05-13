@@ -17,9 +17,9 @@ afterEach(function () {
     @rmdir($this->tmpDir);
 });
 
-it('returns null pair when the manifest file does not exist', function () {
+it('returns empty lists when the manifest file does not exist', function () {
     $manifest = new Manifest($this->manifestPath, $this->distUrl);
-    expect($manifest->resolve('resources/widget/index.ts'))->toBe(['js' => null, 'css' => null]);
+    expect($manifest->resolve('resources/widget/index.ts'))->toBe(['js' => [], 'css' => []]);
 });
 
 it('resolves js and css URLs from a present manifest', function () {
@@ -33,11 +33,11 @@ it('resolves js and css URLs from a present manifest', function () {
     $manifest = new Manifest($this->manifestPath, $this->distUrl);
     $result   = $manifest->resolve('resources/widget/index.ts');
 
-    expect($result['js'])->toBe($this->distUrl . 'js/widget.abc123.js');
-    expect($result['css'])->toBe($this->distUrl . 'assets/widget.def456.css');
+    expect($result['js'])->toBe([$this->distUrl . 'js/widget.abc123.js']);
+    expect($result['css'])->toBe([$this->distUrl . 'assets/widget.def456.css']);
 });
 
-it('returns null css when the manifest entry omits the css array', function () {
+it('returns empty css when the manifest entry omits the css array', function () {
     file_put_contents($this->manifestPath, json_encode([
         'resources/widget/index.ts' => ['file' => 'js/widget.abc123.js'],
     ]));
@@ -45,8 +45,29 @@ it('returns null css when the manifest entry omits the css array', function () {
     $manifest = new Manifest($this->manifestPath, $this->distUrl);
     $result   = $manifest->resolve('resources/widget/index.ts');
 
-    expect($result['js'])->toBe($this->distUrl . 'js/widget.abc123.js');
-    expect($result['css'])->toBeNull();
+    expect($result['js'])->toBe([$this->distUrl . 'js/widget.abc123.js']);
+    expect($result['css'])->toBe([]);
+});
+
+it('follows imports to include shared chunks before the entry', function () {
+    file_put_contents($this->manifestPath, json_encode([
+        '_shared.abc.js' => ['file' => 'js/shared.abc.js'],
+        'resources/admin/index.tsx' => [
+            'file'    => 'js/admin.def.js',
+            'imports' => ['_shared.abc.js'],
+            'css'     => ['assets/admin.ghi.css'],
+        ],
+    ]));
+
+    $manifest = new Manifest($this->manifestPath, $this->distUrl);
+    $result   = $manifest->resolve('resources/admin/index.tsx');
+
+    // Shared chunk comes first; entry comes last (so deps are evaluated first).
+    expect($result['js'])->toBe([
+        $this->distUrl . 'js/shared.abc.js',
+        $this->distUrl . 'js/admin.def.js',
+    ]);
+    expect($result['css'])->toBe([$this->distUrl . 'assets/admin.ghi.css']);
 });
 
 it('caches the parsed manifest under the mtime key', function () {
@@ -76,5 +97,5 @@ it('refreshes the cache when the manifest mtime changes', function () {
     ]));
 
     $result = $manifest->resolve('resources/widget/index.ts');
-    expect($result['js'])->toBe($this->distUrl . 'js/new.js');
+    expect($result['js'])->toBe([$this->distUrl . 'js/new.js']);
 });

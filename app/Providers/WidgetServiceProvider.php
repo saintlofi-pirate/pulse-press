@@ -44,16 +44,27 @@ final class WidgetServiceProvider extends ServiceProvider
         $manifest = $this->app->get(Manifest::class);
         $urls     = $manifest->resolve(self::ENTRY);
 
-        if ($urls['js'] === null) {
+        if (empty($urls['js'])) {
             return;
         }
 
-        if ($urls['css'] !== null) {
-            wp_register_style(self::STYLE_HANDLE, $urls['css'], [], PULSEPRESS_VERSION);
-            wp_enqueue_style(self::STYLE_HANDLE);
+        foreach ($urls['css'] as $i => $cssUrl) {
+            $handle = self::STYLE_HANDLE . '-' . $i;
+            wp_register_style($handle, $cssUrl, [], PULSEPRESS_VERSION);
+            wp_enqueue_style($handle);
         }
 
-        wp_register_script(self::SCRIPT_HANDLE, $urls['js'], [], PULSEPRESS_VERSION, true);
+        $entryUrl   = array_pop($urls['js']);
+        $depUrls    = $urls['js'];
+        $depHandles = [];
+        foreach ($depUrls as $i => $depUrl) {
+            $handle = self::SCRIPT_HANDLE . '-dep-' . $i;
+            wp_register_script($handle, $depUrl, [], PULSEPRESS_VERSION, true);
+            wp_enqueue_script($handle);
+            $depHandles[] = $handle;
+        }
+        wp_register_script(self::SCRIPT_HANDLE, $entryUrl, $depHandles, PULSEPRESS_VERSION, true);
+        $this->ensureModuleScripts(array_merge($depHandles, [self::SCRIPT_HANDLE]));
 
         $postId   = is_singular() ? (int) get_the_ID() : 0;
         $settings = $this->app->has(SettingsRepository::class)
@@ -98,6 +109,24 @@ final class WidgetServiceProvider extends ServiceProvider
 
         wp_localize_script(self::SCRIPT_HANDLE, 'PulsePressData', $payload);
         wp_enqueue_script(self::SCRIPT_HANDLE);
+    }
+
+    /** @param list<string> $handles */
+    private function ensureModuleScripts(array $handles): void
+    {
+        $key = 'pulsepress_module_handles_widget';
+        if (!empty($GLOBALS[$key])) {
+            $GLOBALS[$key] = array_merge($GLOBALS[$key], $handles);
+            return;
+        }
+        $GLOBALS[$key] = $handles;
+        add_filter('script_loader_tag', static function (string $tag, string $handle) use ($key) {
+            $registered = $GLOBALS[$key] ?? [];
+            if (in_array($handle, $registered, true) && !str_contains($tag, ' type="module"')) {
+                $tag = preg_replace('/<script /', '<script type="module" ', $tag, 1);
+            }
+            return $tag;
+        }, 10, 2);
     }
 
     public function maybeAppendWidget(string $content): string

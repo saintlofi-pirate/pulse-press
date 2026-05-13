@@ -53,12 +53,17 @@ final class SettingsServiceProvider extends ServiceProvider
 
     public function registerAdminMenu(): void
     {
+        $renderCallback = [$this, 'renderAdminPage'];
+        if ($this->app->has(AdminServiceProvider::class)) {
+            $renderCallback = [$this->app->get(AdminServiceProvider::class), 'renderPage'];
+        }
+
         add_options_page(
             __('PulsePress', 'pulsepress'),
             __('PulsePress', 'pulsepress'),
             'manage_options',
             self::ADMIN_SLUG,
-            [$this, 'renderAdminPage']
+            $renderCallback
         );
     }
 

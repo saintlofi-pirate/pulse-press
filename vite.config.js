@@ -11,6 +11,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         widget: resolve(__dirname, 'resources/widget/index.ts'),
+        admin: resolve(__dirname, 'resources/admin/index.tsx'),
       },
       output: {
         entryFileNames: 'js/[name].[hash].js',
