@@ -13,6 +13,15 @@ class WpdbStub extends \wpdb
     /** @var array<string, string|null> */
     public array $existingTables = [];
 
+    /** @var array<string, array> */
+    public array $resultsByQuery = [];
+
+    public int $rows_affected = 0;
+
+    public string $last_query = '';
+
+    public string $last_error = '';
+
     public function __construct()
     {
         $this->prefix  = 'wp_';
@@ -43,13 +52,26 @@ class WpdbStub extends \wpdb
 
     public function query(string $sql): int
     {
-        $this->queries[] = $sql;
-        return 0;
+        $this->queries[]  = $sql;
+        $this->last_query = $sql;
+        return $this->rows_affected;
     }
 
     public function get_col(string $sql): array
     {
         $this->queries[] = $sql;
+        return [];
+    }
+
+    public function get_results(string $sql, string $output = 'OBJECT'): array
+    {
+        $this->queries[]  = $sql;
+        $this->last_query = $sql;
+        foreach ($this->resultsByQuery as $fragment => $rows) {
+            if (str_contains($sql, $fragment)) {
+                return $rows;
+            }
+        }
         return [];
     }
 

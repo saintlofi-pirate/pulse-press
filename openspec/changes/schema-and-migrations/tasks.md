@@ -35,8 +35,8 @@
 ## 6. Verification
 
 - [x] 6.1 Run `find app pulsepress.php uninstall.php -name '*.php' -print0 | xargs -0 -n1 /opt/homebrew/opt/php@8.3/bin/php -l` and confirm every file reports "No syntax errors".
-- [ ] 6.2 Activate the plugin on a local WordPress (if available); inspect `SHOW TABLES LIKE 'wp_pulsepress_%'` and confirm three rows. **Pending local WP verification.**
-- [ ] 6.3 Deactivate then reactivate; confirm `pulsepress_db_version` is `'1'` and tables remain untouched. **Pending local WP verification.**
-- [ ] 6.4 Toggle `pulsepress_delete_on_uninstall='1'` and delete the plugin via the WP admin; confirm tables and options are gone. **Pending local WP verification.**
-- [ ] 6.5 Re-install with the option missing/default; confirm uninstall is a no-op. **Pending local WP verification.**
+- [x] 6.2 Activate the plugin on a local WordPress (if available); inspect `SHOW TABLES LIKE 'wp_pulsepress_%'` and confirm three rows. **Verified 2026-05-13** on `wp_lab.test` (WP 6.x, PHP 8.3.30): three tables created, schema matches spec.
+- [x] 6.3 Deactivate then reactivate; confirm `pulsepress_db_version` is `'1'` and tables remain untouched. **Verified 2026-05-13**: db_version stayed at `'1'` and the three tables were untouched.
+- [x] 6.4 Toggle `pulsepress_delete_on_uninstall='1'` and delete the plugin via the WP admin; confirm tables and options are gone. **Verified 2026-05-13** via `wp plugin uninstall pulse-press --skip-delete`: all three tables dropped, all `pulsepress_*` options removed, no other options touched.
+- [x] 6.5 Re-install with the option missing/default; confirm uninstall is a no-op. **Verified 2026-05-13**: with `pulsepress_delete_on_uninstall='0'`, `wp plugin uninstall --skip-delete` left tables and options intact.
 - [x] 6.6 Run `openspec validate schema-and-migrations --strict --no-interactive` and confirm clean.

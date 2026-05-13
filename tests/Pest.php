@@ -11,5 +11,10 @@ uses()
         \Tests\Stubs\OptionStore::reset();
         \Tests\Stubs\DbDeltaSpy::reset();
         \Tests\Stubs\ErrorLogSpy::reset();
+        \Tests\Stubs\TransientStore::reset();
+        \Tests\Stubs\FilterRegistry::reset();
+        \Tests\Stubs\WpSaltStub::reset();
+        \Tests\Stubs\PostRegistry::reset();
+        \Tests\Stubs\RestRouteSpy::reset();
     })
     ->in('Unit');

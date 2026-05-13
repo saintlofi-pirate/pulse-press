@@ -22,6 +22,15 @@ it('autoloads the database schema and migrator classes', function () {
     expect(class_exists(\PulsePress\Providers\DatabaseServiceProvider::class, true))->toBeTrue();
 });
 
+it('autoloads the reaction domain, REST controller, and provider', function () {
+    expect(class_exists(\PulsePress\Reactions\Reactions::class, true))->toBeTrue();
+    expect(class_exists(\PulsePress\Reactions\UserHash::class, true))->toBeTrue();
+    expect(class_exists(\PulsePress\Reactions\ReactionRepository::class, true))->toBeTrue();
+    expect(class_exists(\PulsePress\Http\Controllers\ReactionController::class, true))->toBeTrue();
+    expect(class_exists(\PulsePress\Http\RestException::class, true))->toBeTrue();
+    expect(class_exists(\PulsePress\Providers\RestServiceProvider::class, true))->toBeTrue();
+});
+
 it('does not retain starter strings in PulsePress-owned files', function () {
     $root = dirname(__DIR__, 2);
     $paths = [
