@@ -324,6 +324,57 @@ namespace PulsePress\Captures {
     }
 }
 
+namespace PulsePress\Blocks {
+
+    if (!function_exists(__NAMESPACE__ . '\apply_filters')) {
+        function apply_filters(string $hook, mixed $value, mixed ...$args): mixed
+        {
+            return \Tests\Stubs\FilterRegistry::apply($hook, $value, $args);
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\esc_attr')) {
+        function esc_attr(string $value): string
+        {
+            return htmlspecialchars($value, ENT_QUOTES);
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\get_the_ID')) {
+        function get_the_ID(): int|false
+        {
+            return \Tests\Stubs\WpEnv::currentPostId();
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\get_post_status')) {
+        function get_post_status(int $postId): string|false
+        {
+            return \Tests\Stubs\PostRegistry::status($postId);
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\is_post_publicly_viewable')) {
+        function is_post_publicly_viewable(int $postId): bool
+        {
+            return \Tests\Stubs\PostRegistry::isPublic($postId);
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\shortcode_atts')) {
+        function shortcode_atts(array $defaults, array $atts, string $tag = ''): array
+        {
+            $out = $defaults;
+            foreach ($atts as $key => $value) {
+                if (array_key_exists($key, $defaults)) {
+                    $out[$key] = $value;
+                }
+            }
+            return $out;
+        }
+    }
+}
+
 namespace PulsePress\Settings {
 
     if (!function_exists(__NAMESPACE__ . '\get_option')) {

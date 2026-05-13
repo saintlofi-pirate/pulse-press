@@ -19,6 +19,7 @@ Catalog of every PulsePress action and filter, kept in sync with the code as Ses
 | `pulsepress_settings` | `(array $settings)` | `Settings::DEFAULTS` merged with stored option | Session 6 | Final filter pass on the full settings array. Pro can layer extra fields here; admin-saved values still take precedence over defaults but lose to this filter. |
 | `pulsepress_settings_default` | `(array $defaults)` | `Settings::DEFAULTS` | Session 6 | Override the defaults map (e.g., to pre-seed a different positive set on first install). |
 | `pulsepress_admin_data` | `(array $payload)` | `{restRoot, nonce, settings, defaults, choices, schemaVersion, reactions, version, i18n}` | Session 6b | Adjust the `window.PulsePressAdminData` payload on the admin settings page. Pro layers license-key context, etc. |
+| `pulsepress_widget_container_attrs` | `(array $attrs, int $postId)` | `{'class' => 'pulsepress', 'data-pulsepress-widget' => '', 'data-pulsepress-post-id' => '{id}'}` | Session 7 | Adjust the HTML attributes on the widget container `<div>` before it is serialised. Empty-string values render as bare attributes. |
 
 ## Actions
 

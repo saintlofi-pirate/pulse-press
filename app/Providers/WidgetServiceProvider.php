@@ -135,6 +135,10 @@ final class WidgetServiceProvider extends ServiceProvider
             return $content;
         }
 
+        if (str_contains($content, 'data-pulsepress-widget')) {
+            return $content;
+        }
+
         $postType   = get_post_type();
         $defaultOn  = $postType === 'post';
         $autoInsert = (bool) apply_filters('pulsepress_widget_auto_insert', $defaultOn, $postType);
@@ -148,11 +152,6 @@ final class WidgetServiceProvider extends ServiceProvider
             return $content;
         }
 
-        $container = sprintf(
-            '<div class="pulsepress" data-pulsepress-widget data-pulsepress-post-id="%d"></div>',
-            $postId
-        );
-
-        return $content . $container;
+        return $content . \PulsePress\Blocks\WidgetMarkup::container($postId);
     }
 }
