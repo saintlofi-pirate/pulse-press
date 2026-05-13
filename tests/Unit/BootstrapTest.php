@@ -31,6 +31,11 @@ it('autoloads the reaction domain, REST controller, and provider', function () {
     expect(class_exists(\PulsePress\Providers\RestServiceProvider::class, true))->toBeTrue();
 });
 
+it('autoloads the widget manifest and provider', function () {
+    expect(class_exists(\PulsePress\View\Manifest::class, true))->toBeTrue();
+    expect(class_exists(\PulsePress\Providers\WidgetServiceProvider::class, true))->toBeTrue();
+});
+
 it('does not retain starter strings in PulsePress-owned files', function () {
     $root = dirname(__DIR__, 2);
     $paths = [

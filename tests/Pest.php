@@ -16,5 +16,7 @@ uses()
         \Tests\Stubs\WpSaltStub::reset();
         \Tests\Stubs\PostRegistry::reset();
         \Tests\Stubs\RestRouteSpy::reset();
+        \Tests\Stubs\WpEnv::reset();
+        \Tests\Stubs\AssetSpy::reset();
     })
     ->in('Unit');

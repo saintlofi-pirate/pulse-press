@@ -1,0 +1,94 @@
+.pulsepress {
+  --pulsepress-accent: #6366f1;
+  --pulsepress-accent-contrast: #ffffff;
+  --pulsepress-text: #111827;
+  --pulsepress-muted: #6b7280;
+  --pulsepress-border: #e5e7eb;
+  --pulsepress-bg: #ffffff;
+  --pulsepress-radius: 12px;
+  --pulsepress-gap: 0.5rem;
+  --pulsepress-padding: 0.45rem 0.75rem;
+
+  margin: 1.5rem 0;
+  font-family: inherit;
+  color: var(--pulsepress-text);
+}
+
+.pulsepress-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pulsepress-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pulsepress-gap);
+}
+
+.pulsepress-reaction {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: var(--pulsepress-padding);
+  background: var(--pulsepress-bg);
+  border: 1px solid var(--pulsepress-border);
+  border-radius: var(--pulsepress-radius);
+  color: var(--pulsepress-muted);
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 200ms ease, border-color 150ms ease, color 150ms ease, background-color 150ms ease;
+}
+
+.pulsepress-reaction:hover {
+  border-color: var(--pulsepress-accent);
+  color: var(--pulsepress-text);
+}
+
+.pulsepress-reaction:focus-visible {
+  outline: 2px solid var(--pulsepress-accent);
+  outline-offset: 2px;
+}
+
+.pulsepress-reaction:active {
+  transform: scale(1.05);
+}
+
+.pulsepress-reaction[data-active="true"] {
+  background: var(--pulsepress-accent);
+  border-color: var(--pulsepress-accent);
+  color: var(--pulsepress-accent-contrast);
+}
+
+.pulsepress-icon {
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+}
+
+.pulsepress-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.pulsepress-count {
+  font-variant-numeric: tabular-nums;
+  min-width: 1ch;
+}
+
+.pulsepress-error {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #b91c1c;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulsepress-reaction {
+    transition: none;
+  }
+  .pulsepress-reaction:active {
+    transform: none;
+  }
+}

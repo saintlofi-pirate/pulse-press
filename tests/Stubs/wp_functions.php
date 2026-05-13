@@ -159,6 +159,20 @@ namespace PulsePress\Providers {
         }
     }
 
+    if (!function_exists(__NAMESPACE__ . '\add_filter')) {
+        function add_filter(string $hook, callable $callback, int $priority = 10, int $acceptedArgs = 1): void
+        {
+            \Tests\Stubs\FilterRegistry::addFilter($hook, $callback);
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\apply_filters')) {
+        function apply_filters(string $hook, mixed $value, mixed ...$args): mixed
+        {
+            return \Tests\Stubs\FilterRegistry::apply($hook, $value, $args);
+        }
+    }
+
     if (!function_exists(__NAMESPACE__ . '\register_rest_route')) {
         function register_rest_route(string $namespace, string $route, array $args): void
         {
@@ -170,6 +184,118 @@ namespace PulsePress\Providers {
         function wp_verify_nonce(string $nonce, string $action): int|false
         {
             return $nonce === 'valid-' . $action ? 1 : false;
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\is_admin')) {
+        function is_admin(): bool
+        {
+            return \Tests\Stubs\WpEnv::isAdmin();
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\is_singular')) {
+        function is_singular(string $postType = ''): bool
+        {
+            return \Tests\Stubs\WpEnv::isSingular($postType);
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\get_the_ID')) {
+        function get_the_ID(): int|false
+        {
+            return \Tests\Stubs\WpEnv::currentPostId();
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\get_post_type')) {
+        function get_post_type(): string|false
+        {
+            return \Tests\Stubs\WpEnv::currentPostType();
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\rest_url')) {
+        function rest_url(string $path = ''): string
+        {
+            return 'https://example.test/wp-json/' . ltrim($path, '/');
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\esc_url_raw')) {
+        function esc_url_raw(string $url): string
+        {
+            return $url;
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\wp_create_nonce')) {
+        function wp_create_nonce(string $action): string
+        {
+            return 'nonce-' . $action;
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\wp_register_script')) {
+        function wp_register_script(string $handle, string $src, array $deps = [], string|bool $ver = false, bool $inFooter = false): bool
+        {
+            \Tests\Stubs\AssetSpy::record('register_script', compact('handle', 'src', 'deps', 'ver', 'inFooter'));
+            return true;
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\wp_enqueue_script')) {
+        function wp_enqueue_script(string $handle): void
+        {
+            \Tests\Stubs\AssetSpy::record('enqueue_script', ['handle' => $handle]);
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\wp_register_style')) {
+        function wp_register_style(string $handle, string $src, array $deps = [], string|bool $ver = false): bool
+        {
+            \Tests\Stubs\AssetSpy::record('register_style', compact('handle', 'src', 'deps', 'ver'));
+            return true;
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\wp_enqueue_style')) {
+        function wp_enqueue_style(string $handle): void
+        {
+            \Tests\Stubs\AssetSpy::record('enqueue_style', ['handle' => $handle]);
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\wp_localize_script')) {
+        function wp_localize_script(string $handle, string $objectName, array $data): bool
+        {
+            \Tests\Stubs\AssetSpy::record('localize', compact('handle', 'objectName', 'data'));
+            return true;
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\__')) {
+        function __(string $text, string $domain = 'default'): string
+        {
+            return $text;
+        }
+    }
+}
+
+namespace PulsePress\View {
+
+    if (!function_exists(__NAMESPACE__ . '\get_transient')) {
+        function get_transient(string $key): mixed
+        {
+            return \Tests\Stubs\TransientStore::get($key);
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\set_transient')) {
+        function set_transient(string $key, mixed $value, int $ttl = 0): bool
+        {
+            \Tests\Stubs\TransientStore::set($key, $value, $ttl);
+            return true;
         }
     }
 }
@@ -395,6 +521,85 @@ namespace Tests\Stubs {
         public static function registrations(): array
         {
             return self::$registrations;
+        }
+    }
+
+    final class WpEnv
+    {
+        private static bool $isAdmin = false;
+        private static ?string $singularType = null;
+        private static int $postId = 0;
+        private static string $postType = 'post';
+
+        public static function reset(): void
+        {
+            self::$isAdmin      = false;
+            self::$singularType = null;
+            self::$postId       = 0;
+            self::$postType     = 'post';
+        }
+
+        public static function setAdmin(bool $value): void
+        {
+            self::$isAdmin = $value;
+        }
+
+        public static function setSingular(?string $postType, int $postId = 0): void
+        {
+            self::$singularType = $postType;
+            self::$postId       = $postId;
+            if ($postType !== null) {
+                self::$postType = $postType;
+            }
+        }
+
+        public static function isAdmin(): bool
+        {
+            return self::$isAdmin;
+        }
+
+        public static function isSingular(string $type = ''): bool
+        {
+            if (self::$singularType === null) {
+                return false;
+            }
+            return $type === '' || $type === self::$singularType;
+        }
+
+        public static function currentPostId(): int|false
+        {
+            return self::$postId > 0 ? self::$postId : false;
+        }
+
+        public static function currentPostType(): string|false
+        {
+            return self::$singularType === null ? false : self::$postType;
+        }
+    }
+
+    final class AssetSpy
+    {
+        /** @var list<array{action: string, args: array}> */
+        private static array $calls = [];
+
+        public static function reset(): void
+        {
+            self::$calls = [];
+        }
+
+        public static function record(string $action, array $args): void
+        {
+            self::$calls[] = ['action' => $action, 'args' => $args];
+        }
+
+        public static function calls(): array
+        {
+            return self::$calls;
+        }
+
+        public static function only(string $action): array
+        {
+            return array_values(array_filter(self::$calls, fn ($c) => $c['action'] === $action));
         }
     }
 }

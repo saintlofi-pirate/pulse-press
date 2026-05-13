@@ -12,7 +12,7 @@ class Application extends Container
 
     protected string $pluginFile;
 
-    final private function __construct(string $pluginFile)
+    protected function __construct(string $pluginFile)
     {
         $this->pluginFile = $pluginFile;
 
