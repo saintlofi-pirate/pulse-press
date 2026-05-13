@@ -1,4 +1,4 @@
-import type { CountsResponse, ReactionType, ReactResponse } from './types';
+import type { CaptureResponse, CountsResponse, ReactionType, ReactResponse } from './types';
 
 class RestError extends Error {
   constructor(public code: string, message: string, public status: number) {
@@ -43,6 +43,29 @@ export async function postReaction(
     body: JSON.stringify({ post_id: data.postId, reaction_type: reactionType }),
   });
   return parseJson<ReactResponse>(response);
+}
+
+export async function postCapture(
+  data: { root: string; nonce: string; postId: number },
+  payload: { email: string; reactionType: ReactionType; source: string }
+): Promise<CaptureResponse> {
+  const response = await fetch(`${rootFor(data)}capture`, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'X-WP-Nonce': data.nonce,
+    },
+    credentials: 'same-origin',
+    body: JSON.stringify({
+      post_id: data.postId,
+      email: payload.email,
+      reaction_type: payload.reactionType,
+      consent: true,
+      source: payload.source,
+    }),
+  });
+  return parseJson<CaptureResponse>(response);
 }
 
 export { RestError };

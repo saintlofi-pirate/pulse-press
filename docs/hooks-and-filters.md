@@ -15,6 +15,7 @@ Catalog of every PulsePress action and filter, kept in sync with the code as Ses
 | `pulsepress_capture_sources` | `(string[] $sources)` | `['inline', 'block', 'shortcode']` | Session 4 | Extend or restrict the allowed `source` values on `POST /capture`. |
 | `pulsepress_consent_text_version` | `(string $version)` | `'v1'` | Session 4 | The consent-text version stamp written into every new capture row. Existing rows are not retroactively updated. |
 | `pulsepress_capture_email` | `(string $normalisedEmail, WP_REST_Request $request)` | already lowercased + trimmed input | Session 4 | Transform the email before validation/storage (e.g. strip `+tag` aliases). Receives the already-normalised email. |
+| `pulsepress_positive_reactions` | `(string[] $types)` | `['love', 'insightful', 'funny']` | Session 5 | Which reaction types trigger the inline capture form on the front end. Empty array disables inline capture entirely. |
 
 ## Actions
 

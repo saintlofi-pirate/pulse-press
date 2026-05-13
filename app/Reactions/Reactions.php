@@ -14,6 +14,8 @@ final class Reactions
         'angry',
     ];
 
+    public const DEFAULT_POSITIVE = ['love', 'insightful', 'funny'];
+
     public const TYPE_LENGTH_LIMIT = 32;
 
     public static function isValid(string $type): bool

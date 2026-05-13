@@ -96,11 +96,143 @@
   border: 0;
 }
 
+.pulsepress-capture {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--pulsepress-border);
+  border-radius: var(--pulsepress-radius);
+  background: var(--pulsepress-bg);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 28rem;
+}
+
+.pulsepress-capture-prompt {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.pulsepress-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.pulsepress-label {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--pulsepress-muted);
+}
+
+.pulsepress-input {
+  width: 100%;
+  padding: 0.5rem 0.65rem;
+  font-size: 0.95rem;
+  border: 1px solid var(--pulsepress-border);
+  border-radius: 8px;
+  background: var(--pulsepress-bg);
+  color: var(--pulsepress-text);
+  box-sizing: border-box;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.pulsepress-input:focus-visible {
+  outline: none;
+  border-color: var(--pulsepress-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--pulsepress-accent) 22%, transparent);
+}
+
+.pulsepress-consent-field {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 0.5rem;
+  row-gap: 0.25rem;
+  align-items: start;
+}
+
+.pulsepress-checkbox {
+  margin: 0.2rem 0 0 0;
+  accent-color: var(--pulsepress-accent);
+}
+
+.pulsepress-consent-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.pulsepress-consent-help {
+  grid-column: 2 / -1;
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--pulsepress-muted);
+}
+
+.pulsepress-capture-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.pulsepress-submit {
+  appearance: none;
+  border: 0;
+  padding: 0.55rem 1rem;
+  border-radius: 8px;
+  background: var(--pulsepress-accent);
+  color: var(--pulsepress-accent-contrast);
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 150ms ease, transform 150ms ease;
+}
+
+.pulsepress-submit:focus-visible {
+  outline: 2px solid var(--pulsepress-accent);
+  outline-offset: 2px;
+}
+
+.pulsepress-submit:disabled {
+  opacity: 0.7;
+  cursor: progress;
+}
+
+.pulsepress-link {
+  appearance: none;
+  border: 0;
+  background: none;
+  color: var(--pulsepress-muted);
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0.25rem 0.4rem;
+  border-radius: 6px;
+}
+
+.pulsepress-link:hover {
+  color: var(--pulsepress-text);
+}
+
+.pulsepress-link:focus-visible {
+  outline: 2px solid var(--pulsepress-accent);
+  outline-offset: 2px;
+}
+
+.pulsepress-capture-success {
+  align-items: flex-start;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .pulsepress-reaction {
     transition: none;
   }
   .pulsepress-reaction:active {
     transform: none;
+  }
+  .pulsepress-input,
+  .pulsepress-submit {
+    transition: none;
   }
 }

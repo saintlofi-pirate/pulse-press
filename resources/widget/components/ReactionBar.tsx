@@ -1,8 +1,15 @@
-import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { fetchCounts, postReaction, RestError } from '../api';
 import { iconFor, labelFor } from '../icons';
-import { getStoredReaction, setStoredReaction } from '../storage';
+import { isPositive } from '../positive';
+import {
+  getCapturedFlag,
+  getStoredReaction,
+  setCapturedFlag,
+  setStoredReaction,
+} from '../storage';
 import type { PulsePressData, ReactionType } from '../types';
+import { CaptureForm } from './CaptureForm';
 
 interface Props {
   postId: number;
@@ -17,7 +24,10 @@ export function ReactionBar({ postId, data }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [announcement, setAnnouncement] = useState<string>('');
+  const [captured, setCaptured] = useState<boolean>(() => getCapturedFlag(postId));
+  const [dismissed, setDismissed] = useState<boolean>(false);
   const errorTimerRef = useRef<number | null>(null);
+  const buttonRefs = useMemo(() => new Map<ReactionType, { current: HTMLButtonElement | null }>(), []);
 
   const announce = useCallback((message: string) => {
     setAnnouncement('');
@@ -98,15 +108,46 @@ export function ReactionBar({ postId, data }: Props) {
     [activeType, announce, counts, data, pending, postId, showError]
   );
 
+  const handleCaptureDone = useCallback(
+    (result: { status: 'inserted' | 'already_exists' }) => {
+      setCaptured(true);
+      setCapturedFlag(postId);
+      if (result.status === 'inserted') {
+        announce(data.i18n.capture.thanks);
+      }
+    },
+    [announce, data.i18n.capture.thanks, postId]
+  );
+
+  const handleCaptureDismiss = useCallback(() => {
+    setDismissed(true);
+  }, []);
+
+  const ensureRef = (type: ReactionType): { current: HTMLButtonElement | null } => {
+    if (!buttonRefs.has(type)) {
+      buttonRefs.set(type, { current: null });
+    }
+    return buttonRefs.get(type)!;
+  };
+
+  const showCapture =
+    !captured &&
+    !dismissed &&
+    activeType !== null &&
+    isPositive(activeType, data) &&
+    !pending;
+
   return (
     <div class="pulsepress-bar" data-loading={pending ? 'true' : 'false'}>
       <div class="pulsepress-buttons" role="group" aria-label={data.i18n.groupLabel}>
         {data.reactions.map((type) => {
           const isActive = activeType === type;
           const count = counts[type] ?? 0;
+          const ref = ensureRef(type);
           return (
             <button
               key={type}
+              ref={(node: HTMLButtonElement | null) => { ref.current = node; }}
               type="button"
               class="pulsepress-reaction"
               data-active={isActive ? 'true' : 'false'}
@@ -123,6 +164,16 @@ export function ReactionBar({ postId, data }: Props) {
       <p class="pulsepress-sr-only" role="status" aria-live="polite" aria-atomic="true">{announcement}</p>
       {error !== null && (
         <p class="pulsepress-error" role="alert">{error}</p>
+      )}
+      {showCapture && activeType !== null && (
+        <CaptureForm
+          postId={postId}
+          reactionType={activeType}
+          data={data}
+          triggerRef={ensureRef(activeType)}
+          onDone={handleCaptureDone}
+          onDismiss={handleCaptureDismiss}
+        />
       )}
     </div>
   );

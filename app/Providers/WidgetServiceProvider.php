@@ -55,17 +55,32 @@ final class WidgetServiceProvider extends ServiceProvider
 
         $postId  = is_singular() ? (int) get_the_ID() : 0;
         $payload = [
-            'root'      => esc_url_raw(rest_url('pulsepress/v1/')),
-            'nonce'     => wp_create_nonce('wp_rest'),
-            'postId'    => $postId,
-            'reactions' => array_values((array) apply_filters('pulsepress_reaction_types', Reactions::TYPES)),
-            'i18n'      => [
+            'root'              => esc_url_raw(rest_url('pulsepress/v1/')),
+            'nonce'             => wp_create_nonce('wp_rest'),
+            'postId'            => $postId,
+            'reactions'         => array_values((array) apply_filters('pulsepress_reaction_types', Reactions::TYPES)),
+            'positiveReactions' => array_values((array) apply_filters('pulsepress_positive_reactions', Reactions::DEFAULT_POSITIVE)),
+            'i18n'              => [
                 'loading'         => __('Loading reactions…', 'pulsepress'),
                 'error'           => __('Sorry, your reaction could not be saved. Please try again.', 'pulsepress'),
                 'activeSuffix'    => __(', selected', 'pulsepress'),
                 'groupLabel'      => __('Reactions', 'pulsepress'),
                 'announceReacted' => __('Reacted with {type}.', 'pulsepress'),
                 'announceUpdated' => __('Updated reaction to {type}.', 'pulsepress'),
+                'capture'         => [
+                    'prompt'          => __('Liked this? Get the next one in your inbox.', 'pulsepress'),
+                    'label'           => __('Email address', 'pulsepress'),
+                    'placeholder'     => __('you@example.com', 'pulsepress'),
+                    'consent'         => __('I agree to receive new-post updates.', 'pulsepress'),
+                    'consentHelper'   => __('We will only use your email to send new-post notifications. Unsubscribe any time.', 'pulsepress'),
+                    'submit'          => __('Subscribe', 'pulsepress'),
+                    'submitting'      => __('Submitting…', 'pulsepress'),
+                    'thanks'          => __('Thanks — we will keep you in the loop.', 'pulsepress'),
+                    'alreadyCaptured' => __('We already have your email saved for this post.', 'pulsepress'),
+                    'networkError'    => __('Sorry, that did not go through. Please try again.', 'pulsepress'),
+                    'expiredNonce'    => __('Your session has expired. Please refresh the page and try again.', 'pulsepress'),
+                    'dismiss'         => __('Dismiss', 'pulsepress'),
+                ],
             ],
         ];
 
