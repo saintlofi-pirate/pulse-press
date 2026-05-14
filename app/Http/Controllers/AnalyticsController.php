@@ -12,7 +12,19 @@ use WP_REST_Response;
 
 final class AnalyticsController
 {
-    public const FREE_WINDOW_MAX_DAYS = 30;
+    /**
+     * Performance ceiling for a single synchronous analytics request.
+     *
+     * This is NOT a Free/Pro gate. Same value for every install. A 2-year
+     * window keeps a single REST request snappy on tables up to ~1M rows.
+     * Sites that need longer windows in one shot can raise it via the
+     * pulsepress_analytics_max_days filter. Pro adds pre-aggregated
+     * weekly/monthly rollups for snappy multi-year queries by default.
+     */
+    public const MAX_WINDOW_DAYS = 730;
+
+    /** Default window when the admin opens the dashboard with no args. */
+    public const DEFAULT_WINDOW_DAYS = 30;
 
     public function __construct(private MetricsCalculator $calculator)
     {
@@ -26,8 +38,13 @@ final class AnalyticsController
         $fromParam = (string) ($request->get_param('from') ?? '');
         $toParam   = (string) ($request->get_param('to') ?? '');
 
+        $maxDays = (int) apply_filters('pulsepress_analytics_max_days', self::MAX_WINDOW_DAYS);
+        if ($maxDays < 1) {
+            $maxDays = self::MAX_WINDOW_DAYS;
+        }
+
         $to   = $this->parseDate($toParam, $today, $timezone)->setTime(0, 0, 0)->modify('+1 day');
-        $from = $this->parseDate($fromParam, $today->modify('-' . (self::FREE_WINDOW_MAX_DAYS - 1) . ' days'), $timezone)->setTime(0, 0, 0);
+        $from = $this->parseDate($fromParam, $today->modify('-' . (self::DEFAULT_WINDOW_DAYS - 1) . ' days'), $timezone)->setTime(0, 0, 0);
 
         if ($from > $to) {
             $from = $to->modify('-1 day');
@@ -35,8 +52,8 @@ final class AnalyticsController
 
         $diffDays = (int) $from->diff($to)->days;
         $clamped  = false;
-        if ($diffDays > self::FREE_WINDOW_MAX_DAYS) {
-            $from    = $to->modify('-' . self::FREE_WINDOW_MAX_DAYS . ' days');
+        if ($diffDays > $maxDays) {
+            $from    = $to->modify('-' . $maxDays . ' days');
             $clamped = true;
         }
 

@@ -208,6 +208,8 @@ If a contributor or model is about to ship admin UI that doesn't meet this bar, 
 
 ## Free vs Pro Scope
 
+**Principle**: PulsePress is self-hosted. The data lives in the user's database. Free is **functionally complete**: no row caps, no time-window gates, every row queryable, every analytics number visible. Pro adds **additive capabilities** — outbound integrations, advanced analysis, automation, scale-engineering, support — not "permission to look at your own data." See `feedback_free_pro_split` memory for the durable rule.
+
 | Capability | Free | Pro |
 | --- | --- | --- |
 | Six reaction types with custom labels | Yes | Yes |
@@ -218,20 +220,97 @@ If a contributor or model is about to ship admin UI that doesn't meet this bar, 
 | Per-post override (Auto / Force on / Force off) | Yes | Yes |
 | Allow guest reactions toggle | Yes | Yes |
 | Email capture after positive reactions | CSV export | ESP direct sync |
-| Built-in analytics | 30 days | 12 months |
-| Top posts by reaction | Yes | Yes |
-| Sentiment insights | Yes | Yes |
+| Built-in analytics | Full dashboard, any window up to the performance ceiling | Pre-aggregated weekly + monthly rollups for snappy multi-year queries |
+| Top posts by reaction | Yes | Yes + sortable per-post sentiment, segment by author / category / tag |
+| Sentiment insights | Yes | Yes + window-over-window comparison ("this 30 days vs previous 30 days") |
 | Gutenberg block and shortcode | Yes | Yes |
 | Light and dark mode | Yes | Yes |
 | GDPR-safe defaults | Yes | Yes |
 | Multi-language labels | Yes | Yes |
-| ESP integrations | No | Yes |
+| CSV export of captures | Yes (all rows, all columns, no cap) | + scheduled exports + sync-status column via `pulsepress_export_columns` filter |
+| ESP integrations (Mailchimp / ConvertKit / MailerLite / Brevo / Beehiiv) | No | Yes |
 | A/B widget testing | No | Yes |
 | Custom reaction sets by category/tag | No | Yes |
 | IP allowlist / blocklist for reactions | No | Yes |
 | Webhooks and Zapier | No | Yes |
+| Weekly digest emails | No | Yes |
+| Async report generation for huge windows | No | Yes |
 | White-labeling | No | Yes |
 | Priority support | No | Yes |
+
+### Performance ceiling, not a license gate
+
+The analytics REST endpoint clamps a single synchronous request to `MAX_WINDOW_DAYS = 730` (two years) **regardless of license**. This is a performance guard — a 5-year SELECT on a 1M-row daily_agg table would block a REST worker. Sites with smaller tables can raise the ceiling with one filter:
+
+```php
+add_filter('pulsepress_analytics_max_days', fn () => 365 * 5);
+```
+
+Pro's value here isn't "permission to look at more days." Pro's value is making 5-year queries **fast** via pre-aggregated weekly + monthly rollup tables, plus async report generation for the truly huge.
+
+## Pro Extension Seams
+
+Pro is a separate addon plugin (Session 13). It MUST attach exclusively through PHP/JS hooks; modifying Free internals is forbidden. The catalog of seams documented below is the entire contract between Free and Pro — if Pro can't be built against this surface, the gap is a missing Free hook (add it to Free), never a Free-internals tweak.
+
+**Settings + admin UI extension:**
+
+- `pulsepress_settings` (filter, Session 6) — Pro layers extra settings keys onto the merged settings array; admin SPA reads them generically.
+- `pulsepress_settings_default` (filter, Session 6) — pre-seeds defaults for Pro-specific keys on first install.
+- `pulsepress_admin_data` (filter, Session 6b) — Pro injects extra context into the `PulsePressAdminData` localized payload (license key, A/B variant id, etc.).
+- `pulsepress_admin_analytics_panels` (filter, Session 9) — Pro registers extra analytics panels (compare-windows, A/B winner, per-segment breakdown). The SPA renders any registered panel below the Free four.
+- `pulsepress_admin_metric_cards` (filter, Session 9 future) — Pro registers extra cards (e.g. "vs previous 30 days"); SPA appends to the metric grid.
+
+**REST extension:**
+
+- Pro registers its own routes under `pulsepress/v1/pro/*` via `rest_api_init` — no need to touch Free's controllers. Pro's REST is permission-gated independently.
+- `pulsepress_widget_data` (filter, Session 3) — Pro injects extra config into the front-end widget bootstrap (A/B variant, theme overrides).
+
+**Storage + analytics extension:**
+
+- `pulsepress_export_columns` (filter, Session 10) — Pro adds CSV columns (ESP sync status, last synced at).
+- `pulsepress_analytics_window` (filter, Session 9) — Pro overrides the window bounds. Pro can also swap `AnalyticsRepository` via container rebinding to read from its weekly/monthly rollup tables instead of daily.
+- `pulsepress_after_aggregate` (action, Session 8) — Pro receives the daily AggregationResult; fans it into weekly + monthly rollups, ESP digests, etc.
+
+**Widget surface extension:**
+
+- `pulsepress_reaction_types` (filter, Session 2) — Pro adds reactions via filter.
+- `pulsepress_widget_icons` (filter, Session 6.5 planned) — Pro adds icon-style presets.
+- `pulsepress_widget_container_attrs` (filter, Session 7) — Pro adds `data-*` attributes (A/B variant tags).
+- `pulsepress_positive_reactions` (filter, Session 5) — Pro changes which reactions trigger capture.
+- `pulsepress_visibility_mode` (filter, Session 6.7) — Pro adds last-mile visibility policy (per-category, scheduled visibility).
+
+**Lifecycle extension:**
+
+- `pulsepress_before_react` / `pulsepress_after_react` (actions, Session 2) — Pro attaches webhooks, rate limits, ESP triggers.
+- `pulsepress_before_capture` / `pulsepress_after_capture` (actions, Session 4) — Pro pushes captures to ESPs, fires double opt-in emails.
+- `pulsepress_settings_saved` (action, Session 6) — Pro syncs settings to its own subsystems.
+- `pulsepress_before_export` (action, Session 10) — Pro audits the export, throttles bulk exports.
+
+**Sample Pro hookshape (illustrative, not shipping):**
+
+```php
+// In Pro plugin, add an Analytics panel:
+add_filter('pulsepress_admin_analytics_panels', function (array $panels): array {
+    $panels[] = [
+        'id'        => 'compare_windows',
+        'title'     => __('Window comparison', 'pulsepress-pro'),
+        'render_js' => 'PulsePressPro.renderCompareWindows',
+        'data'      => [
+            'previous_total' => /* ... */,
+            'current_total'  => /* ... */,
+        ],
+    ];
+    return $panels;
+});
+
+// In Pro plugin, push captures to Mailchimp:
+add_action('pulsepress_after_capture', function (int $captureId, int $postId, string $email, string $reactionType, string $consentVersion): void {
+    if (!function_exists('pulsepresspro_mailchimp_enqueue')) return;
+    pulsepresspro_mailchimp_enqueue($email, ['consent_version' => $consentVersion]);
+}, 10, 5);
+```
+
+If Pro tries to do anything not on this list — fork Free, monkey-patch a class, edit a `.php` file in `pulse-press/app/` — that's a bug in *Free's hook surface*, not in Pro. Add the missing hook to Free.
 
 ## Frontend Widget
 

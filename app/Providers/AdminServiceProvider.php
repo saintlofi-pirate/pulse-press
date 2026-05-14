@@ -158,7 +158,7 @@ final class AdminServiceProvider extends ServiceProvider
                 'privacyTitle'    => __('Privacy', 'pulsepress'),
                 'privacyHelper'   => __('Set how PulsePress handles data when the plugin is removed.', 'pulsepress'),
                 'analyticsTitle'  => __('Analytics', 'pulsepress'),
-                'analyticsHelper' => __('Reactions and captures from the last 30 days. Free includes a 30-day window; Pro extends to 12 months.', 'pulsepress'),
+                'analyticsHelper' => __('Reactions and captures over the selected window. Defaults to the trailing 30 days.', 'pulsepress'),
             ],
             'captureExport' => [
                 'label'           => __('Export captures', 'pulsepress'),
@@ -191,7 +191,7 @@ final class AdminServiceProvider extends ServiceProvider
                 'loadingState'             => __('Loading analytics…', 'pulsepress'),
                 'errorState'               => __('Could not load analytics. Please try again.', 'pulsepress'),
                 'retry'                    => __('Retry', 'pulsepress'),
-                'clampedNotice'            => __('Window capped at 30 days (Free).', 'pulsepress'),
+                'clampedNotice'            => __('Window trimmed to fit the analytics performance ceiling. Adjust via the pulsepress_analytics_max_days filter to allow longer ranges.', 'pulsepress'),
                 'deletedPost'              => __('(deleted post)', 'pulsepress'),
             ],
             'fields' => [
