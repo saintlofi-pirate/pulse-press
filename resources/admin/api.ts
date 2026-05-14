@@ -60,3 +60,19 @@ export async function fetchAnalytics(restRoot: string, nonce: string): Promise<M
   });
   return parseJson<MetricsEnvelope>(response);
 }
+
+export async function downloadCaptureCsv(restRoot: string, nonce: string): Promise<{ blob: Blob; filename: string }> {
+  const response = await fetch(`${rootFor(restRoot)}captures.csv`, {
+    headers: { 'X-WP-Nonce': nonce },
+    credentials: 'same-origin',
+  });
+  if (!response.ok) {
+    const body = await response.text();
+    throw new AdminRestError('pulsepress_export_failed', body || response.statusText, response.status);
+  }
+  const disposition = response.headers.get('Content-Disposition') || '';
+  const match = /filename=([^;]+)/i.exec(disposition);
+  const filename = (match ? match[1].trim().replace(/^"(.*)"$/, '$1') : 'pulsepress-captures.csv');
+  const blob = await response.blob();
+  return { blob, filename };
+}

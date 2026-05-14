@@ -3,11 +3,13 @@ declare(strict_types=1);
 
 namespace PulsePress\Providers;
 
+use PulsePress\Captures\CaptureExporter;
 use PulsePress\Captures\CaptureRepository;
 use PulsePress\Captures\Captures;
 use PulsePress\Captures\FraudPurger;
 use PulsePress\Core\ServiceProvider;
 use PulsePress\Http\Controllers\CaptureController;
+use PulsePress\Http\Controllers\ExportController;
 use PulsePress\Reactions\Reactions;
 
 final class CaptureServiceProvider extends ServiceProvider
@@ -25,6 +27,12 @@ final class CaptureServiceProvider extends ServiceProvider
         });
         $this->app->singleton(CaptureController::class, function () {
             return new CaptureController($this->app->get(CaptureRepository::class));
+        });
+        $this->app->singleton(CaptureExporter::class, function () {
+            return new CaptureExporter($GLOBALS['wpdb']);
+        });
+        $this->app->singleton(ExportController::class, function () {
+            return new ExportController($this->app->get(CaptureExporter::class));
         });
     }
 
@@ -53,6 +61,16 @@ final class CaptureServiceProvider extends ServiceProvider
 
         add_action(self::PURGE_HOOK, function (): void {
             $this->app->get(FraudPurger::class)->run();
+        });
+
+        add_action('rest_api_init', function (): void {
+            /** @var ExportController $exportController */
+            $exportController = $this->app->get(ExportController::class);
+            register_rest_route(self::REST_NAMESPACE, '/captures.csv', [
+                'methods'             => 'GET',
+                'callback'            => [$exportController, 'download'],
+                'permission_callback' => static fn () => current_user_can('manage_options'),
+            ]);
         });
     }
 }

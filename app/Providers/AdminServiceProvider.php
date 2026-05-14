@@ -160,6 +160,14 @@ final class AdminServiceProvider extends ServiceProvider
                 'analyticsTitle'  => __('Analytics', 'pulsepress'),
                 'analyticsHelper' => __('Reactions and captures from the last 30 days. Free includes a 30-day window; Pro extends to 12 months.', 'pulsepress'),
             ],
+            'captureExport' => [
+                'label'           => __('Export captures', 'pulsepress'),
+                'helper'          => __('Download every saved email + consent metadata as a CSV file. Anyone with WordPress admin access can run an export.', 'pulsepress'),
+                'preparing'       => __('Preparing…', 'pulsepress'),
+                'downloadStarted' => __('Download started.', 'pulsepress'),
+                'error'           => __('Could not export captures. Please try again.', 'pulsepress'),
+                'retry'           => __('Retry', 'pulsepress'),
+            ],
             'analytics' => [
                 'totalReactionsLabel'      => __('Total reactions', 'pulsepress'),
                 'totalReactionsHelper'     => __('All reactions on every post in this window.', 'pulsepress'),

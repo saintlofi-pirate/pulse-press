@@ -1,3 +1,4 @@
+import { CaptureExportButton } from '../components/CaptureExportButton';
 import { NumberField } from '../components/fields/NumberField';
 import { TextField } from '../components/fields/TextField';
 import { TextareaField } from '../components/fields/TextareaField';
@@ -52,6 +53,8 @@ export function CaptureSection({ state, adminData }: Props) {
           status={<StatusPill status={fieldStatus.retention_days === 'error' ? undefined : fieldStatus.retention_days} i18n={i18n} />}
           error={errors.retention_days}
         />
+
+        <CaptureExportButton adminData={adminData} />
       </div>
     </section>
   );

@@ -322,6 +322,35 @@ namespace PulsePress\Captures {
             return \Tests\Stubs\FilterRegistry::apply($hook, $value, $args);
         }
     }
+
+    if (!function_exists(__NAMESPACE__ . '\do_action')) {
+        function do_action(string $hook, mixed ...$args): void
+        {
+            \Tests\Stubs\FilterRegistry::doAction($hook, $args);
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\get_the_title')) {
+        function get_the_title(int $postId): string|false
+        {
+            return \Tests\Stubs\PostRegistry::title($postId);
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\__')) {
+        function __(string $text, string $domain = 'default'): string
+        {
+            return $text;
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\error_log')) {
+        function error_log(string $message): bool
+        {
+            \Tests\Stubs\ErrorLogSpy::record($message);
+            return true;
+        }
+    }
 }
 
 namespace PulsePress\Visibility {

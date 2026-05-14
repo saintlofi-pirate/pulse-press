@@ -532,6 +532,42 @@
   font-weight: 500;
 }
 
+.pulsepress-export-region {
+  margin-top: 0.5rem;
+  padding: 1.1rem 1.2rem;
+  border: 1px solid var(--pp-border);
+  border-radius: var(--pp-radius);
+  background: var(--pp-card);
+  box-shadow: var(--pp-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.pulsepress-export-region__head h3 {
+  margin: 0 0 0.2rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.pulsepress-export-helper {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--pp-muted);
+  line-height: 1.5;
+}
+
+.pulsepress-export-region__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.pulsepress-export-status {
+  font-size: 0.78rem;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .pulsepress-tab,
   .pulsepress-section,
