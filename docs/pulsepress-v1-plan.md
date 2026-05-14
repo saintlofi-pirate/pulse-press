@@ -210,6 +210,8 @@ If a contributor or model is about to ship admin UI that doesn't meet this bar, 
 
 **Principle**: PulsePress is self-hosted. The data lives in the user's database. Free is **functionally complete**: no row caps, no time-window gates, every row queryable, every analytics number visible. Pro adds **additive capabilities** — outbound integrations, advanced analysis, automation, scale-engineering, support — not "permission to look at your own data." See `feedback_free_pro_split` memory for the durable rule.
 
+> **The Pro product spec, codebase plan, license server architecture, and per-feature designs live in [`docs/pro-roadmap.md`](pro-roadmap.md).** This section keeps only the durable principle + the Free/Pro capability table. Everything Pro-implementation-specific (pricing tiers, license server, ESP sync, A/B engine, segmentation, white-label, async reports, rollups) is in the roadmap doc.
+
 | Capability | Free | Pro |
 | --- | --- | --- |
 | Six reaction types with custom labels | Yes | Yes |
