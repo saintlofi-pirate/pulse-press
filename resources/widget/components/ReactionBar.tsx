@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
+import type { ComponentType } from 'preact';
 import { fetchCounts, postReaction, RestError } from '../api';
 import { iconFor, labelFor } from '../icons';
 import { isPositive } from '../positive';
@@ -9,7 +10,9 @@ import {
   setStoredReaction,
 } from '../storage';
 import type { PulsePressData, ReactionType } from '../types';
-import { CaptureForm } from './CaptureForm';
+import type { CaptureForm as CaptureFormComponent } from './CaptureForm';
+
+type CaptureFormProps = Parameters<typeof CaptureFormComponent>[0];
 
 interface Props {
   postId: number;
@@ -28,6 +31,7 @@ export function ReactionBar({ postId, data, initialCounts, previewOnly = false }
   const [announcement, setAnnouncement] = useState<string>('');
   const [captured, setCaptured] = useState<boolean>(() => previewOnly ? false : getCapturedFlag(postId));
   const [dismissed, setDismissed] = useState<boolean>(false);
+  const [LazyCaptureForm, setLazyCaptureForm] = useState<ComponentType<CaptureFormProps> | null>(null);
   const errorTimerRef = useRef<number | null>(null);
   const buttonRefs = useMemo(() => new Map<ReactionType, { current: HTMLButtonElement | null }>(), []);
 
@@ -140,6 +144,15 @@ export function ReactionBar({ postId, data, initialCounts, previewOnly = false }
     isPositive(activeType, data) &&
     !pending;
 
+  useEffect(() => {
+    if (!showCapture || LazyCaptureForm !== null || previewOnly) return;
+    let cancelled = false;
+    import('./CaptureForm')
+      .then((mod) => { if (!cancelled) setLazyCaptureForm(() => mod.CaptureForm); })
+      .catch(() => { /* network blip — next showCapture render will retry */ });
+    return () => { cancelled = true; };
+  }, [showCapture, LazyCaptureForm, previewOnly]);
+
   return (
     <div class="pulsepress-bar" data-loading={pending ? 'true' : 'false'}>
       <div class="pulsepress-buttons" role="group" aria-label={data.i18n.groupLabel}>
@@ -169,14 +182,24 @@ export function ReactionBar({ postId, data, initialCounts, previewOnly = false }
         <p class="pulsepress-error" role="alert">{error}</p>
       )}
       {showCapture && activeType !== null && (
-        <CaptureForm
-          postId={postId}
-          reactionType={activeType}
-          data={data}
-          triggerRef={ensureRef(activeType)}
-          onDone={handleCaptureDone}
-          onDismiss={handleCaptureDismiss}
-        />
+        LazyCaptureForm !== null ? (
+          <LazyCaptureForm
+            postId={postId}
+            reactionType={activeType}
+            data={data}
+            triggerRef={ensureRef(activeType)}
+            onDone={handleCaptureDone}
+            onDismiss={handleCaptureDismiss}
+          />
+        ) : (
+          <p
+            class="pulsepress-capture-loading"
+            role="status"
+            aria-live="polite"
+          >
+            {data.i18n.capture.submitting}
+          </p>
+        )
       )}
     </div>
   );

@@ -238,3 +238,14 @@
     transition: none;
   }
 }
+
+.pulsepress-capture-loading {
+  margin: 1rem 0 0;
+  padding: 0.85rem 1rem;
+  font-size: 0.9rem;
+  color: var(--pulsepress-muted);
+  background: var(--pulsepress-bg);
+  border: 1px dashed var(--pulsepress-border);
+  border-radius: var(--pulsepress-radius);
+  max-width: 28rem;
+}

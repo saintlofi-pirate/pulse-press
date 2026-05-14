@@ -602,3 +602,28 @@
   font-size: 0.85rem;
   line-height: 1.5;
 }
+
+.pulsepress-skeleton {
+  display: block;
+  width: 100%;
+  background: linear-gradient(90deg, var(--pp-soft, #f8fafc) 0%, color-mix(in srgb, var(--pp-soft, #f8fafc) 60%, var(--pp-border)) 50%, var(--pp-soft, #f8fafc) 100%);
+  background-size: 200% 100%;
+  border-radius: var(--pp-radius);
+  margin-top: 1rem;
+  animation: pulsepress-skeleton-shimmer 1.6s ease-in-out infinite;
+}
+
+.pulsepress-skeleton--chart { height: 220px; }
+.pulsepress-skeleton--table { height: 200px; }
+
+@keyframes pulsepress-skeleton-shimmer {
+  0%   { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulsepress-skeleton {
+    animation: none;
+    background: var(--pp-soft);
+  }
+}

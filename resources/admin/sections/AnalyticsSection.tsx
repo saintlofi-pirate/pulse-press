@@ -1,10 +1,14 @@
 import { useCallback, useEffect, useState } from 'preact/hooks';
+import type { ComponentType } from 'preact';
 import { fetchAnalytics } from '../api';
-import { DailySeriesChart } from '../components/DailySeriesChart';
+import type { DailySeriesChart as DailySeriesChartComponent } from '../components/DailySeriesChart';
 import { ExtensionMount } from '../components/ExtensionMount';
 import { MetricCard } from '../components/MetricCard';
-import { TopPostsTable } from '../components/TopPostsTable';
+import type { TopPostsTable as TopPostsTableComponent } from '../components/TopPostsTable';
 import type { MetricsEnvelope, PulsePressAdminData } from '../types';
+
+type ChartProps = Parameters<typeof DailySeriesChartComponent>[0];
+type TableProps = Parameters<typeof TopPostsTableComponent>[0];
 
 interface Props {
   adminData: PulsePressAdminData;
@@ -42,6 +46,8 @@ export function AnalyticsSection({ adminData }: Props) {
   const [status, setStatus]   = useState<Status>('loading');
   const [data, setData]       = useState<MetricsEnvelope | null>(null);
   const [error, setError]     = useState<string | null>(null);
+  const [LazyChart, setLazyChart] = useState<ComponentType<ChartProps> | null>(null);
+  const [LazyTable, setLazyTable] = useState<ComponentType<TableProps> | null>(null);
 
   const load = useCallback(async () => {
     setStatus('loading');
@@ -58,6 +64,17 @@ export function AnalyticsSection({ adminData }: Props) {
   }, [adminData.nonce, adminData.restRoot, i18n.errorState]);
 
   useEffect(() => { void load(); }, [load]);
+
+  useEffect(() => {
+    let cancelled = false;
+    void import('../components/DailySeriesChart').then((mod) => {
+      if (!cancelled) setLazyChart(() => mod.DailySeriesChart);
+    });
+    void import('../components/TopPostsTable').then((mod) => {
+      if (!cancelled) setLazyTable(() => mod.TopPostsTable);
+    });
+    return () => { cancelled = true; };
+  }, []);
 
   if (status === 'loading') {
     return (
@@ -124,9 +141,13 @@ export function AnalyticsSection({ adminData }: Props) {
 
           <p class="pulsepress-insight" role="status">{sentimentInsight}</p>
 
-          <DailySeriesChart series={data.dailySeries} from={data.from} to={data.to} i18n={i18n} />
+          {LazyChart !== null
+            ? <LazyChart series={data.dailySeries} from={data.from} to={data.to} i18n={i18n} />
+            : <div class="pulsepress-skeleton pulsepress-skeleton--chart" role="status" aria-live="polite" aria-label={i18n.loadingState} />}
 
-          <TopPostsTable rows={data.topPosts} titles={data.postTitles} i18n={i18n} />
+          {LazyTable !== null
+            ? <LazyTable rows={data.topPosts} titles={data.postTitles} i18n={i18n} />
+            : <div class="pulsepress-skeleton pulsepress-skeleton--table" role="status" aria-live="polite" aria-label={i18n.loadingState} />}
 
           {adminData.analyticsPanels.map((panel) => (
             <ExtensionMount
