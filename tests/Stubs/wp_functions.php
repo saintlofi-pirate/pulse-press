@@ -324,6 +324,51 @@ namespace PulsePress\Captures {
     }
 }
 
+namespace PulsePress\Analytics {
+
+    if (!defined(__NAMESPACE__ . '\HOUR_IN_SECONDS')) {
+        define(__NAMESPACE__ . '\HOUR_IN_SECONDS', 3600);
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\do_action')) {
+        function do_action(string $hook, mixed ...$args): void
+        {
+            \Tests\Stubs\FilterRegistry::doAction($hook, $args);
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\error_log')) {
+        function error_log(string $message): bool
+        {
+            \Tests\Stubs\ErrorLogSpy::record($message);
+            return true;
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\wp_schedule_event')) {
+        function wp_schedule_event(int $timestamp, string $recurrence, string $hook): bool
+        {
+            \Tests\Stubs\CronSpy::schedule($hook, $timestamp, $recurrence);
+            return true;
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\wp_unschedule_event')) {
+        function wp_unschedule_event(int $timestamp, string $hook): bool
+        {
+            \Tests\Stubs\CronSpy::unschedule($hook);
+            return true;
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\wp_next_scheduled')) {
+        function wp_next_scheduled(string $hook): int|false
+        {
+            return \Tests\Stubs\CronSpy::next($hook);
+        }
+    }
+}
+
 namespace PulsePress\Blocks {
 
     if (!function_exists(__NAMESPACE__ . '\apply_filters')) {
@@ -691,6 +736,37 @@ namespace Tests\Stubs {
         public static function currentPostType(): string|false
         {
             return self::$singularType === null ? false : self::$postType;
+        }
+    }
+
+    final class CronSpy
+    {
+        /** @var array<string, array{timestamp: int, recurrence: string}> */
+        private static array $events = [];
+
+        public static function reset(): void
+        {
+            self::$events = [];
+        }
+
+        public static function schedule(string $hook, int $timestamp, string $recurrence): void
+        {
+            self::$events[$hook] = ['timestamp' => $timestamp, 'recurrence' => $recurrence];
+        }
+
+        public static function unschedule(string $hook): void
+        {
+            unset(self::$events[$hook]);
+        }
+
+        public static function next(string $hook): int|false
+        {
+            return self::$events[$hook]['timestamp'] ?? false;
+        }
+
+        public static function all(): array
+        {
+            return self::$events;
         }
     }
 

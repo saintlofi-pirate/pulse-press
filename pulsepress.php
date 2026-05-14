@@ -58,12 +58,22 @@ register_activation_hook(__FILE__, static function (): void {
     if (!wp_next_scheduled(\PulsePress\Providers\CaptureServiceProvider::PURGE_HOOK)) {
         wp_schedule_event(time() + HOUR_IN_SECONDS, 'daily', \PulsePress\Providers\CaptureServiceProvider::PURGE_HOOK);
     }
+
+    if (!wp_next_scheduled(\PulsePress\Providers\AnalyticsServiceProvider::CRON_HOOK)) {
+        $firstRun = (new \DateTimeImmutable('today 02:00', wp_timezone()))->modify('+1 day');
+        wp_schedule_event($firstRun->getTimestamp(), 'daily', \PulsePress\Providers\AnalyticsServiceProvider::CRON_HOOK);
+    }
 });
 
 register_deactivation_hook(__FILE__, static function (): void {
     $next = wp_next_scheduled(\PulsePress\Providers\CaptureServiceProvider::PURGE_HOOK);
     if ($next !== false) {
         wp_unschedule_event($next, \PulsePress\Providers\CaptureServiceProvider::PURGE_HOOK);
+    }
+
+    $aggNext = wp_next_scheduled(\PulsePress\Providers\AnalyticsServiceProvider::CRON_HOOK);
+    if ($aggNext !== false) {
+        wp_unschedule_event($aggNext, \PulsePress\Providers\AnalyticsServiceProvider::CRON_HOOK);
     }
 });
 

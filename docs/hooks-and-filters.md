@@ -20,6 +20,8 @@ Catalog of every PulsePress action and filter, kept in sync with the code as Ses
 | `pulsepress_settings_default` | `(array $defaults)` | `Settings::DEFAULTS` | Session 6 | Override the defaults map (e.g., to pre-seed a different positive set on first install). |
 | `pulsepress_admin_data` | `(array $payload)` | `{restRoot, nonce, settings, defaults, choices, schemaVersion, reactions, version, i18n}` | Session 6b | Adjust the `window.PulsePressAdminData` payload on the admin settings page. Pro layers license-key context, etc. |
 | `pulsepress_widget_container_attrs` | `(array $attrs, int $postId)` | `{'class' => 'pulsepress', 'data-pulsepress-widget' => '', 'data-pulsepress-post-id' => '{id}'}` | Session 7 | Adjust the HTML attributes on the widget container `<div>` before it is serialised. Empty-string values render as bare attributes. |
+| `pulsepress_aggregation_date` | `(DateTimeImmutable $date)` | yesterday in `wp_timezone()` | Session 8 | Override the date the daily aggregator processes on each cron tick. Useful for one-off rebuild scripts. |
+| `pulsepress_aggregation_timezone` | `(DateTimeZone $tz)` | `wp_timezone()` | Session 8 | Override the timezone used to compute site-local day boundaries during aggregation. Rarely needed. |
 
 ## Actions
 
@@ -31,6 +33,8 @@ Catalog of every PulsePress action and filter, kept in sync with the code as Ses
 | `pulsepress_after_capture` | `(int $captureId, int $postId, string $email, string $reactionType, string $consentVersion)` | Session 4 | Post-store hook. Fires only on `'inserted'` (not on `'already_exists'`). ESP sync, double opt-in mail, webhooks attach here. |
 | `pulsepress_purge_fraud_metadata` | `()` | Session 4 (WP-Cron event) | Daily cron event that runs `FraudPurger::run()` to null hashes whose `fraud_metadata_purge_at` has passed. Hookable, but the default handler is registered in `CaptureServiceProvider::boot()`. |
 | `pulsepress_settings_saved` | `(array $new, array $previous)` | Session 6 | Fires after the settings repository persists changes. ESP credential sync, telemetry, cache invalidation attach here. |
+| `pulsepress_after_aggregate` | `(AggregationResult $result)` | Session 8 | Fires after every successful daily aggregation (including zero-row days). Pro hooks attach for "top post" notifications, ESP digests, etc. Skipped when aggregation fails. |
+| `pulsepress_aggregate_reactions` | `()` | Session 8 (WP-Cron event) | Daily cron that computes yesterday's site-local date and runs the aggregator. The default handler lives in `AnalyticsServiceProvider::boot()`. |
 
 ## Naming Conventions
 

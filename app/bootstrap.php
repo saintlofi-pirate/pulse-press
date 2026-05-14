@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 use PulsePress\Providers\AdminServiceProvider;
+use PulsePress\Providers\AnalyticsServiceProvider;
 use PulsePress\Providers\AppServiceProvider;
 use PulsePress\Providers\BlockServiceProvider;
 use PulsePress\Providers\CaptureServiceProvider;
@@ -20,5 +21,6 @@ return [
         CaptureServiceProvider::class,
         WidgetServiceProvider::class,
         BlockServiceProvider::class,
+        AnalyticsServiceProvider::class,
     ],
 ];
