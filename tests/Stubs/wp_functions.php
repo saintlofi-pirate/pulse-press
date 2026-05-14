@@ -370,6 +370,27 @@ namespace PulsePress\Analytics {
         }
     }
 
+    if (!function_exists(__NAMESPACE__ . '\apply_filters')) {
+        function apply_filters(string $hook, mixed $value, mixed ...$args): mixed
+        {
+            return \Tests\Stubs\FilterRegistry::apply($hook, $value, $args);
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\get_the_title')) {
+        function get_the_title(int $postId): string|false
+        {
+            return \Tests\Stubs\PostRegistry::title($postId);
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\__')) {
+        function __(string $text, string $domain = 'default'): string
+        {
+            return $text;
+        }
+    }
+
     if (!function_exists(__NAMESPACE__ . '\wp_schedule_event')) {
         function wp_schedule_event(int $timestamp, string $recurrence, string $hook): bool
         {
@@ -699,6 +720,11 @@ namespace Tests\Stubs {
         public static function postType(int $postId): ?string
         {
             return self::$posts[$postId]['type'] ?? null;
+        }
+
+        public static function title(int $postId): string|false
+        {
+            return self::$posts[$postId]['title'] ?? false;
         }
     }
 

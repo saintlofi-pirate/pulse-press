@@ -3,13 +3,14 @@ import { LivePreview } from './components/LivePreview';
 import { PulsePressLayout } from './components/PulsePressLayout';
 import { SectionNav } from './components/SectionNav';
 import { useSettingsState } from './hooks/useSettingsState';
+import { AnalyticsSection } from './sections/AnalyticsSection';
 import { CaptureSection } from './sections/CaptureSection';
 import { DisplaySection } from './sections/DisplaySection';
 import { PrivacySection } from './sections/PrivacySection';
 import { ReactionsSection } from './sections/ReactionsSection';
 import type { PulsePressAdminData, TabId } from './types';
 
-const TAB_IDS: TabId[] = ['display', 'reactions', 'capture', 'privacy'];
+const TAB_IDS: TabId[] = ['display', 'analytics', 'reactions', 'capture', 'privacy'];
 
 function hashToTab(): TabId {
   const raw = window.location.hash.replace(/^#/, '');
@@ -40,6 +41,8 @@ export function App({ adminData }: Props) {
 
   const renderPanel = () => {
     switch (activeTab) {
+      case 'analytics':
+        return <AnalyticsSection adminData={adminData} />;
       case 'reactions':
         return <ReactionsSection state={state} adminData={adminData} />;
       case 'capture':

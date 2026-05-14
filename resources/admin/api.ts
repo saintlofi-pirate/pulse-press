@@ -1,4 +1,4 @@
-import type { SettingsChoices, SettingsState } from './types';
+import type { MetricsEnvelope, SettingsChoices, SettingsState } from './types';
 
 export interface SettingsResponse {
   settings: SettingsState;
@@ -51,4 +51,12 @@ export async function saveSettings(
     body: JSON.stringify(partial),
   });
   return parseJson<SettingsResponse>(response);
+}
+
+export async function fetchAnalytics(restRoot: string, nonce: string): Promise<MetricsEnvelope> {
+  const response = await fetch(`${rootFor(restRoot)}analytics/summary`, {
+    headers: { Accept: 'application/json', 'X-WP-Nonce': nonce },
+    credentials: 'same-origin',
+  });
+  return parseJson<MetricsEnvelope>(response);
 }

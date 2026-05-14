@@ -5,9 +5,13 @@ namespace PulsePress\Providers;
 
 use DateTimeImmutable;
 use PulsePress\Analytics\Aggregator;
+use PulsePress\Analytics\AnalyticsRepository;
+use PulsePress\Analytics\MetricsCalculator;
 use PulsePress\Analytics\QueueScheduler;
 use PulsePress\Analytics\WpCronScheduler;
 use PulsePress\Core\ServiceProvider;
+use PulsePress\Http\Controllers\AnalyticsController;
+use PulsePress\Settings\SettingsRepository;
 
 final class AnalyticsServiceProvider extends ServiceProvider
 {
@@ -19,11 +23,24 @@ final class AnalyticsServiceProvider extends ServiceProvider
         $this->app->singleton(Aggregator::class, function () {
             return new Aggregator($GLOBALS['wpdb']);
         });
+        $this->app->singleton(AnalyticsRepository::class, function () {
+            return new AnalyticsRepository($GLOBALS['wpdb']);
+        });
+        $this->app->singleton(MetricsCalculator::class, function () {
+            return new MetricsCalculator(
+                $this->app->get(AnalyticsRepository::class),
+                $this->app->get(SettingsRepository::class),
+            );
+        });
+        $this->app->singleton(AnalyticsController::class, function () {
+            return new AnalyticsController($this->app->get(MetricsCalculator::class));
+        });
     }
 
     public function boot(): void
     {
         add_action(self::CRON_HOOK, [$this, 'runScheduledAggregation']);
+        add_action('rest_api_init', [$this, 'registerRestRoutes']);
 
         // Default site-timezone resolution for the filter (priority 5 → site filters at 10 still win).
         add_filter('pulsepress_aggregation_timezone', static function ($value) {
@@ -32,6 +49,20 @@ final class AnalyticsServiceProvider extends ServiceProvider
             }
             return wp_timezone();
         }, 5);
+    }
+
+    public function registerRestRoutes(): void
+    {
+        $controller = $this->app->get(AnalyticsController::class);
+        register_rest_route('pulsepress/v1', '/analytics/summary', [
+            'methods'             => 'GET',
+            'callback'            => [$controller, 'summary'],
+            'permission_callback' => static fn () => current_user_can('manage_options'),
+            'args'                => [
+                'from' => ['type' => 'string', 'required' => false],
+                'to'   => ['type' => 'string', 'required' => false],
+            ],
+        ]);
     }
 
     public function runScheduledAggregation(): void

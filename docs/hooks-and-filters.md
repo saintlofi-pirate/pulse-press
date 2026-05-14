@@ -22,6 +22,8 @@ Catalog of every PulsePress action and filter, kept in sync with the code as Ses
 | `pulsepress_widget_container_attrs` | `(array $attrs, int $postId)` | `{'class' => 'pulsepress', 'data-pulsepress-widget' => '', 'data-pulsepress-post-id' => '{id}'}` | Session 7 | Adjust the HTML attributes on the widget container `<div>` before it is serialised. Empty-string values render as bare attributes. |
 | `pulsepress_aggregation_date` | `(DateTimeImmutable $date)` | yesterday in `wp_timezone()` | Session 8 | Override the date the daily aggregator processes on each cron tick. Useful for one-off rebuild scripts. |
 | `pulsepress_aggregation_timezone` | `(DateTimeZone $tz)` | `wp_timezone()` | Session 8 | Override the timezone used to compute site-local day boundaries during aggregation. Rarely needed. |
+| `pulsepress_analytics_window` | `(array $window, WP_REST_Request $request)` | `{'from' => DateTimeImmutable (UTC), 'to' => DateTimeImmutable (UTC), 'clamped' => bool}` | Session 9 | Last filter on the analytics window. Pro overrides Free's 30-day clamp here to extend the dashboard to 12 months. |
+| `pulsepress_admin_analytics_panels` | `(array $panels)` | `[]` | Session 9 (Pro extension seam) | Lets Pro register additional admin Analytics panels alongside the Free four. Free does not consume the filter today. |
 
 ## Actions
 

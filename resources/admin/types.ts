@@ -44,7 +44,7 @@ export interface PulsePressAdminData {
     livePreviewLabel: string;
     livePreviewHelper: string;
     livePreviewReadOnly: string;
-    tabs: { display: string; reactions: string; capture: string; privacy: string };
+    tabs: { display: string; analytics: string; reactions: string; capture: string; privacy: string };
     sections: {
       displayTitle: string;
       displayHelper: string;
@@ -54,6 +54,29 @@ export interface PulsePressAdminData {
       captureHelper: string;
       privacyTitle: string;
       privacyHelper: string;
+      analyticsTitle: string;
+      analyticsHelper: string;
+    };
+    analytics: {
+      totalReactionsLabel: string;
+      totalReactionsHelper: string;
+      totalCapturesLabel: string;
+      totalCapturesHelper: string;
+      sentimentRateLabel: string;
+      sentimentRateHelper: string;
+      captureRateLabel: string;
+      captureRateHelper: string;
+      topPostsCaption: string;
+      topPostsColumns: { post: string; total: string; positive: string; captures: string };
+      sentimentInsightTemplate: string;
+      sentimentInsightFallback: string;
+      chartLabel: string;
+      emptyState: string;
+      loadingState: string;
+      errorState: string;
+      retry: string;
+      clampedNotice: string;
+      deletedPost: string;
     };
     fields: {
       countVisibilityLabel: string;
