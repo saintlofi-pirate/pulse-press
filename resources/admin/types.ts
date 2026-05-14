@@ -75,6 +75,7 @@ export interface PulsePressAdminData {
     livePreviewReadOnly: string;
     tabs: { display: string; analytics: string; reactions: string; capture: string; privacy: string } & Record<string, string>;
     extension: { fallback: string; sectionLabel: string };
+    toggle: { on: string; off: string };
     sections: {
       displayTitle: string;
       displayHelper: string;

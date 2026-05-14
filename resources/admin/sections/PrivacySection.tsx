@@ -27,6 +27,7 @@ export function PrivacySection({ state, adminData }: Props) {
           onChange={(next) => update('delete_on_uninstall', next)}
           status={<StatusPill status={fieldStatus.delete_on_uninstall === 'error' ? undefined : fieldStatus.delete_on_uninstall} i18n={i18n} />}
           error={errors.delete_on_uninstall}
+          labels={i18n.toggle}
         />
       </div>
     </section>

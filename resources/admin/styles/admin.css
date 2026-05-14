@@ -123,6 +123,12 @@
   outline: none;
 }
 
+.pulsepress-panel:focus-visible {
+  outline: 2px solid var(--pp-accent);
+  outline-offset: 4px;
+  border-radius: var(--pp-radius);
+}
+
 .pulsepress-section {
   background: var(--pp-card);
   border: 1px solid var(--pp-border);

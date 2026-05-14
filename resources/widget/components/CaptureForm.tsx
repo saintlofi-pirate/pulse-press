@@ -13,9 +13,10 @@ interface Props {
 }
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const EMAIL_INPUT_ID  = 'pulsepress-capture-email';
-const CONSENT_INPUT_ID = 'pulsepress-capture-consent';
-const CONSENT_HELP_ID  = 'pulsepress-capture-consent-help';
+const EMAIL_INPUT_ID    = 'pulsepress-capture-email';
+const CONSENT_INPUT_ID  = 'pulsepress-capture-consent';
+const CONSENT_HELP_ID   = 'pulsepress-capture-consent-help';
+const CAPTURE_TITLE_ID  = 'pulsepress-capture-title';
 
 export function CaptureForm({ postId, reactionType, data, triggerRef, onDone, onDismiss }: Props) {
   const i18n = data.i18n.capture;
@@ -117,11 +118,14 @@ export function CaptureForm({ postId, reactionType, data, triggerRef, onDone, on
   return (
     <form
       class="pulsepress-capture"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={CAPTURE_TITLE_ID}
       onSubmit={handleSubmit}
       onKeyDown={handleKeyDown}
       noValidate
     >
-      <p class="pulsepress-capture-prompt">{i18n.prompt}</p>
+      <h3 id={CAPTURE_TITLE_ID} class="pulsepress-capture-title">{i18n.prompt}</h3>
 
       <div class="pulsepress-field">
         <label class="pulsepress-label" for={EMAIL_INPUT_ID}>{i18n.label}</label>

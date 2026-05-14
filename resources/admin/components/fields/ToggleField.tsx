@@ -9,12 +9,15 @@ interface Props {
   onChange: (next: boolean) => void;
   status?: ComponentChildren;
   error?: string | null;
+  labels?: { on: string; off: string };
 }
 
-export function ToggleField({ label, helper, checked, onChange, status, error }: Props) {
+export function ToggleField({ label, helper, checked, onChange, status, error, labels }: Props) {
   const id     = useId();
   const helpId = `${id}-help`;
   const errId  = `${id}-error`;
+  const onText  = labels?.on ?? 'On';
+  const offText = labels?.off ?? 'Off';
   return (
     <FieldShell
       label={label}
@@ -36,7 +39,7 @@ export function ToggleField({ label, helper, checked, onChange, status, error }:
           onChange={(e) => onChange((e.target as HTMLInputElement).checked)}
         />
         <span class="pulsepress-toggle__slider" aria-hidden="true" />
-        <span class="pulsepress-toggle__state">{checked ? 'On' : 'Off'}</span>
+        <span class="pulsepress-toggle__state">{checked ? onText : offText}</span>
       </label>
     </FieldShell>
   );

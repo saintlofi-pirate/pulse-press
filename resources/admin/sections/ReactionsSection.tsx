@@ -38,6 +38,7 @@ export function ReactionsSection({ state, adminData }: Props) {
           onChange={(next) => update('allow_guest_reactions', next)}
           status={<StatusPill status={fieldStatus.allow_guest_reactions === 'error' ? undefined : fieldStatus.allow_guest_reactions} i18n={i18n} />}
           error={errors.allow_guest_reactions}
+          labels={i18n.toggle}
         />
       </div>
     </section>

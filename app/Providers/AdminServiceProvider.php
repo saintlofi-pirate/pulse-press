@@ -215,6 +215,10 @@ final class AdminServiceProvider extends ServiceProvider
                 'fallback'    => __('This section is provided by another plugin that didn’t load. Try refreshing the page.', 'pulsepress'),
                 'sectionLabel' => __('Extension region', 'pulsepress'),
             ],
+            'toggle' => [
+                'on'  => __('On', 'pulsepress'),
+                'off' => __('Off', 'pulsepress'),
+            ],
             'captureExport' => [
                 'label'           => __('Export captures', 'pulsepress'),
                 'helper'          => __('Download every saved email + consent metadata as a CSV file. Anyone with WordPress admin access can run an export.', 'pulsepress'),
