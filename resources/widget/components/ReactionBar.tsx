@@ -14,17 +14,19 @@ import { CaptureForm } from './CaptureForm';
 interface Props {
   postId: number;
   data: PulsePressData;
+  initialCounts?: Record<string, number>;
+  previewOnly?: boolean;
 }
 
 const ERROR_VISIBLE_MS = 4000;
 
-export function ReactionBar({ postId, data }: Props) {
-  const [counts, setCounts] = useState<Record<string, number>>({});
-  const [activeType, setActiveType] = useState<ReactionType | null>(() => getStoredReaction(postId));
+export function ReactionBar({ postId, data, initialCounts, previewOnly = false }: Props) {
+  const [counts, setCounts] = useState<Record<string, number>>(() => initialCounts ?? {});
+  const [activeType, setActiveType] = useState<ReactionType | null>(() => previewOnly ? null : getStoredReaction(postId));
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [announcement, setAnnouncement] = useState<string>('');
-  const [captured, setCaptured] = useState<boolean>(() => getCapturedFlag(postId));
+  const [captured, setCaptured] = useState<boolean>(() => previewOnly ? false : getCapturedFlag(postId));
   const [dismissed, setDismissed] = useState<boolean>(false);
   const errorTimerRef = useRef<number | null>(null);
   const buttonRefs = useMemo(() => new Map<ReactionType, { current: HTMLButtonElement | null }>(), []);
@@ -35,6 +37,7 @@ export function ReactionBar({ postId, data }: Props) {
   }, []);
 
   useEffect(() => {
+    if (previewOnly) return;
     let cancelled = false;
     fetchCounts({ root: data.root, postId })
       .then((response) => {
@@ -48,7 +51,7 @@ export function ReactionBar({ postId, data }: Props) {
     return () => {
       cancelled = true;
     };
-  }, [data.root, postId]);
+  }, [data.root, postId, previewOnly]);
 
   useEffect(() => {
     return () => {

@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from 'preact/hooks';
+import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
+import { ExtensionMount } from './components/ExtensionMount';
 import { LivePreview } from './components/LivePreview';
 import { PulsePressLayout } from './components/PulsePressLayout';
 import { SectionNav } from './components/SectionNav';
@@ -8,13 +9,14 @@ import { CaptureSection } from './sections/CaptureSection';
 import { DisplaySection } from './sections/DisplaySection';
 import { PrivacySection } from './sections/PrivacySection';
 import { ReactionsSection } from './sections/ReactionsSection';
-import type { PulsePressAdminData, TabId } from './types';
+import type { ExtensionTab, PulsePressAdminData } from './types';
 
-const TAB_IDS: TabId[] = ['display', 'analytics', 'reactions', 'capture', 'privacy'];
+const FREE_TAB_IDS = new Set(['display', 'analytics', 'reactions', 'capture', 'privacy']);
 
-function hashToTab(): TabId {
+function pickDefaultTab(tabs: ExtensionTab[]): string {
   const raw = window.location.hash.replace(/^#/, '');
-  return (TAB_IDS as string[]).includes(raw) ? (raw as TabId) : 'display';
+  if (raw && tabs.some((t) => t.id === raw)) return raw;
+  return tabs[0]?.id ?? 'display';
 }
 
 interface Props {
@@ -23,23 +25,41 @@ interface Props {
 
 export function App({ adminData }: Props) {
   const state = useSettingsState(adminData);
-  const [activeTab, setActiveTab] = useState<TabId>(hashToTab);
+  const tabs: ExtensionTab[] = useMemo(() => {
+    if (Array.isArray(adminData.tabs) && adminData.tabs.length > 0) return adminData.tabs;
+    return [
+      { id: 'display', label: adminData.i18n.tabs.display, order: 10 },
+      { id: 'analytics', label: adminData.i18n.tabs.analytics, order: 20 },
+      { id: 'reactions', label: adminData.i18n.tabs.reactions, order: 30 },
+      { id: 'capture', label: adminData.i18n.tabs.capture, order: 40 },
+      { id: 'privacy', label: adminData.i18n.tabs.privacy, order: 50 },
+    ];
+  }, [adminData]);
+
+  const [activeTab, setActiveTab] = useState<string>(() => pickDefaultTab(tabs));
 
   useEffect(() => {
-    const sync = () => setActiveTab(hashToTab());
+    const sync = () => setActiveTab(pickDefaultTab(tabs));
     window.addEventListener('hashchange', sync);
     return () => window.removeEventListener('hashchange', sync);
-  }, []);
+  }, [tabs]);
 
-  const changeTab = useCallback((next: TabId) => {
+  useEffect(() => {
+    if (!tabs.some((t) => t.id === activeTab)) {
+      setActiveTab(tabs[0]?.id ?? 'display');
+    }
+  }, [tabs, activeTab]);
+
+  const changeTab = useCallback((next: string) => {
     if (next === activeTab) return;
     window.location.hash = next;
     setActiveTab(next);
   }, [activeTab]);
 
-  const tabs = TAB_IDS.map((id) => ({ id, label: adminData.i18n.tabs[id] }));
-
   const renderPanel = () => {
+    if (!FREE_TAB_IDS.has(activeTab)) {
+      return <ExtensionMount kind="tab" id={activeTab} adminData={adminData} />;
+    }
     switch (activeTab) {
       case 'analytics':
         return <AnalyticsSection adminData={adminData} />;

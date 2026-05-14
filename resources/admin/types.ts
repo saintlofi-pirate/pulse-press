@@ -26,6 +26,32 @@ export type SettingsChoices = {
   post_types: Record<string, string>;
 };
 
+export interface ExtensionTab {
+  id: string;
+  label: string;
+  order: number;
+}
+
+export interface ExtensionMetricCard {
+  id: string;
+  title: string;
+  value: string;
+  helper?: string;
+  emphasis?: boolean;
+  renderJs?: string;
+  data?: unknown;
+  fallback?: string;
+}
+
+export interface ExtensionAnalyticsPanel {
+  id: string;
+  title?: string;
+  helper?: string;
+  data?: unknown;
+  renderJs?: string;
+  fallback?: string;
+}
+
 export interface PulsePressAdminData {
   restRoot: string;
   nonce: string;
@@ -35,6 +61,9 @@ export interface PulsePressAdminData {
   schemaVersion: number;
   reactions: ReactionType[];
   version: string;
+  tabs: ExtensionTab[];
+  metricCards: ExtensionMetricCard[];
+  analyticsPanels: ExtensionAnalyticsPanel[];
   i18n: {
     pageTitle: string;
     saved: string;
@@ -44,7 +73,8 @@ export interface PulsePressAdminData {
     livePreviewLabel: string;
     livePreviewHelper: string;
     livePreviewReadOnly: string;
-    tabs: { display: string; analytics: string; reactions: string; capture: string; privacy: string };
+    tabs: { display: string; analytics: string; reactions: string; capture: string; privacy: string } & Record<string, string>;
+    extension: { fallback: string; sectionLabel: string };
     sections: {
       displayTitle: string;
       displayHelper: string;
@@ -119,9 +149,27 @@ export interface PulsePressAdminData {
 
 export type TabId = 'display' | 'reactions' | 'capture' | 'privacy';
 
+export type ExtensionKind = 'tab' | 'card' | 'panel';
+
+export interface ExtensionContext {
+  id: string;
+  kind: ExtensionKind;
+  data: unknown;
+  adminData: PulsePressAdminData;
+}
+
+export type ExtensionRenderer = (root: HTMLElement, ctx: ExtensionContext) => void | (() => void);
+
+export interface PulsePressAdminApi {
+  registerTabRenderer: (id: string, renderer: ExtensionRenderer) => void;
+  registerCardRenderer: (id: string, renderer: ExtensionRenderer) => void;
+  registerPanelRenderer: (id: string, renderer: ExtensionRenderer) => void;
+}
+
 declare global {
   interface Window {
     PulsePressAdminData?: PulsePressAdminData;
+    PulsePressAdmin?: PulsePressAdminApi;
   }
 }
 

@@ -1,19 +1,18 @@
 import { useCallback, useEffect, useRef } from 'preact/hooks';
-import type { TabId } from '../types';
 
 interface NavTab {
-  id: TabId;
+  id: string;
   label: string;
 }
 
 interface Props {
   tabs: NavTab[];
-  active: TabId;
-  onChange: (next: TabId) => void;
+  active: string;
+  onChange: (next: string) => void;
 }
 
 export function SectionNav({ tabs, active, onChange }: Props) {
-  const refs = useRef<Map<TabId, HTMLButtonElement | null>>(new Map());
+  const refs = useRef<Map<string, HTMLButtonElement | null>>(new Map());
 
   useEffect(() => {
     const node = refs.current.get(active);
@@ -21,7 +20,7 @@ export function SectionNav({ tabs, active, onChange }: Props) {
   }, [active]);
 
   const focusAt = useCallback(
-    (id: TabId) => {
+    (id: string) => {
       onChange(id);
       window.setTimeout(() => refs.current.get(id)?.focus(), 0);
     },

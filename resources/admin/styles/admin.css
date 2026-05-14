@@ -579,3 +579,20 @@
     transition: none;
   }
 }
+
+.pulsepress-extension-mount {
+  display: block;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.pulsepress-extension-fallback {
+  margin-top: 1rem;
+  padding: 1rem 1.15rem;
+  border: 1px dashed var(--pp-border, #e2e8f0);
+  border-radius: var(--pp-radius-md, 10px);
+  background: var(--pp-soft, #f8fafc);
+  color: var(--pp-muted, #475569);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}

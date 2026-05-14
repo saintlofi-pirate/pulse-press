@@ -76,11 +76,10 @@ export function LivePreview({ settings, adminData }: Props) {
         onClickCapture={handleClickCapture}
       >
         <div class="pulsepress">
-          <ReactionBar postId={0} data={{ ...data, postId: 0 }} />
+          <ReactionBar postId={0} data={{ ...data, postId: 0 }} initialCounts={MOCK_COUNTS} previewOnly />
         </div>
         <div class="pulsepress-preview__overlay" aria-hidden="true" />
       </div>
-      <p class="pulsepress-preview__counts">Mock counts: love {MOCK_COUNTS.love}, insightful {MOCK_COUNTS.insightful}, funny {MOCK_COUNTS.funny}, sad {MOCK_COUNTS.sad}, surprised {MOCK_COUNTS.surprised}, angry {MOCK_COUNTS.angry}.</p>
       <p class="pulsepress-sr-only" role="status" aria-live="polite" aria-atomic="true">{announce}</p>
     </aside>
   );

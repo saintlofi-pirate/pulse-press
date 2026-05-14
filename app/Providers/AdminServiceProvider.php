@@ -91,22 +91,73 @@ final class AdminServiceProvider extends ServiceProvider
         $choices               = Settings::CHOICES;
         $choices['post_types'] = $this->publicPostTypeMap();
 
+        $i18n = $this->i18n();
+
         $payload = [
-            'restRoot'      => esc_url_raw(rest_url('pulsepress/v1/')),
-            'nonce'         => wp_create_nonce('wp_rest'),
-            'settings'      => $settings,
-            'defaults'      => Settings::DEFAULTS,
-            'choices'       => $choices,
-            'schemaVersion' => Settings::SCHEMA_VERSION,
-            'reactions'     => array_values((array) apply_filters('pulsepress_reaction_types', Reactions::TYPES)),
-            'version'       => PULSEPRESS_VERSION,
-            'i18n'          => $this->i18n(),
+            'restRoot'        => esc_url_raw(rest_url('pulsepress/v1/')),
+            'nonce'           => wp_create_nonce('wp_rest'),
+            'settings'        => $settings,
+            'defaults'        => Settings::DEFAULTS,
+            'choices'         => $choices,
+            'schemaVersion'   => Settings::SCHEMA_VERSION,
+            'reactions'       => array_values((array) apply_filters('pulsepress_reaction_types', Reactions::TYPES)),
+            'version'         => PULSEPRESS_VERSION,
+            'i18n'            => $i18n,
+            'tabs'            => $this->publicTabs($i18n),
+            'metricCards'     => array_values((array) apply_filters('pulsepress_admin_metric_cards', [])),
+            'analyticsPanels' => array_values((array) apply_filters('pulsepress_admin_analytics_panels', [])),
         ];
 
         $payload = (array) apply_filters('pulsepress_admin_data', $payload);
 
         wp_localize_script(self::SCRIPT_HANDLE, 'PulsePressAdminData', $payload);
         wp_enqueue_script(self::SCRIPT_HANDLE);
+    }
+
+    /**
+     * @param array<string, mixed> $i18n
+     * @return list<array{id: string, label: string, order: int}>
+     */
+    private function publicTabs(array $i18n): array
+    {
+        $labels = is_array($i18n['tabs'] ?? null) ? $i18n['tabs'] : [];
+        $base   = [
+            ['id' => 'display',   'label' => (string) ($labels['display']   ?? 'Display'),       'order' => 10],
+            ['id' => 'analytics', 'label' => (string) ($labels['analytics'] ?? 'Analytics'),     'order' => 20],
+            ['id' => 'reactions', 'label' => (string) ($labels['reactions'] ?? 'Reactions'),     'order' => 30],
+            ['id' => 'capture',   'label' => (string) ($labels['capture']   ?? 'Email capture'), 'order' => 40],
+            ['id' => 'privacy',   'label' => (string) ($labels['privacy']   ?? 'Privacy'),       'order' => 50],
+        ];
+
+        $extra = (array) apply_filters('pulsepress_admin_tabs', []);
+        $seen  = [];
+        $all   = [];
+        foreach ($base as $tab) {
+            $seen[$tab['id']] = true;
+            $all[]            = $tab;
+        }
+        foreach ($extra as $tab) {
+            if (!is_array($tab)) {
+                continue;
+            }
+            $id = isset($tab['id']) ? (string) $tab['id'] : '';
+            if ($id === '' || isset($seen[$id])) {
+                continue;
+            }
+            $seen[$id] = true;
+            $all[]     = [
+                'id'    => $id,
+                'label' => isset($tab['label']) ? (string) $tab['label'] : $id,
+                'order' => isset($tab['order']) ? (int) $tab['order'] : 1000,
+            ];
+        }
+
+        usort($all, static function (array $a, array $b): int {
+            $cmp = $a['order'] <=> $b['order'];
+            return $cmp !== 0 ? $cmp : strcmp($a['id'], $b['id']);
+        });
+
+        return $all;
     }
 
     /** @return array<string, string> */
@@ -159,6 +210,10 @@ final class AdminServiceProvider extends ServiceProvider
                 'privacyHelper'   => __('Set how PulsePress handles data when the plugin is removed.', 'pulsepress'),
                 'analyticsTitle'  => __('Analytics', 'pulsepress'),
                 'analyticsHelper' => __('Reactions and captures over the selected window. Defaults to the trailing 30 days.', 'pulsepress'),
+            ],
+            'extension' => [
+                'fallback'    => __('This section is provided by another plugin that didn’t load. Try refreshing the page.', 'pulsepress'),
+                'sectionLabel' => __('Extension region', 'pulsepress'),
             ],
             'captureExport' => [
                 'label'           => __('Export captures', 'pulsepress'),

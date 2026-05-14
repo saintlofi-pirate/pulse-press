@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'preact/hooks';
 import { fetchAnalytics } from '../api';
 import { DailySeriesChart } from '../components/DailySeriesChart';
+import { ExtensionMount } from '../components/ExtensionMount';
 import { MetricCard } from '../components/MetricCard';
 import { TopPostsTable } from '../components/TopPostsTable';
 import type { MetricsEnvelope, PulsePressAdminData } from '../types';
@@ -114,6 +115,11 @@ export function AnalyticsSection({ adminData }: Props) {
             <MetricCard title={i18n.totalCapturesLabel}  value={formatInt(data.totalCaptures)}  helper={i18n.totalCapturesHelper} />
             <MetricCard title={i18n.sentimentRateLabel}  value={formatPercent(data.sentimentRate, '—')} helper={i18n.sentimentRateHelper} />
             <MetricCard title={i18n.captureRateLabel}    value={formatPercent(data.captureRate, '—')}   helper={i18n.captureRateHelper} />
+            {adminData.metricCards.map((card) => (
+              card.renderJs
+                ? <ExtensionMount key={`card-${card.id}`} kind="card" id={card.id} adminData={adminData} data={card.data ?? card} fallback={card.fallback} ariaLabel={card.title} />
+                : <MetricCard key={`card-${card.id}`} title={card.title} value={card.value} helper={card.helper} emphasis={card.emphasis} />
+            ))}
           </div>
 
           <p class="pulsepress-insight" role="status">{sentimentInsight}</p>
@@ -121,6 +127,18 @@ export function AnalyticsSection({ adminData }: Props) {
           <DailySeriesChart series={data.dailySeries} from={data.from} to={data.to} i18n={i18n} />
 
           <TopPostsTable rows={data.topPosts} titles={data.postTitles} i18n={i18n} />
+
+          {adminData.analyticsPanels.map((panel) => (
+            <ExtensionMount
+              key={`panel-${panel.id}`}
+              kind="panel"
+              id={panel.id}
+              adminData={adminData}
+              data={panel.data ?? panel}
+              fallback={panel.fallback}
+              ariaLabel={panel.title}
+            />
+          ))}
         </div>
       )}
     </section>
