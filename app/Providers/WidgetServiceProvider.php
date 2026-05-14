@@ -139,17 +139,24 @@ final class WidgetServiceProvider extends ServiceProvider
             return $content;
         }
 
-        $postType   = get_post_type();
-        $defaultOn  = $postType === 'post';
-        $autoInsert = (bool) apply_filters('pulsepress_widget_auto_insert', $defaultOn, $postType);
-
-        if (!$autoInsert) {
-            return $content;
-        }
-
         $postId = (int) get_the_ID();
         if ($postId <= 0) {
             return $content;
+        }
+
+        if ($this->app->has(\PulsePress\Visibility\VisibilityResolver::class)) {
+            /** @var \PulsePress\Visibility\VisibilityResolver $resolver */
+            $resolver = $this->app->get(\PulsePress\Visibility\VisibilityResolver::class);
+            if (!$resolver->shouldRender($postId, 'auto')) {
+                return $content;
+            }
+        } else {
+            $postType   = get_post_type();
+            $defaultOn  = $postType === 'post';
+            $autoInsert = (bool) apply_filters('pulsepress_widget_auto_insert', $defaultOn, $postType);
+            if (!$autoInsert) {
+                return $content;
+            }
         }
 
         return $content . \PulsePress\Blocks\WidgetMarkup::container($postId);

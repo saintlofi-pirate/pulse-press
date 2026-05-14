@@ -14,6 +14,7 @@ export type SettingsState = {
   consent_text_version: string;
   delete_on_uninstall: boolean;
   retention_days: number;
+  hide_on_post_types: string[];
 };
 
 export type SettingsChoices = {
@@ -22,6 +23,7 @@ export type SettingsChoices = {
   icon_style: string[];
   theme_mode: string[];
   auto_insert_position: string[];
+  post_types: Record<string, string>;
 };
 
 export interface PulsePressAdminData {
@@ -73,6 +75,8 @@ export interface PulsePressAdminData {
       autoInsertPositionLabel: string;
       autoInsertPositionHelper: string;
       autoInsertPositionChoices: Record<string, string>;
+      hideOnPostTypesLabel: string;
+      hideOnPostTypesHelper: string;
       positiveReactionsLabel: string;
       positiveReactionsHelper: string;
       reactionLabels: Record<string, string>;

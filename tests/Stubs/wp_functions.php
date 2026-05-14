@@ -324,6 +324,31 @@ namespace PulsePress\Captures {
     }
 }
 
+namespace PulsePress\Visibility {
+
+    if (!function_exists(__NAMESPACE__ . '\apply_filters')) {
+        function apply_filters(string $hook, mixed $value, mixed ...$args): mixed
+        {
+            return \Tests\Stubs\FilterRegistry::apply($hook, $value, $args);
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\get_post_meta')) {
+        function get_post_meta(int $postId, string $key, bool $single = false): mixed
+        {
+            return \Tests\Stubs\PostMetaStore::get($postId, $key);
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\get_post_type')) {
+        function get_post_type(int $postId = 0): string|false
+        {
+            $type = \Tests\Stubs\PostRegistry::postType($postId);
+            return $type !== null ? $type : false;
+        }
+    }
+}
+
 namespace PulsePress\Analytics {
 
     if (!defined(__NAMESPACE__ . '\HOUR_IN_SECONDS')) {
@@ -641,7 +666,7 @@ namespace Tests\Stubs {
 
     final class PostRegistry
     {
-        /** @var array<int, array{status: string, public: bool}> */
+        /** @var array<int, array{status: string, public: bool, type: string}> */
         private static array $posts = [];
 
         public static function reset(): void
@@ -649,9 +674,16 @@ namespace Tests\Stubs {
             self::$posts = [];
         }
 
-        public static function register(int $postId, string $status = 'publish', bool $public = true): void
+        public static function register(int $postId, string $status = 'publish', bool $public = true, string $type = 'post'): void
         {
-            self::$posts[$postId] = ['status' => $status, 'public' => $public];
+            self::$posts[$postId] = ['status' => $status, 'public' => $public, 'type' => $type];
+        }
+
+        public static function setPostType(int $postId, string $type): void
+        {
+            if (isset(self::$posts[$postId])) {
+                self::$posts[$postId]['type'] = $type;
+            }
         }
 
         public static function status(int $postId): string|false
@@ -662,6 +694,37 @@ namespace Tests\Stubs {
         public static function isPublic(int $postId): bool
         {
             return self::$posts[$postId]['public'] ?? false;
+        }
+
+        public static function postType(int $postId): ?string
+        {
+            return self::$posts[$postId]['type'] ?? null;
+        }
+    }
+
+    final class PostMetaStore
+    {
+        /** @var array<string, mixed> */
+        private static array $meta = [];
+
+        public static function reset(): void
+        {
+            self::$meta = [];
+        }
+
+        public static function key(int $postId, string $key): string
+        {
+            return $postId . ':' . $key;
+        }
+
+        public static function set(int $postId, string $key, mixed $value): void
+        {
+            self::$meta[self::key($postId, $key)] = $value;
+        }
+
+        public static function get(int $postId, string $key): mixed
+        {
+            return self::$meta[self::key($postId, $key)] ?? '';
         }
     }
 

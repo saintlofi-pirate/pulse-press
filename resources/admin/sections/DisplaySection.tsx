@@ -85,10 +85,7 @@ export function DisplaySection({ state, adminData }: Props) {
           label={i18n.fields.autoInsertPostTypesLabel}
           helper={i18n.fields.autoInsertPostTypesHelper}
           values={settings.auto_insert_post_types}
-          options={[
-            { value: 'post', label: 'Posts' },
-            { value: 'page', label: 'Pages' },
-          ]}
+          options={Object.entries(choices.post_types ?? {}).map(([value, label]) => ({ value, label }))}
           onChange={(next) => update('auto_insert_post_types', next.length === 0 ? ['post'] : next)}
           status={<StatusPill status={fieldStatus.auto_insert_post_types === 'error' ? undefined : fieldStatus.auto_insert_post_types} i18n={i18n} />}
           error={errors.auto_insert_post_types}
@@ -102,6 +99,16 @@ export function DisplaySection({ state, adminData }: Props) {
           onChange={(next) => update('auto_insert_position', next)}
           status={<StatusPill status={fieldStatus.auto_insert_position === 'error' ? undefined : fieldStatus.auto_insert_position} i18n={i18n} />}
           error={errors.auto_insert_position}
+        />
+
+        <CheckboxListField
+          label={i18n.fields.hideOnPostTypesLabel}
+          helper={i18n.fields.hideOnPostTypesHelper}
+          values={settings.hide_on_post_types ?? []}
+          options={Object.entries(choices.post_types ?? {}).map(([value, label]) => ({ value, label }))}
+          onChange={(next) => update('hide_on_post_types', next)}
+          status={<StatusPill status={fieldStatus.hide_on_post_types === 'error' ? undefined : fieldStatus.hide_on_post_types} i18n={i18n} />}
+          error={errors.hide_on_post_types}
         />
       </div>
     </section>

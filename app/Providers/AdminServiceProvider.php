@@ -3,11 +3,13 @@ declare(strict_types=1);
 
 namespace PulsePress\Providers;
 
+use PulsePress\Admin\WidgetStateMetaBox;
 use PulsePress\Core\ServiceProvider;
 use PulsePress\Reactions\Reactions;
 use PulsePress\Settings\Settings;
 use PulsePress\Settings\SettingsRepository;
 use PulsePress\View\Manifest;
+use PulsePress\Visibility\VisibilityResolver;
 
 final class AdminServiceProvider extends ServiceProvider
 {
@@ -20,11 +22,16 @@ final class AdminServiceProvider extends ServiceProvider
     {
         $self = $this;
         $this->app->singleton(self::class, fn () => $self);
+        $this->app->singleton(VisibilityResolver::class, function () {
+            return new VisibilityResolver($this->app->get(SettingsRepository::class));
+        });
+        $this->app->singleton(WidgetStateMetaBox::class, fn () => new WidgetStateMetaBox());
     }
 
     public function boot(): void
     {
         add_action('admin_enqueue_scripts', [$this, 'maybeEnqueueAssets']);
+        $this->app->get(WidgetStateMetaBox::class)->register();
     }
 
     public function renderPage(): void
@@ -81,12 +88,15 @@ final class AdminServiceProvider extends ServiceProvider
         $repository = $this->app->get(SettingsRepository::class);
         $settings   = $repository->get();
 
+        $choices               = Settings::CHOICES;
+        $choices['post_types'] = $this->publicPostTypeMap();
+
         $payload = [
             'restRoot'      => esc_url_raw(rest_url('pulsepress/v1/')),
             'nonce'         => wp_create_nonce('wp_rest'),
             'settings'      => $settings,
             'defaults'      => Settings::DEFAULTS,
-            'choices'       => Settings::CHOICES,
+            'choices'       => $choices,
             'schemaVersion' => Settings::SCHEMA_VERSION,
             'reactions'     => array_values((array) apply_filters('pulsepress_reaction_types', Reactions::TYPES)),
             'version'       => PULSEPRESS_VERSION,
@@ -97,6 +107,26 @@ final class AdminServiceProvider extends ServiceProvider
 
         wp_localize_script(self::SCRIPT_HANDLE, 'PulsePressAdminData', $payload);
         wp_enqueue_script(self::SCRIPT_HANDLE);
+    }
+
+    /** @return array<string, string> */
+    private function publicPostTypeMap(): array
+    {
+        if (!function_exists('get_post_types')) {
+            return ['post' => 'Posts', 'page' => 'Pages'];
+        }
+        $objects = get_post_types(['public' => true], 'objects');
+        $map     = [];
+        foreach ($objects as $slug => $object) {
+            if (!is_string($slug) || $slug === '') {
+                continue;
+            }
+            $label = is_object($object) && isset($object->labels->singular_name) && $object->labels->singular_name !== ''
+                ? $object->labels->singular_name
+                : (is_object($object) && isset($object->labels->name) ? $object->labels->name : $slug);
+            $map[$slug] = (string) $label;
+        }
+        return $map;
     }
 
     /** @return array<string, mixed> */
@@ -158,6 +188,8 @@ final class AdminServiceProvider extends ServiceProvider
                 ],
                 'autoInsertPostTypesLabel'  => __('Auto-insert on', 'pulsepress'),
                 'autoInsertPostTypesHelper' => __('Where the widget appears automatically.', 'pulsepress'),
+                'hideOnPostTypesLabel'      => __('Never show on', 'pulsepress'),
+                'hideOnPostTypesHelper'     => __('Suppress the widget on these post types, even when placed via block or shortcode. Per-post overrides set to "Always show" still win.', 'pulsepress'),
                 'autoInsertPositionLabel'   => __('Position', 'pulsepress'),
                 'autoInsertPositionHelper'  => __('Above the post body, below it, or both.', 'pulsepress'),
                 'autoInsertPositionChoices' => [

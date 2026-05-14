@@ -30,6 +30,7 @@ final class Settings
         'consent_text_version'   => 'v1',
         'delete_on_uninstall'    => false,
         'retention_days'         => 0,
+        'hide_on_post_types'     => [],
     ];
 
     public const CHOICES = [
@@ -84,6 +85,9 @@ final class Settings
         if (array_key_exists('retention_days', $input)) {
             $clean['retention_days'] = self::intRange($input['retention_days'], 0, 3650, self::DEFAULTS['retention_days']);
         }
+        if (array_key_exists('hide_on_post_types', $input)) {
+            $clean['hide_on_post_types'] = self::stringArray($input['hide_on_post_types'], null, self::DEFAULTS['hide_on_post_types']);
+        }
 
         return $clean;
     }
@@ -133,6 +137,9 @@ final class Settings
     {
         if (!is_array($value)) {
             return $default;
+        }
+        if ($value === []) {
+            return [];
         }
         $clean = [];
         foreach ($value as $item) {

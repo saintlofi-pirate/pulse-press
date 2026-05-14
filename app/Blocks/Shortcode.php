@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace PulsePress\Blocks;
 
+use PulsePress\Core\Application;
+use PulsePress\Visibility\VisibilityResolver;
+
 final class Shortcode
 {
     public const TAG = 'pulsepress';
@@ -25,6 +28,15 @@ final class Shortcode
         }
         if (!is_post_publicly_viewable($postId)) {
             return '';
+        }
+
+        $app = Application::getInstance();
+        if ($app !== null && $app->has(VisibilityResolver::class)) {
+            /** @var VisibilityResolver $resolver */
+            $resolver = $app->get(VisibilityResolver::class);
+            if (!$resolver->shouldRender($postId, 'shortcode')) {
+                return '';
+            }
         }
 
         return WidgetMarkup::container($postId);
