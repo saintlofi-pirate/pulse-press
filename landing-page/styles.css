@@ -42,6 +42,7 @@ a {
   background: rgba(255, 255, 255, 0.92);
   border-bottom: 1px solid var(--line);
   backdrop-filter: blur(14px);
+  min-height: 76px;
 }
 
 .brand {
@@ -53,6 +54,8 @@ a {
 }
 
 .brand img {
+  width: 40px;
+  height: 40px;
   border-radius: 10px;
   object-fit: cover;
 }
@@ -76,7 +79,7 @@ a {
 
 .hero {
   position: relative;
-  min-height: 720px;
+  min-height: min(760px, calc(100svh - 76px));
   display: flex;
   align-items: center;
   overflow: hidden;
@@ -105,14 +108,14 @@ a {
 .hero-inner {
   position: relative;
   z-index: 1;
-  width: min(860px, calc(100% - 40px));
+  width: min(920px, calc(100% - 40px));
   margin: 0 auto;
-  padding: 96px 0 128px;
+  padding: clamp(64px, 10vh, 108px) 0 clamp(72px, 12vh, 132px);
 }
 
 .hero-logo {
-  width: 148px;
-  height: 148px;
+  width: clamp(96px, 12vw, 136px);
+  height: clamp(96px, 12vw, 136px);
   object-fit: cover;
   border: 5px solid rgba(255, 255, 255, 0.96);
   border-radius: 34px;
@@ -143,8 +146,8 @@ p {
 h1 {
   max-width: 820px;
   margin-bottom: 22px;
-  font-size: 76px;
-  line-height: 0.98;
+  font-size: clamp(46px, 6.8vw, 82px);
+  line-height: 1;
   letter-spacing: 0;
 }
 
@@ -421,7 +424,7 @@ h3 {
   }
 
   .hero {
-    min-height: 660px;
+    min-height: auto;
   }
 
   .hero::after {
@@ -447,7 +450,7 @@ h3 {
   }
 
   h1 {
-    font-size: 54px;
+    font-size: clamp(46px, 10vw, 58px);
   }
 
   h2 {
@@ -473,7 +476,7 @@ h3 {
   }
 
   h1 {
-    font-size: 42px;
+    font-size: clamp(38px, 12vw, 46px);
   }
 
   h2 {
