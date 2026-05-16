@@ -12,19 +12,27 @@ Reactions, inline email capture, and analytics — privacy-first and built for W
 
 == Description ==
 
-PulsePress lets readers react to posts and turns positive reactions into an opportunity to grow your email list, with privacy-safe analytics that show what content is working.
+PulsePress lets readers react to posts and turns positive reactions into an opportunity to grow your email list, with privacy-safe analytics that show which content is working.
 
-The free plugin includes a reaction widget, inline email capture storage, CSV export, display settings, shortcode/block rendering, privacy controls, and a lightweight analytics dashboard.
+The free plugin is built to stand on its own: reactions, inline email capture, CSV export, display settings, shortcode/block rendering, privacy controls, and a lightweight analytics dashboard are all included.
 
-### What you can do with PulsePress
+### Free features in 0.1.0
 
 * Add a reaction widget to posts automatically or with the `[pulsepress]` shortcode.
-* Let readers react with configurable positive/neutral/negative reactions.
-* Show counts always, never, or only after a threshold.
+* Use a Gutenberg block when you want per-post placement.
+* Let readers respond with configurable positive, neutral, and negative reactions.
+* Choose minimal, expressive, story, or clap-counter widget styles.
+* Show reaction counts always, never, or only after a threshold.
 * Capture emails inline after positive reactions with explicit consent.
 * Export captured emails to CSV from the WordPress admin.
-* Review top posts, sentiment, captures, and aggregate engagement in the dashboard.
+* Review top posts, sentiment, captures, and aggregate engagement in an admin dashboard.
+* Control auto-insert by public post type and hide the widget on specific posts.
+* Customize labels for multi-language or brand-specific reaction wording.
 * Keep data local to WordPress with no third-party tracking by default.
+
+### Privacy-first by default
+
+PulsePress does not send reader reactions or captured emails to a third-party service by default. Reaction deduplication uses a soft user hash, email captures stay in your WordPress database, and CSV export is available when you want to move data manually.
 
 == Installation ==
 
