@@ -11,9 +11,9 @@ use PulsePress\Analytics\QueueScheduler;
 use PulsePress\Analytics\WpCronScheduler;
 use PulsePress\Core\ServiceProvider;
 use PulsePress\Http\Controllers\AnalyticsController;
+use PulsePress\Reactions\ReactionRepository;
 use PulsePress\Settings\SettingsRepository;
 
-defined('ABSPATH') || exit;
 final class AnalyticsServiceProvider extends ServiceProvider
 {
     public const CRON_HOOK = 'pulsepress_aggregate_reactions';
@@ -27,6 +27,11 @@ final class AnalyticsServiceProvider extends ServiceProvider
         $this->app->singleton(AnalyticsRepository::class, function () {
             return new AnalyticsRepository($GLOBALS['wpdb']);
         });
+        if (!$this->app->has(ReactionRepository::class)) {
+            $this->app->singleton(ReactionRepository::class, function () {
+                return new ReactionRepository($GLOBALS['wpdb']);
+            });
+        }
         $this->app->singleton(MetricsCalculator::class, function () {
             return new MetricsCalculator(
                 $this->app->get(AnalyticsRepository::class),
@@ -81,5 +86,21 @@ final class AnalyticsServiceProvider extends ServiceProvider
         }
 
         $this->app->get(Aggregator::class)->aggregate($date);
+        $this->purgeExpiredReactions();
+    }
+
+    private function purgeExpiredReactions(): void
+    {
+        $settings = $this->app->get(SettingsRepository::class)->get();
+        $days     = (int) ($settings['retention_days'] ?? 0);
+
+        if ($days <= 0) {
+            return;
+        }
+
+        $cutoff  = new DateTimeImmutable('-' . $days . ' days', new \DateTimeZone('UTC'));
+        $deleted = $this->app->get(ReactionRepository::class)->purgeOlderThan($cutoff);
+
+        do_action('pulsepress_reactions_retention_purged', $deleted, $cutoff, $days);
     }
 }

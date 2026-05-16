@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PulsePress - Reactions, Email Capture, and Analytics for WordPress</title>
+    <meta
+      name="description"
+      content="PulsePress is a privacy-first WordPress plugin for reader reactions, inline email capture, and actionable publishing analytics."
+    />
+    <meta property="og:title" content="PulsePress" />
+    <meta property="og:description" content="Reader sentiment, inline email capture, and analytics for WordPress publishers." />
+    <meta property="og:image" content="assets/social-engagement-icon.png" />
+    <meta property="og:type" content="website" />
+    <link rel="icon" href="assets/social-engagement-icon.png" type="image/png" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="PulsePress home">
+        <img src="assets/social-engagement-icon.png" alt="" width="36" height="36" />
+        <span>PulsePress</span>
+      </a>
+      <nav class="nav" aria-label="Primary navigation">
+        <a href="#features">Features</a>
+        <a href="#privacy">Privacy</a>
+        <a href="#upcoming">Upcoming</a>
+        <a href="#download">Download</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <img class="hero-mark" src="assets/social-engagement-icon.png" alt="" />
+        <div class="hero-inner">
+          <img class="hero-logo" src="assets/social-engagement-icon.png" alt="PulsePress social engagement content card icon" />
+          <p class="eyebrow">WordPress reactions with consent-aware growth</p>
+          <h1 id="hero-title">Understand what readers feel, then invite the right ones back.</h1>
+          <p class="hero-copy">
+            PulsePress adds accessible reactions, inline email capture, CSV export, and publisher-friendly analytics
+            without third-party tracking scripts.
+          </p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#download">Get the free plugin</a>
+            <a class="button button-secondary" href="#features">View features</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="proof-band" aria-label="Core product capabilities">
+        <div>
+          <strong>Accessible reactions</strong>
+          <span>Keyboard-ready buttons, ARIA state, and clear focus styles.</span>
+        </div>
+        <div>
+          <strong>Inline capture</strong>
+          <span>Ask for email after positive reader intent, with consent text saved.</span>
+        </div>
+        <div>
+          <strong>Publisher analytics</strong>
+          <span>Track sentiment, captures, and top posts from the WordPress admin.</span>
+        </div>
+      </section>
+
+      <section id="features" class="section feature-section">
+        <div class="section-copy">
+          <p class="eyebrow">Built for the post, not the popup</p>
+          <h2>Turn lightweight feedback into a clean publishing signal.</h2>
+          <p>
+            PulsePress keeps the front end simple: readers react, positive reactions can trigger a compact
+            email capture prompt, and site owners get a practical view of which posts are connecting.
+          </p>
+        </div>
+        <div class="feature-showcase">
+          <article class="feature-panel feature-panel-main">
+            <span>01</span>
+            <h3>Reaction widget that feels native to the article</h3>
+            <p>Six default reactions, clean design choices, classic or emoji icons, count visibility controls, and guest reaction rules.</p>
+            <ul>
+              <li>Minimalist and subtle text layouts</li>
+              <li>Light, dark, or system theme mode</li>
+              <li>Accessible buttons with clear selected states</li>
+            </ul>
+          </article>
+          <article class="feature-panel">
+            <span>02</span>
+            <h3>Capture after intent</h3>
+            <p>Ask for email only after a positive reaction, so the form appears when a reader has already shown interest.</p>
+          </article>
+          <article class="feature-panel">
+            <span>03</span>
+            <h3>Placement that respects each post</h3>
+            <p>Auto insert above, below, or both; use a block or shortcode; hide by post type or specific post IDs.</p>
+          </article>
+          <article class="feature-panel">
+            <span>04</span>
+            <h3>Admin preview and analytics</h3>
+            <p>Preview the real front-end widget, then track reactions, captures, sentiment, and top posts from WordPress.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="privacy" class="section quiet-section">
+        <div class="section-copy narrow">
+          <p class="eyebrow">Privacy-first by default</p>
+          <h2>No tracking network required.</h2>
+          <p>
+            Reactions use a per-site dedupe hash instead of storing raw visitor IP addresses for the reaction flow.
+            Email captures store explicit consent metadata, and retention controls keep raw reaction data on your terms.
+          </p>
+        </div>
+        <dl class="privacy-list">
+          <div>
+            <dt>Reaction storage</dt>
+            <dd>Custom WordPress tables with one current reaction per visitor and post.</dd>
+          </div>
+          <div>
+            <dt>Consent records</dt>
+            <dd>Captured emails include consent timestamp, source, reaction type, and consent text version.</dd>
+          </div>
+          <div>
+            <dt>Data controls</dt>
+            <dd>CSV export, retention cleanup, and explicit delete-on-uninstall behavior.</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section id="upcoming" class="section upcoming-section">
+        <div class="section-copy">
+          <p class="eyebrow">Upcoming workflows</p>
+          <h2>Email provider connections and deeper audience loops.</h2>
+          <p>
+            PulsePress already captures consented emails inside WordPress. The next workflow layer connects those
+            high-intent readers to the tools publishers already use.
+          </p>
+        </div>
+        <div class="upcoming-grid" aria-label="Upcoming capabilities">
+          <article>
+            <span>Connection</span>
+            <h3>Email provider sync</h3>
+            <p>Send captured subscribers to Mailchimp, ConvertKit, Beehiiv, Brevo, MailerLite, and similar providers.</p>
+          </article>
+          <article>
+            <span>Routing</span>
+            <h3>Reaction-based lists and tags</h3>
+            <p>Map Love, Insightful, Funny, or custom positive reactions to provider tags, lists, or audience segments.</p>
+          </article>
+          <article>
+            <span>Experiments</span>
+            <h3>Prompt and placement testing</h3>
+            <p>Compare capture copy, widget placement, animation style, and timing to see what grows the list cleanly.</p>
+          </article>
+          <article>
+            <span>Reporting</span>
+            <h3>Longer-range publishing analytics</h3>
+            <p>Understand which posts keep creating subscribers over weeks, months, campaigns, and reader segments.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="download" class="download">
+        <div>
+          <p class="eyebrow">Ready for WordPress publishers</p>
+          <h2>Install PulsePress and start learning from reader intent.</h2>
+          <p>Use this static page as the public product site, GitHub Pages landing page, or release microsite.</p>
+        </div>
+        <div class="download-actions">
+          <a class="button button-primary" href="downloads/pulsepress-0.1.0.zip">Download ZIP</a>
+          <a class="button button-secondary" href="plugin-readme.txt">Read plugin details</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>PulsePress</span>
+      <span>Privacy-first reactions, email capture, and analytics for WordPress.</span>
+    </footer>
+  </body>
+</html>

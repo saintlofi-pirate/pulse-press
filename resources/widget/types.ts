@@ -7,6 +7,9 @@ export type ReactionType =
   | 'angry'
   | string;
 
+export type WidgetDesign = 'minimal' | 'expressive' | 'minimalist' | 'subtle_text' | 'progress_split' | 'vertical_rail' | 'clap_counter';
+export type AnimationMode = 'none' | 'subtle' | 'spring' | 'burst' | 'float' | 'glow' | 'count_bump' | 'trail';
+
 export interface CaptureI18n {
   prompt: string;
   label: string;
@@ -28,6 +31,14 @@ export interface PulsePressData {
   postId: number;
   reactions: ReactionType[];
   positiveReactions: ReactionType[];
+  allowGuestReactions?: boolean;
+  isLoggedIn?: boolean;
+  iconStyle?: 'classic' | 'emoji';
+  themeMode?: 'light' | 'dark' | 'auto';
+  widgetDesign?: WidgetDesign;
+  animationMode?: AnimationMode;
+  countVisibility?: 'always' | 'never' | 'threshold';
+  countThreshold?: number;
   i18n: {
     loading: string;
     error: string;

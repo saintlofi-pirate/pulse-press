@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1544 500" role="img" aria-labelledby="title desc">
+  <title id="title">PulsePress WordPress.org banner</title>
+  <desc id="desc">PulsePress brand banner using the social engagement content card logo, with reaction, email capture, and analytics UI cards.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1544" y2="500" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F7FBFA"/>
+      <stop offset="0.55" stop-color="#FEFCF7"/>
+      <stop offset="1" stop-color="#EEF7F5"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-30%" width="140%" height="170%">
+      <feDropShadow dx="0" dy="18" stdDeviation="16" flood-color="#19313C" flood-opacity="0.10"/>
+    </filter>
+    <clipPath id="logoClip">
+      <rect x="96" y="68" width="170" height="170" rx="42"/>
+    </clipPath>
+  </defs>
+
+  <rect width="1544" height="500" fill="url(#bg)"/>
+  <circle cx="1328" cy="78" r="112" fill="#4FD1C5" opacity="0.18"/>
+  <circle cx="1461" cy="421" r="66" fill="#FFD166" opacity="0.28"/>
+  <circle cx="62" cy="421" r="86" fill="#F04F6A" opacity="0.10"/>
+
+  <g filter="url(#softShadow)">
+    <rect x="96" y="68" width="170" height="170" rx="42" fill="#FFFFFF"/>
+    <image href="../../resources/social_engagement_content_card_icon.png" x="62" y="34" width="238" height="238" preserveAspectRatio="xMidYMid slice" clip-path="url(#logoClip)"/>
+  </g>
+
+  <text x="304" y="155" fill="#102A36" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="74" font-weight="780" letter-spacing="0">Pulse<tspan fill="#F04F6A">Press</tspan></text>
+  <text x="308" y="208" fill="#385966" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="32" font-weight="520" letter-spacing="0">Reactions that grow your email list</text>
+  <text x="310" y="254" fill="#6A818B" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="24" font-weight="480" letter-spacing="0">Privacy-first sentiment, inline capture, and analytics.</text>
+
+  <rect x="916" y="92" width="448" height="310" rx="24" fill="#19313C" opacity="0.08"/>
+  <g transform="translate(916 73)">
+    <rect width="448" height="310" rx="24" fill="#FFFFFF"/>
+    <rect x="28" y="27" width="392" height="52" rx="16" fill="#EEF7F5"/>
+    <text x="48" y="62" fill="#153E4A" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="20" font-weight="700">Reader sentiment</text>
+    <g transform="translate(32 111)">
+      <rect width="76" height="76" rx="22" fill="#FFF0EC"/>
+      <text x="38" y="50" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI Symbol', sans-serif" font-size="34">♥</text>
+      <rect x="92" y="5" width="76" height="76" rx="22" fill="#EDFDFB"/>
+      <text x="130" y="52" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI Symbol', sans-serif" font-size="31">↗</text>
+      <rect x="184" y="5" width="76" height="76" rx="22" fill="#FFF8E3"/>
+      <text x="222" y="52" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI Symbol', sans-serif" font-size="31">✦</text>
+      <rect x="276" y="5" width="76" height="76" rx="22" fill="#F1F5F9"/>
+      <text x="314" y="52" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI Symbol', sans-serif" font-size="31">☹</text>
+    </g>
+    <g transform="translate(30 225)">
+      <rect width="184" height="58" rx="18" fill="#153E4A"/>
+      <text x="24" y="36" fill="#FFFFFF" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="18" font-weight="700">Capture +34%</text>
+      <rect x="206" width="214" height="58" rx="18" fill="#F7FBFA" stroke="#D8E8E5"/>
+      <text x="230" y="36" fill="#385966" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="18" font-weight="700">Top post insight</text>
+    </g>
+  </g>
+
+  <rect x="548" y="322" width="354" height="120" rx="24" fill="#19313C" opacity="0.08"/>
+  <g transform="translate(548 304)">
+    <rect width="354" height="120" rx="24" fill="#FFFFFF"/>
+    <text x="28" y="45" fill="#153E4A" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="19" font-weight="720">Email capture</text>
+    <rect x="28" y="66" width="205" height="28" rx="14" fill="#EDFDFB"/>
+    <rect x="248" y="66" width="74" height="28" rx="14" fill="#F04F6A"/>
+  </g>
+</svg>

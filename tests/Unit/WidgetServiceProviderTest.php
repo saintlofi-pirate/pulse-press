@@ -65,7 +65,7 @@ function pp_make_temp_manifest(array $entry): Manifest
     return new Manifest($path, 'https://example.test/dist/');
 }
 
-it('enqueues script + style + localize on a singular post when manifest resolves', function () {
+it('enqueues script + style + data payload on a singular post when manifest resolves', function () {
     WpEnv::setAdmin(false);
     WpEnv::setSingular('post', 209);
 
@@ -82,12 +82,19 @@ it('enqueues script + style + localize on a singular post when manifest resolves
     expect(AssetSpy::only('register_style'))->toHaveCount(1);
     expect(AssetSpy::only('enqueue_style'))->toHaveCount(1);
 
-    $localize = AssetSpy::only('localize');
-    expect($localize)->toHaveCount(1);
-    expect($localize[0]['args']['objectName'])->toBe('PulsePressData');
-    expect($localize[0]['args']['data']['postId'])->toBe(209);
-    expect($localize[0]['args']['data']['root'])->toBe('https://example.test/wp-json/pulsepress/v1/');
-    expect($localize[0]['args']['data']['reactions'])->toBe(['love', 'insightful', 'funny', 'sad', 'surprised', 'angry']);
+    $inline = AssetSpy::only('inline_script');
+    expect($inline)->toHaveCount(1);
+    expect($inline[0]['args']['position'])->toBe('before');
+
+    preg_match('/^var PulsePressData = (.*);$/', $inline[0]['args']['data'], $matches);
+    $data = json_decode($matches[1] ?? '{}', true);
+
+    expect($data['postId'])->toBe(209);
+    expect($data['root'])->toBe('https://example.test/wp-json/pulsepress/v1/');
+    expect($data['reactions'])->toBe(['love', 'insightful', 'funny', 'sad', 'surprised', 'angry']);
+    expect($data['allowGuestReactions'])->toBeTrue();
+    expect($data['countThreshold'])->toBe(5);
+    expect($data['animationMode'])->toBe('subtle');
 });
 
 it('enqueues on non-singular pages when pulsepress_widget_enqueue is filtered true', function () {

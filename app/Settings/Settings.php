@@ -11,9 +11,10 @@ final class Settings
     public const OPTION_NAME    = 'pulsepress_settings';
 
     public const VISIBILITY_CHOICES = ['always', 'never', 'threshold'];
-    public const DESIGN_CHOICES     = ['minimal', 'expressive'];
+    public const DESIGN_CHOICES     = ['minimal', 'expressive', 'minimalist', 'subtle_text', 'progress_split', 'vertical_rail', 'clap_counter'];
     public const ICON_CHOICES       = ['classic', 'emoji'];
     public const THEME_CHOICES      = ['light', 'dark', 'auto'];
+    public const ANIMATION_CHOICES  = ['none', 'subtle', 'spring', 'burst', 'float', 'glow', 'count_bump', 'trail'];
     public const POSITION_CHOICES   = ['above', 'below', 'both'];
 
     public const DEFAULTS = [
@@ -22,8 +23,10 @@ final class Settings
         'widget_design'          => 'minimal',
         'icon_style'             => 'classic',
         'theme_mode'             => 'auto',
+        'animation_mode'         => 'subtle',
         'auto_insert_post_types' => ['post'],
         'auto_insert_position'   => 'below',
+        'enabled_reactions'      => ['love', 'insightful', 'funny', 'sad', 'surprised', 'angry'],
         'positive_reactions'     => ['love', 'insightful', 'funny'],
         'allow_guest_reactions'  => true,
         'consent_text'           => 'I agree to receive new-post updates.',
@@ -31,6 +34,7 @@ final class Settings
         'delete_on_uninstall'    => false,
         'retention_days'         => 0,
         'hide_on_post_types'     => [],
+        'hide_on_post_ids'       => [],
     ];
 
     public const CHOICES = [
@@ -38,6 +42,7 @@ final class Settings
         'widget_design'        => self::DESIGN_CHOICES,
         'icon_style'           => self::ICON_CHOICES,
         'theme_mode'           => self::THEME_CHOICES,
+        'animation_mode'       => self::ANIMATION_CHOICES,
         'auto_insert_position' => self::POSITION_CHOICES,
     ];
 
@@ -61,11 +66,17 @@ final class Settings
         if (array_key_exists('theme_mode', $input)) {
             $clean['theme_mode'] = self::oneOf($input['theme_mode'], self::THEME_CHOICES, self::DEFAULTS['theme_mode']);
         }
+        if (array_key_exists('animation_mode', $input)) {
+            $clean['animation_mode'] = self::oneOf($input['animation_mode'], self::ANIMATION_CHOICES, self::DEFAULTS['animation_mode']);
+        }
         if (array_key_exists('auto_insert_post_types', $input)) {
             $clean['auto_insert_post_types'] = self::stringArray($input['auto_insert_post_types'], null, self::DEFAULTS['auto_insert_post_types']);
         }
         if (array_key_exists('auto_insert_position', $input)) {
             $clean['auto_insert_position'] = self::oneOf($input['auto_insert_position'], self::POSITION_CHOICES, self::DEFAULTS['auto_insert_position']);
+        }
+        if (array_key_exists('enabled_reactions', $input)) {
+            $clean['enabled_reactions'] = self::stringArray($input['enabled_reactions'], Reactions::TYPES, self::DEFAULTS['enabled_reactions']);
         }
         if (array_key_exists('positive_reactions', $input)) {
             $clean['positive_reactions'] = self::stringArray($input['positive_reactions'], Reactions::TYPES, self::DEFAULTS['positive_reactions']);
@@ -88,16 +99,19 @@ final class Settings
         if (array_key_exists('hide_on_post_types', $input)) {
             $clean['hide_on_post_types'] = self::stringArray($input['hide_on_post_types'], null, self::DEFAULTS['hide_on_post_types']);
         }
+        if (array_key_exists('hide_on_post_ids', $input)) {
+            $clean['hide_on_post_ids'] = self::intArray($input['hide_on_post_ids']);
+        }
 
         return $clean;
     }
 
-    public static function oneOf(mixed $value, array $allowed, string $default): string
+    public static function oneOf($value, array $allowed, string $default): string
     {
         return is_string($value) && in_array($value, $allowed, true) ? $value : $default;
     }
 
-    public static function intRange(mixed $value, int $min, int $max, int $default): int
+    public static function intRange($value, int $min, int $max, int $default): int
     {
         if (!is_numeric($value)) {
             return $default;
@@ -112,7 +126,7 @@ final class Settings
         return $i;
     }
 
-    public static function boolean(mixed $value, bool $default): bool
+    public static function boolean($value, bool $default): bool
     {
         if (is_bool($value)) {
             return $value;
@@ -133,7 +147,7 @@ final class Settings
     }
 
     /** @param string[]|null $allowed */
-    public static function stringArray(mixed $value, ?array $allowed, array $default): array
+    public static function stringArray($value, ?array $allowed, array $default): array
     {
         if (!is_array($value)) {
             return $default;
@@ -156,7 +170,30 @@ final class Settings
         return $clean === [] ? $default : $clean;
     }
 
-    public static function text(mixed $value, int $maxLength, string $default): string
+    /** @return list<int> */
+    public static function intArray($value): array
+    {
+        if (is_string($value)) {
+            $value = preg_split('/[\s,]+/', $value, -1, PREG_SPLIT_NO_EMPTY);
+        }
+        if (!is_array($value)) {
+            return [];
+        }
+
+        $clean = [];
+        foreach ($value as $item) {
+            if (!is_numeric($item)) {
+                continue;
+            }
+            $id = (int) $item;
+            if ($id > 0 && !in_array($id, $clean, true)) {
+                $clean[] = $id;
+            }
+        }
+        return $clean;
+    }
+
+    public static function text($value, int $maxLength, string $default): string
     {
         if (!is_string($value)) {
             return $default;

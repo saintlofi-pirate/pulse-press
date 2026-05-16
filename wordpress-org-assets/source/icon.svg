@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">PulsePress icon</title>
+  <desc id="desc">PulsePress social engagement content card logo.</desc>
+  <rect width="256" height="256" rx="56" fill="#FFFFFF"/>
+  <image href="../../resources/social_engagement_content_card_icon.png" x="-34" y="-34" width="324" height="324" preserveAspectRatio="xMidYMid slice"/>
+</svg>

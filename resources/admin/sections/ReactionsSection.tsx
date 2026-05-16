@@ -11,7 +11,8 @@ interface Props {
 
 export function ReactionsSection({ state, adminData }: Props) {
   const i18n = adminData.i18n;
-  const { settings, reactions, fieldStatus, errors, update } = state;
+  const { settings, reactions, fieldStatus, errors, update, updateMany } = state;
+  const visibleReactionOptions = settings.enabled_reactions.map((r) => ({ value: r, label: i18n.fields.reactionLabels[r] ?? r }));
 
   return (
     <section class="pulsepress-section" aria-labelledby="pulsepress-section-reactions-title">
@@ -22,10 +23,27 @@ export function ReactionsSection({ state, adminData }: Props) {
 
       <div class="pulsepress-section__body">
         <CheckboxListField
+          label={i18n.fields.enabledReactionsLabel}
+          helper={i18n.fields.enabledReactionsHelper}
+          values={settings.enabled_reactions}
+          options={reactions.map((r) => ({ value: r, label: i18n.fields.reactionLabels[r] ?? r }))}
+          onChange={(next) => {
+            const enabled = next.length === 0 ? ['love'] : next;
+            const positives = settings.positive_reactions.filter((reaction) => enabled.includes(reaction));
+            return updateMany({
+              enabled_reactions: enabled,
+              positive_reactions: positives.length === 0 ? enabled.slice(0, 1) : positives,
+            });
+          }}
+          status={<StatusPill status={fieldStatus.enabled_reactions === 'error' ? undefined : fieldStatus.enabled_reactions} i18n={i18n} />}
+          error={errors.enabled_reactions}
+        />
+
+        <CheckboxListField
           label={i18n.fields.positiveReactionsLabel}
           helper={i18n.fields.positiveReactionsHelper}
           values={settings.positive_reactions}
-          options={reactions.map((r) => ({ value: r, label: i18n.fields.reactionLabels[r] ?? r }))}
+          options={visibleReactionOptions}
           onChange={(next) => update('positive_reactions', next)}
           status={<StatusPill status={fieldStatus.positive_reactions === 'error' ? undefined : fieldStatus.positive_reactions} i18n={i18n} />}
           error={errors.positive_reactions}

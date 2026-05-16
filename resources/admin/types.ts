@@ -1,13 +1,15 @@
-import type { PulsePressData, ReactionType } from '../widget/types';
+import type { AnimationMode, PulsePressData, ReactionType, WidgetDesign } from '../widget/types';
 
 export type SettingsState = {
   count_visibility: 'always' | 'never' | 'threshold';
   count_threshold: number;
-  widget_design: 'minimal' | 'expressive';
+  widget_design: WidgetDesign;
   icon_style: 'classic' | 'emoji';
   theme_mode: 'light' | 'dark' | 'auto';
+  animation_mode: AnimationMode;
   auto_insert_post_types: string[];
   auto_insert_position: 'above' | 'below' | 'both';
+  enabled_reactions: ReactionType[];
   positive_reactions: ReactionType[];
   allow_guest_reactions: boolean;
   consent_text: string;
@@ -15,6 +17,7 @@ export type SettingsState = {
   delete_on_uninstall: boolean;
   retention_days: number;
   hide_on_post_types: string[];
+  hide_on_post_ids: number[];
 };
 
 export type SettingsChoices = {
@@ -22,8 +25,10 @@ export type SettingsChoices = {
   widget_design: string[];
   icon_style: string[];
   theme_mode: string[];
+  animation_mode: string[];
   auto_insert_position: string[];
   post_types: Record<string, string>;
+  posts: Record<string, string>;
 };
 
 export interface ExtensionTab {
@@ -124,6 +129,9 @@ export interface PulsePressAdminData {
       themeModeLabel: string;
       themeModeHelper: string;
       themeModeChoices: Record<string, string>;
+      animationModeLabel: string;
+      animationModeHelper: string;
+      animationModeChoices: Record<string, string>;
       autoInsertPostTypesLabel: string;
       autoInsertPostTypesHelper: string;
       autoInsertPositionLabel: string;
@@ -131,6 +139,13 @@ export interface PulsePressAdminData {
       autoInsertPositionChoices: Record<string, string>;
       hideOnPostTypesLabel: string;
       hideOnPostTypesHelper: string;
+      hideOnPostIdsLabel: string;
+      hideOnPostIdsHelper: string;
+      hideOnPostIdsPlaceholder: string;
+      hideOnPostIdsSelectLabel: string;
+      hideOnPostIdsSelectOption: string;
+      enabledReactionsLabel: string;
+      enabledReactionsHelper: string;
       positiveReactionsLabel: string;
       positiveReactionsHelper: string;
       reactionLabels: Record<string, string>;
@@ -175,4 +190,4 @@ declare global {
 }
 
 // Re-export front-end types so admin files can pull from one place.
-export type { PulsePressData, ReactionType };
+export type { AnimationMode, PulsePressData, ReactionType, WidgetDesign };

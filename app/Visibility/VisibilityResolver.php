@@ -15,8 +15,11 @@ final class VisibilityResolver
 
     public const MODES = [self::MODE_AUTO, self::MODE_ON, self::MODE_OFF];
 
-    public function __construct(private SettingsRepository $settings)
+    private SettingsRepository $settings;
+
+    public function __construct(SettingsRepository $settings)
     {
+        $this->settings = $settings;
     }
 
     public function mode(int $postId): string
@@ -38,6 +41,12 @@ final class VisibilityResolver
             return false;
         }
 
+        $settings = $this->settings->get();
+        $hiddenIds = is_array($settings['hide_on_post_ids'] ?? null) ? array_map('intval', $settings['hide_on_post_ids']) : [];
+        if (in_array($postId, $hiddenIds, true)) {
+            return false;
+        }
+
         $mode = $this->mode($postId);
         if ($mode === self::MODE_ON) {
             return true;
@@ -51,19 +60,19 @@ final class VisibilityResolver
             return false;
         }
 
-        $settings = $this->settings->get();
         $hideList = is_array($settings['hide_on_post_types'] ?? null) ? $settings['hide_on_post_types'] : [];
         if (in_array($postType, $hideList, true)) {
             return false;
         }
 
-        return match ($context) {
-            'block', 'shortcode' => true,
-            default              => in_array($postType, (array) ($settings['auto_insert_post_types'] ?? []), true),
-        };
+        if ($context === 'block' || $context === 'shortcode') {
+            return true;
+        }
+
+        return in_array($postType, (array) ($settings['auto_insert_post_types'] ?? []), true);
     }
 
-    public static function sanitiseMode(mixed $value): string
+    public static function sanitiseMode($value): string
     {
         if (is_string($value) && in_array($value, self::MODES, true)) {
             return $value;

@@ -18,6 +18,7 @@ export interface UseSettingsState {
   fieldStatus: Partial<Record<FieldKey, Status>>;
   errors: Partial<Record<FieldKey, string>>;
   update: <K extends FieldKey>(key: K, value: SettingsState[K]) => Promise<void>;
+  updateMany: (partial: Partial<SettingsState>) => Promise<void>;
   resetFields: (keys: FieldKey[]) => Promise<void>;
 }
 
@@ -26,6 +27,17 @@ export function useSettingsState(data: PulsePressAdminData): UseSettingsState {
   const [fieldStatus, setFieldStatus] = useState<Partial<Record<FieldKey, Status>>>({});
   const [errors, setErrors] = useState<Partial<Record<FieldKey, string>>>({});
   const timers = useRef<Map<FieldKey, number>>(new Map());
+  const settingsRef = useRef<SettingsState>(data.settings);
+  const fieldVersions = useRef<Partial<Record<FieldKey, number>>>({});
+  const versionCounter = useRef(0);
+
+  const applySettings = useCallback((updater: (current: SettingsState) => SettingsState) => {
+    setSettings((current) => {
+      const next = updater(current);
+      settingsRef.current = next;
+      return next;
+    });
+  }, []);
 
   const flashStatus = useCallback((key: FieldKey, status: Status, autoclearMs?: number) => {
     setFieldStatus((prev) => ({ ...prev, [key]: status }));
@@ -57,9 +69,17 @@ export function useSettingsState(data: PulsePressAdminData): UseSettingsState {
   const persist = useCallback(
     async (partial: Partial<SettingsState>) => {
       const keys = Object.keys(partial) as FieldKey[];
-      const previousSnapshot = settings;
+      const previousSnapshot = settingsRef.current;
+      const requestVersions: Partial<Record<FieldKey, number>> = {};
 
-      setSettings((prev) => ({ ...prev, ...partial }));
+      keys.forEach((key) => {
+        const version = versionCounter.current + 1;
+        versionCounter.current = version;
+        fieldVersions.current[key] = version;
+        requestVersions[key] = version;
+      });
+
+      applySettings((prev) => ({ ...prev, ...partial }));
       keys.forEach((k) => flashStatus(k, 'saving'));
       setErrors((prev) => {
         const next = { ...prev };
@@ -71,23 +91,48 @@ export function useSettingsState(data: PulsePressAdminData): UseSettingsState {
 
       try {
         const response = await saveSettings(data.restRoot, data.nonce, partial);
-        setSettings(response.settings);
-        keys.forEach((k) => flashStatus(k, 'saved', PILL_VISIBLE_MS));
+        const latestKeys = keys.filter((key) => fieldVersions.current[key] === requestVersions[key]);
+        if (latestKeys.length > 0) {
+          applySettings((current) => {
+            const next = { ...current };
+            latestKeys.forEach((key) => {
+              next[key] = response.settings[key];
+            });
+            return next;
+          });
+          latestKeys.forEach((k) => flashStatus(k, 'saved', PILL_VISIBLE_MS));
+        }
       } catch (err) {
-        setSettings(previousSnapshot);
         const message = err instanceof AdminRestError ? err.message : data.i18n.saveError;
-        keys.forEach((k) => {
+        const latestKeys = keys.filter((key) => fieldVersions.current[key] === requestVersions[key]);
+        if (latestKeys.length > 0) {
+          applySettings((current) => {
+            const next = { ...current };
+            latestKeys.forEach((key) => {
+              next[key] = previousSnapshot[key];
+            });
+            return next;
+          });
+        }
+        latestKeys.forEach((k) => {
           flashStatus(k, 'error', ERROR_VISIBLE_MS);
           setErrors((prev) => ({ ...prev, [k]: message }));
         });
       }
     },
-    [data.i18n.saveError, data.nonce, data.restRoot, flashStatus, settings]
+    [applySettings, data.i18n.saveError, data.nonce, data.restRoot, flashStatus]
   );
 
   const update = useCallback(
     async <K extends FieldKey>(key: K, value: SettingsState[K]) => {
       await persist({ [key]: value } as Partial<SettingsState>);
+    },
+    [persist]
+  );
+
+  const updateMany = useCallback(
+    async (partial: Partial<SettingsState>) => {
+      await persist(partial);
     },
     [persist]
   );
@@ -112,6 +157,7 @@ export function useSettingsState(data: PulsePressAdminData): UseSettingsState {
     fieldStatus,
     errors,
     update,
+    updateMany,
     resetFields,
   };
 }

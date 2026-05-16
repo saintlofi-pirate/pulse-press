@@ -1,6 +1,7 @@
 import { CheckboxListField } from '../components/fields/CheckboxListField';
 import { NumberField } from '../components/fields/NumberField';
 import { RadioField } from '../components/fields/RadioField';
+import { TextField } from '../components/fields/TextField';
 import { StatusPill } from '../components/StatusPill';
 import type { UseSettingsState } from '../hooks/useSettingsState';
 import type { PulsePressAdminData } from '../types';
@@ -13,6 +14,7 @@ interface Props {
 export function DisplaySection({ state, adminData }: Props) {
   const i18n = adminData.i18n;
   const { settings, choices, fieldStatus, errors, update } = state;
+  const excludedPostIds = settings.hide_on_post_ids ?? [];
 
   const radioOpts = (key: keyof typeof choices) =>
     (choices[key] as string[]).map((value) => ({
@@ -81,6 +83,16 @@ export function DisplaySection({ state, adminData }: Props) {
           error={errors.theme_mode}
         />
 
+        <RadioField
+          label={i18n.fields.animationModeLabel}
+          helper={i18n.fields.animationModeHelper}
+          value={settings.animation_mode}
+          options={choices.animation_mode.map((v) => ({ value: v as typeof settings.animation_mode, label: i18n.fields.animationModeChoices[v] ?? v }))}
+          onChange={(next) => update('animation_mode', next)}
+          status={<StatusPill status={fieldStatus.animation_mode === 'error' ? undefined : fieldStatus.animation_mode} i18n={i18n} />}
+          error={errors.animation_mode}
+        />
+
         <CheckboxListField
           label={i18n.fields.autoInsertPostTypesLabel}
           helper={i18n.fields.autoInsertPostTypesHelper}
@@ -110,9 +122,57 @@ export function DisplaySection({ state, adminData }: Props) {
           status={<StatusPill status={fieldStatus.hide_on_post_types === 'error' ? undefined : fieldStatus.hide_on_post_types} i18n={i18n} />}
           error={errors.hide_on_post_types}
         />
+
+        <TextField
+          label={i18n.fields.hideOnPostIdsLabel}
+          helper={i18n.fields.hideOnPostIdsHelper}
+          value={excludedPostIds.join(', ')}
+          placeholder={i18n.fields.hideOnPostIdsPlaceholder}
+          onChange={(next) => update('hide_on_post_ids', parsePostIds(next))}
+          status={<StatusPill status={fieldStatus.hide_on_post_ids === 'error' ? undefined : fieldStatus.hide_on_post_ids} i18n={i18n} />}
+          error={errors.hide_on_post_ids}
+        />
+
+        {Object.keys(choices.posts ?? {}).length > 0 && (
+          <label class="pulsepress-field">
+            <span class="pulsepress-field__head">
+              <span class="pulsepress-field__label">{i18n.fields.hideOnPostIdsSelectLabel}</span>
+            </span>
+            <select
+              class="pulsepress-input"
+              value=""
+              onChange={(event) => {
+                const value = parseInt((event.target as HTMLSelectElement).value, 10);
+                if (Number.isFinite(value) && value > 0 && !excludedPostIds.includes(value)) {
+                  void update('hide_on_post_ids', [...excludedPostIds, value]);
+                }
+              }}
+            >
+              <option value="">{i18n.fields.hideOnPostIdsSelectOption}</option>
+              {Object.entries(choices.posts)
+                .filter(([id]) => !excludedPostIds.includes(parseInt(id, 10)))
+                .map(([id, label]) => (
+                  <option key={id} value={id}>{label}</option>
+                ))}
+            </select>
+          </label>
+        )}
       </div>
     </section>
   );
+}
+
+function parsePostIds(value: string): number[] {
+  const ids: number[] = [];
+  value
+    .split(/[\s,]+/)
+    .map((part) => parseInt(part, 10))
+    .forEach((id) => {
+      if (Number.isFinite(id) && id > 0 && !ids.includes(id)) {
+        ids.push(id);
+      }
+    });
+  return ids;
 }
 
 function labelMapKey(key: string): string {
@@ -121,6 +181,7 @@ function labelMapKey(key: string): string {
     widget_design: 'widgetDesignChoices',
     icon_style: 'iconStyleChoices',
     theme_mode: 'themeModeChoices',
+    animation_mode: 'animationModeChoices',
     auto_insert_position: 'autoInsertPositionChoices',
   };
   return map[key] ?? '';

@@ -24,6 +24,7 @@ interface Props {
 const ERROR_VISIBLE_MS = 4000;
 
 export function ReactionBar({ postId, data, initialCounts, previewOnly = false }: Props) {
+  const hasValidPost = postId > 0;
   const [counts, setCounts] = useState<Record<string, number>>(() => initialCounts ?? {});
   const [activeType, setActiveType] = useState<ReactionType | null>(() => previewOnly ? null : getStoredReaction(postId));
   const [error, setError] = useState<string | null>(null);
@@ -41,7 +42,7 @@ export function ReactionBar({ postId, data, initialCounts, previewOnly = false }
   }, []);
 
   useEffect(() => {
-    if (previewOnly) return;
+    if (previewOnly || !hasValidPost) return;
     let cancelled = false;
     fetchCounts({ root: data.root, postId })
       .then((response) => {
@@ -55,7 +56,7 @@ export function ReactionBar({ postId, data, initialCounts, previewOnly = false }
     return () => {
       cancelled = true;
     };
-  }, [data.root, postId, previewOnly]);
+  }, [data.root, hasValidPost, postId, previewOnly]);
 
   useEffect(() => {
     return () => {
@@ -76,9 +77,11 @@ export function ReactionBar({ postId, data, initialCounts, previewOnly = false }
     }, ERROR_VISIBLE_MS);
   }, []);
 
+  const reactionsDisabled = data.allowGuestReactions === false && data.isLoggedIn !== true;
+
   const handleClick = useCallback(
     async (type: ReactionType) => {
-      if (pending || type === activeType) {
+      if (pending || reactionsDisabled || type === activeType || previewOnly || !hasValidPost) {
         return;
       }
 
@@ -112,7 +115,7 @@ export function ReactionBar({ postId, data, initialCounts, previewOnly = false }
         setPending(false);
       }
     },
-    [activeType, announce, counts, data, pending, postId, showError]
+    [activeType, announce, counts, data, hasValidPost, pending, postId, previewOnly, reactionsDisabled, showError]
   );
 
   const handleCaptureDone = useCallback(
@@ -137,12 +140,27 @@ export function ReactionBar({ postId, data, initialCounts, previewOnly = false }
     return buttonRefs.get(type)!;
   };
 
+  const shouldShowCount = useCallback(
+    (count: number): boolean => {
+      const visibility = data.countVisibility ?? 'always';
+      if (visibility === 'never') {
+        return false;
+      }
+      if (visibility === 'threshold') {
+        return count >= (data.countThreshold ?? 0);
+      }
+      return true;
+    },
+    [data.countThreshold, data.countVisibility]
+  );
+
   const showCapture =
     !captured &&
     !dismissed &&
     activeType !== null &&
     isPositive(activeType, data) &&
-    !pending;
+    !pending &&
+    hasValidPost;
 
   useEffect(() => {
     if (!showCapture || LazyCaptureForm !== null || previewOnly) return;
@@ -153,33 +171,78 @@ export function ReactionBar({ postId, data, initialCounts, previewOnly = false }
     return () => { cancelled = true; };
   }, [showCapture, LazyCaptureForm, previewOnly]);
 
+  const design = data.widgetDesign ?? 'minimal';
+  const maxCount = Math.max(1, ...data.reactions.map((type) => counts[type] ?? 0));
+  const totalCount = data.reactions.reduce((sum, type) => sum + (counts[type] ?? 0), 0);
+  const clapType = (data.positiveReactions[0] ?? data.reactions[0] ?? 'love') as ReactionType;
+  const clapCount = counts[clapType] ?? totalCount;
+
   return (
-    <div class="pulsepress-bar" data-loading={pending ? 'true' : 'false'}>
-      <div class="pulsepress-buttons" role="group" aria-label={data.i18n.groupLabel}>
-        {data.reactions.map((type) => {
-          const isActive = activeType === type;
-          const count = counts[type] ?? 0;
-          const ref = ensureRef(type);
-          return (
-            <button
-              key={type}
-              ref={(node: HTMLButtonElement | null) => { ref.current = node; }}
-              type="button"
-              class="pulsepress-reaction"
-              data-active={isActive ? 'true' : 'false'}
-              aria-pressed={isActive ? 'true' : 'false'}
-              aria-label={`${labelFor(type)}, ${count}${isActive ? data.i18n.activeSuffix : ''}`}
-              onClick={() => handleClick(type)}
-            >
-              <span class="pulsepress-icon" dangerouslySetInnerHTML={{ __html: iconFor(type) }} />
-              <span class="pulsepress-count" aria-hidden="true">{count}</span>
-            </button>
-          );
-        })}
-      </div>
+    <div
+      class="pulsepress-bar"
+      data-loading={pending ? 'true' : 'false'}
+      data-design={design}
+      data-icon-style={data.iconStyle ?? 'classic'}
+      data-theme={data.themeMode ?? 'auto'}
+      data-animation={data.animationMode ?? 'subtle'}
+      data-preview={previewOnly ? 'true' : 'false'}
+      data-guest-reactions={data.allowGuestReactions === false ? 'false' : 'true'}
+      data-reacted={activeType !== null ? 'true' : 'false'}
+    >
+      {design === 'clap_counter' ? (
+        <div class="pulsepress-clap" role="group" aria-label={data.i18n.groupLabel}>
+          <button
+            ref={(node: HTMLButtonElement | null) => { ensureRef(clapType).current = node; }}
+            type="button"
+            class="pulsepress-clap-button"
+            data-active={activeType === clapType ? 'true' : 'false'}
+            aria-pressed={activeType === clapType ? 'true' : 'false'}
+            aria-label={`Clap${shouldShowCount(clapCount) ? ', ' + clapCount : ''}${activeType === clapType ? data.i18n.activeSuffix : ''}`}
+            disabled={reactionsDisabled}
+            onClick={() => handleClick(clapType)}
+          >
+            <span class="pulsepress-clap-icon" aria-hidden="true">👏</span>
+            {shouldShowCount(clapCount) && <span class="pulsepress-clap-count" aria-hidden="true">{formatCompactCount(clapCount)}</span>}
+            <span class="pulsepress-clap-label" aria-hidden="true">Claps recorded</span>
+          </button>
+          <p class="pulsepress-clap-helper">Press to celebrate this post</p>
+        </div>
+      ) : (
+        <div class="pulsepress-buttons" role="group" aria-label={data.i18n.groupLabel}>
+          {data.reactions.map((type) => {
+            const isActive = activeType === type;
+            const count = counts[type] ?? 0;
+            const percent = Math.round((count / maxCount) * 100);
+            const ref = ensureRef(type);
+            return (
+              <button
+                key={type}
+                ref={(node: HTMLButtonElement | null) => { ref.current = node; }}
+                type="button"
+                class="pulsepress-reaction"
+                data-active={isActive ? 'true' : 'false'}
+                data-positive={isPositive(type, data) ? 'true' : 'false'}
+                aria-pressed={isActive ? 'true' : 'false'}
+                aria-label={`${labelFor(type)}${shouldShowCount(count) ? ', ' + count : ''}${isActive ? data.i18n.activeSuffix : ''}`}
+                disabled={reactionsDisabled}
+                onClick={() => handleClick(type)}
+                style={`--pulsepress-percent:${percent}%`}
+              >
+                <span class="pulsepress-fill" aria-hidden="true" />
+                <span class="pulsepress-icon" dangerouslySetInnerHTML={{ __html: iconFor(type, data.iconStyle ?? 'classic') }} />
+                <span class="pulsepress-label-text" aria-hidden="true">{labelFor(type)}</span>
+                {shouldShowCount(count) && <span class="pulsepress-count" aria-hidden="true">{count}</span>}
+              </button>
+            );
+          })}
+        </div>
+      )}
       <p class="pulsepress-sr-only" role="status" aria-live="polite" aria-atomic="true">{announcement}</p>
       {error !== null && (
         <p class="pulsepress-error" role="alert">{error}</p>
+      )}
+      {reactionsDisabled && (
+        <p class="pulsepress-login-required" role="status">Please sign in to react.</p>
       )}
       {showCapture && activeType !== null && (
         LazyCaptureForm !== null ? (
@@ -203,4 +266,11 @@ export function ReactionBar({ postId, data, initialCounts, previewOnly = false }
       )}
     </div>
   );
+}
+
+function formatCompactCount(count: number): string {
+  if (count >= 1000) {
+    return `${Math.round(count / 100) / 10}k`;
+  }
+  return String(count);
 }

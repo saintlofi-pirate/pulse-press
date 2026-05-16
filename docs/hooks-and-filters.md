@@ -10,7 +10,7 @@ Catalog of every PulsePress action and filter, kept in sync with the code as Ses
 | `pulsepress_client_ip` | `(string $remoteAddr, WP_REST_Request $request)` | `$_SERVER['REMOTE_ADDR']` | Session 2 | CDN/proxy override for the IP used in the dedup hash. |
 | `pulsepress_widget_enqueue` | `(bool $force)` | `false` | Session 3 | Force-enqueue the widget assets on non-singular-post views. |
 | `pulsepress_widget_auto_insert` | `(bool $default, string $postType)` | `true` for `post`, `false` otherwise | Session 3 | Auto-append the widget container to `the_content` for a given post type. |
-| `pulsepress_widget_data` | `(array $payload)` | `{root, nonce, postId, reactions, i18n}` | Session 3 | Adjust the `window.PulsePressData` payload before `wp_localize_script`. |
+| `pulsepress_widget_data` | `(array $payload)` | `{root, nonce, postId, reactions, positiveReactions, allowGuestReactions, iconStyle, themeMode, widgetDesign, animationMode, countVisibility, countThreshold, i18n}` | Session 3 | Adjust the `window.PulsePressData` payload before it is encoded into the front-end script. |
 | `pulsepress_widget_icons` | `(array $iconMap, string $preset)` | Classic SVG map | Session 6.5 (planned) | Override the icon set for a preset; lets Pro add presets without code. |
 | `pulsepress_capture_sources` | `(string[] $sources)` | `['inline', 'block', 'shortcode']` | Session 4 | Extend or restrict the allowed `source` values on `POST /capture`. |
 | `pulsepress_consent_text_version` | `(string $version)` | `'v1'` | Session 4 | The consent-text version stamp written into every new capture row. Existing rows are not retroactively updated. |
@@ -41,6 +41,7 @@ Catalog of every PulsePress action and filter, kept in sync with the code as Ses
 | `pulsepress_settings_saved` | `(array $new, array $previous)` | Session 6 | Fires after the settings repository persists changes. ESP credential sync, telemetry, cache invalidation attach here. |
 | `pulsepress_after_aggregate` | `(AggregationResult $result)` | Session 8 | Fires after every successful daily aggregation (including zero-row days). Pro hooks attach for "top post" notifications, ESP digests, etc. Skipped when aggregation fails. |
 | `pulsepress_aggregate_reactions` | `()` | Session 8 (WP-Cron event) | Daily cron that computes yesterday's site-local date and runs the aggregator. The default handler lives in `AnalyticsServiceProvider::boot()`. |
+| `pulsepress_reactions_retention_purged` | `(int $deleted, DateTimeImmutable $cutoff, int $days)` | Session 12 | Fires after the daily analytics cron deletes raw reaction rows older than the saved `retention_days` setting. Skipped when retention is `0`. |
 
 ## Naming Conventions
 

@@ -11,13 +11,13 @@ use PulsePress\Settings\SettingsRepository;
 use PulsePress\View\Manifest;
 use PulsePress\Visibility\VisibilityResolver;
 
-defined('ABSPATH') || exit;
 final class AdminServiceProvider extends ServiceProvider
 {
     public const SCRIPT_HANDLE = 'pulsepress-admin';
     public const STYLE_HANDLE  = 'pulsepress-admin';
     public const ENTRY         = 'resources/admin/index.tsx';
     public const PAGE_HOOK     = 'settings_page_pulsepress';
+    public const LEGACY_PAGE_HOOK = 'settings_page_pulse-press';
 
     public function register(): void
     {
@@ -37,12 +37,12 @@ final class AdminServiceProvider extends ServiceProvider
 
     public function renderPage(): void
     {
-        echo '<div class="wrap"><div id="pulsepress-admin">' . esc_html__('Loading…', 'pulse-press') . '</div></div>';
+        echo '<div class="wrap"><div id="pulsepress-admin">' . esc_html__('Loading…', 'pulsepress') . '</div></div>';
     }
 
     public function maybeEnqueueAssets(string $hookSuffix): void
     {
-        if ($hookSuffix !== self::PAGE_HOOK) {
+        if (!in_array($hookSuffix, [self::PAGE_HOOK, self::LEGACY_PAGE_HOOK], true)) {
             return;
         }
 
@@ -72,13 +72,14 @@ final class AdminServiceProvider extends ServiceProvider
         wp_register_script(self::SCRIPT_HANDLE, $entryUrl, $depHandles, PULSEPRESS_VERSION, true);
 
         $moduleHandles = array_merge($depHandles, [self::SCRIPT_HANDLE]);
-        if (!empty($GLOBALS['pulsepress_module_handles_admin'])) {
-            $GLOBALS['pulsepress_module_handles_admin'] = array_merge($GLOBALS['pulsepress_module_handles_admin'], $moduleHandles);
+        $globalKey     = 'pulsepress_module_handles_admin';
+        if (!empty($GLOBALS[$globalKey])) {
+            $GLOBALS[$globalKey] = array_merge($GLOBALS[$globalKey], $moduleHandles);
         } else {
-            $GLOBALS['pulsepress_module_handles_admin'] = $moduleHandles;
-            add_filter('script_loader_tag', static function (string $tag, string $handle) {
-                $registered = $GLOBALS['pulsepress_module_handles_admin'] ?? [];
-                if (in_array($handle, $registered, true) && !str_contains($tag, ' type="module"')) {
+            $GLOBALS[$globalKey] = $moduleHandles;
+            add_filter('script_loader_tag', static function (string $tag, string $handle) use ($globalKey) {
+                $registered = $GLOBALS[$globalKey] ?? [];
+                if (in_array($handle, $registered, true) && strpos($tag, ' type="module"') === false) {
                     $tag = preg_replace('/<script /', '<script type="module" ', $tag, 1);
                 }
                 return $tag;
@@ -90,6 +91,7 @@ final class AdminServiceProvider extends ServiceProvider
 
         $choices               = Settings::CHOICES;
         $choices['post_types'] = $this->publicPostTypeMap();
+        $choices['posts']      = $this->publicContentMap();
 
         $i18n = $this->i18n();
 
@@ -180,139 +182,198 @@ final class AdminServiceProvider extends ServiceProvider
         return $map;
     }
 
+    /** @return array<string, string> */
+    private function publicContentMap(): array
+    {
+        if (!function_exists('get_posts')) {
+            return [];
+        }
+
+        $items = get_posts([
+            'post_type'      => array_keys($this->publicPostTypeMap()),
+            'post_status'    => 'publish',
+            'posts_per_page' => 100,
+            'orderby'        => 'date',
+            'order'          => 'DESC',
+            'fields'         => 'ids',
+        ]);
+
+        $map = [];
+        foreach ($items as $postId) {
+            $id = (int) $postId;
+            if ($id <= 0) {
+                continue;
+            }
+            $title = get_the_title($id);
+            $type  = get_post_type($id);
+            $map[(string) $id] = sprintf(
+                '%s #%d%s',
+                $title !== '' ? $title : __('(no title)', 'pulsepress'),
+                $id,
+                is_string($type) && $type !== '' ? ' · ' . $type : ''
+            );
+        }
+
+        return $map;
+    }
+
     /** @return array<string, mixed> */
     private function i18n(): array
     {
         return [
-            'pageTitle'           => __('Reactions, captures, and analytics for your posts.', 'pulse-press'),
-            'saved'               => __('Saved', 'pulse-press'),
-            'saving'              => __('Saving…', 'pulse-press'),
-            'saveError'           => __('Could not save. Please try again.', 'pulse-press'),
-            'resetSection'        => __('Reset to defaults', 'pulse-press'),
-            'livePreviewLabel'    => __('Live preview', 'pulse-press'),
-            'livePreviewHelper'   => __('A live, read-only preview of how your widget will look on a published post.', 'pulse-press'),
-            'livePreviewReadOnly' => __('Preview is read-only.', 'pulse-press'),
+            'pageTitle'           => __('Reactions, captures, and analytics for your posts.', 'pulsepress'),
+            'saved'               => __('Saved', 'pulsepress'),
+            'saving'              => __('Saving…', 'pulsepress'),
+            'saveError'           => __('Could not save. Please try again.', 'pulsepress'),
+            'resetSection'        => __('Reset to defaults', 'pulsepress'),
+            'livePreviewLabel'    => __('Live preview', 'pulsepress'),
+            'livePreviewHelper'   => __('A live, read-only preview of how your widget will look on a published post.', 'pulsepress'),
+            'livePreviewReadOnly' => __('Preview is read-only.', 'pulsepress'),
             'tabs' => [
-                'display'   => __('Display', 'pulse-press'),
-                'analytics' => __('Analytics', 'pulse-press'),
-                'reactions' => __('Reactions', 'pulse-press'),
-                'capture'   => __('Email capture', 'pulse-press'),
-                'privacy'   => __('Privacy', 'pulse-press'),
+                'display'   => __('Display', 'pulsepress'),
+                'analytics' => __('Analytics', 'pulsepress'),
+                'reactions' => __('Reactions', 'pulsepress'),
+                'capture'   => __('Email capture', 'pulsepress'),
+                'privacy'   => __('Privacy', 'pulsepress'),
             ],
             'sections' => [
-                'displayTitle'    => __('Display', 'pulse-press'),
-                'displayHelper'   => __('Choose how and where the reaction widget appears on your site.', 'pulse-press'),
-                'reactionsTitle'  => __('Reactions', 'pulse-press'),
-                'reactionsHelper' => __('Pick which reactions trigger the email capture prompt and who can react.', 'pulse-press'),
-                'captureTitle'    => __('Email capture', 'pulse-press'),
-                'captureHelper'   => __('Customise the consent statement and decide how long to keep captures.', 'pulse-press'),
-                'privacyTitle'    => __('Privacy', 'pulse-press'),
-                'privacyHelper'   => __('Set how PulsePress handles data when the plugin is removed.', 'pulse-press'),
-                'analyticsTitle'  => __('Analytics', 'pulse-press'),
-                'analyticsHelper' => __('Reactions and captures over the selected window. Defaults to the trailing 30 days.', 'pulse-press'),
+                'displayTitle'    => __('Display', 'pulsepress'),
+                'displayHelper'   => __('Choose how and where the reaction widget appears on your site.', 'pulsepress'),
+                'reactionsTitle'  => __('Reactions', 'pulsepress'),
+                'reactionsHelper' => __('Pick which reactions appear in the widget, which ones trigger email capture, and who can react.', 'pulsepress'),
+                'captureTitle'    => __('Email capture', 'pulsepress'),
+                'captureHelper'   => __('Customise the consent statement and decide how long to keep captures.', 'pulsepress'),
+                'privacyTitle'    => __('Privacy', 'pulsepress'),
+                'privacyHelper'   => __('Set how PulsePress handles data when the plugin is removed.', 'pulsepress'),
+                'analyticsTitle'  => __('Analytics', 'pulsepress'),
+                'analyticsHelper' => __('Reactions and captures over the selected window. Defaults to the trailing 30 days.', 'pulsepress'),
             ],
             'extension' => [
-                'fallback'    => __('This section is provided by another plugin that didn’t load. Try refreshing the page.', 'pulse-press'),
-                'sectionLabel' => __('Extension region', 'pulse-press'),
+                'fallback'    => __('This section is provided by another plugin that didn’t load. Try refreshing the page.', 'pulsepress'),
+                'sectionLabel' => __('Extension region', 'pulsepress'),
             ],
             'toggle' => [
-                'on'  => __('On', 'pulse-press'),
-                'off' => __('Off', 'pulse-press'),
+                'on'  => __('On', 'pulsepress'),
+                'off' => __('Off', 'pulsepress'),
             ],
             'captureExport' => [
-                'label'           => __('Export captures', 'pulse-press'),
-                'helper'          => __('Download every saved email + consent metadata as a CSV file. Anyone with WordPress admin access can run an export.', 'pulse-press'),
-                'preparing'       => __('Preparing…', 'pulse-press'),
-                'downloadStarted' => __('Download started.', 'pulse-press'),
-                'error'           => __('Could not export captures. Please try again.', 'pulse-press'),
-                'retry'           => __('Retry', 'pulse-press'),
+                'label'           => __('Export captures', 'pulsepress'),
+                'helper'          => __('Download every saved email + consent metadata as a CSV file. Anyone with WordPress admin access can run an export.', 'pulsepress'),
+                'preparing'       => __('Preparing…', 'pulsepress'),
+                'downloadStarted' => __('Download started.', 'pulsepress'),
+                'error'           => __('Could not export captures. Please try again.', 'pulsepress'),
+                'retry'           => __('Retry', 'pulsepress'),
             ],
             'analytics' => [
-                'totalReactionsLabel'      => __('Total reactions', 'pulse-press'),
-                'totalReactionsHelper'     => __('All reactions on every post in this window.', 'pulse-press'),
-                'totalCapturesLabel'       => __('Email captures', 'pulse-press'),
-                'totalCapturesHelper'      => __('Consented emails saved through the inline form.', 'pulse-press'),
-                'sentimentRateLabel'       => __('Sentiment', 'pulse-press'),
-                'sentimentRateHelper'     => __('Positive reactions divided by total reactions.', 'pulse-press'),
-                'captureRateLabel'         => __('Capture rate', 'pulse-press'),
-                'captureRateHelper'        => __('Captures divided by positive reactions (upper-bound denominator).', 'pulse-press'),
-                'topPostsCaption'          => __('Top posts in the selected window', 'pulse-press'),
+                'totalReactionsLabel'      => __('Total reactions', 'pulsepress'),
+                'totalReactionsHelper'     => __('All reactions on every post in this window.', 'pulsepress'),
+                'totalCapturesLabel'       => __('Email captures', 'pulsepress'),
+                'totalCapturesHelper'      => __('Consented emails saved through the inline form.', 'pulsepress'),
+                'sentimentRateLabel'       => __('Sentiment', 'pulsepress'),
+                'sentimentRateHelper'     => __('Positive reactions divided by total reactions.', 'pulsepress'),
+                'captureRateLabel'         => __('Capture rate', 'pulsepress'),
+                'captureRateHelper'        => __('Captures divided by positive reactions (upper-bound denominator).', 'pulsepress'),
+                'topPostsCaption'          => __('Top posts in the selected window', 'pulsepress'),
                 'topPostsColumns'          => [
-                    'post'     => __('Post', 'pulse-press'),
-                    'total'    => __('Total reactions', 'pulse-press'),
-                    'positive' => __('Positive reactions', 'pulse-press'),
-                    'captures' => __('Captures', 'pulse-press'),
+                    'post'     => __('Post', 'pulsepress'),
+                    'total'    => __('Total reactions', 'pulsepress'),
+                    'positive' => __('Positive reactions', 'pulsepress'),
+                    'captures' => __('Captures', 'pulsepress'),
                 ],
-                'sentimentInsightTemplate' => __('Your readers are mostly reacting with {type} ({percent}% positive overall).', 'pulse-press'),
-                'sentimentInsightFallback' => __('Sentiment will appear once you have a few reactions to summarise.', 'pulse-press'),
-                'chartLabel'               => __('Daily reaction counts over the selected window.', 'pulse-press'),
-                'emptyState'               => __('No reactions yet — visit a post and react to see numbers here.', 'pulse-press'),
-                'loadingState'             => __('Loading analytics…', 'pulse-press'),
-                'errorState'               => __('Could not load analytics. Please try again.', 'pulse-press'),
-                'retry'                    => __('Retry', 'pulse-press'),
-                'clampedNotice'            => __('Window trimmed to fit the analytics performance ceiling. Adjust via the pulsepress_analytics_max_days filter to allow longer ranges.', 'pulse-press'),
-                'deletedPost'              => __('(deleted post)', 'pulse-press'),
+                'sentimentInsightTemplate' => __('Your readers are mostly reacting with {type} ({percent}% positive overall).', 'pulsepress'),
+                'sentimentInsightFallback' => __('Sentiment will appear once you have a few reactions to summarise.', 'pulsepress'),
+                'chartLabel'               => __('Daily reaction counts over the selected window.', 'pulsepress'),
+                'emptyState'               => __('No reactions yet — visit a post and react to see numbers here.', 'pulsepress'),
+                'loadingState'             => __('Loading analytics…', 'pulsepress'),
+                'errorState'               => __('Could not load analytics. Please try again.', 'pulsepress'),
+                'retry'                    => __('Retry', 'pulsepress'),
+                'clampedNotice'            => __('Window trimmed to fit the analytics performance ceiling. Adjust via the pulsepress_analytics_max_days filter to allow longer ranges.', 'pulsepress'),
+                'deletedPost'              => __('(deleted post)', 'pulsepress'),
             ],
             'fields' => [
-                'countVisibilityLabel'      => __('Count visibility', 'pulse-press'),
-                'countVisibilityHelper'     => __('Show the reaction counts to visitors or hide them.', 'pulse-press'),
+                'countVisibilityLabel'      => __('Count visibility', 'pulsepress'),
+                'countVisibilityHelper'     => __('Show the reaction counts to visitors or hide them.', 'pulsepress'),
                 'countVisibilityChoices'    => [
-                    'always'    => __('Always show counts', 'pulse-press'),
-                    'never'     => __('Never show counts', 'pulse-press'),
-                    'threshold' => __('Show only after a threshold', 'pulse-press'),
+                    'always'    => __('Always show counts', 'pulsepress'),
+                    'never'     => __('Never show counts', 'pulsepress'),
+                    'threshold' => __('Show only after a threshold', 'pulsepress'),
                 ],
-                'countThresholdLabel'       => __('Threshold', 'pulse-press'),
-                'countThresholdHelper'      => __('Counts appear once a reaction reaches this number.', 'pulse-press'),
-                'widgetDesignLabel'         => __('Widget design', 'pulse-press'),
-                'widgetDesignHelper'        => __('Two designs ship in Free; Pro adds more.', 'pulse-press'),
+                'countThresholdLabel'       => __('Threshold', 'pulsepress'),
+                'countThresholdHelper'      => __('Counts appear once a reaction reaches this number.', 'pulsepress'),
+                'widgetDesignLabel'         => __('Widget design', 'pulsepress'),
+                'widgetDesignHelper'        => __('Includes Stitch-inspired layouts: clean bars, progress split, vertical rail, and clap counter patterns.', 'pulsepress'),
                 'widgetDesignChoices'       => [
-                    'minimal'    => __('Minimal', 'pulse-press'),
-                    'expressive' => __('Expressive', 'pulse-press'),
+                    'minimal'        => __('Minimal', 'pulsepress'),
+                    'expressive'     => __('Expressive', 'pulsepress'),
+                    'minimalist'     => __('Minimalist', 'pulsepress'),
+                    'subtle_text'    => __('Subtle text', 'pulsepress'),
+                    'progress_split' => __('Progress split', 'pulsepress'),
+                    'vertical_rail'  => __('Vertical rail', 'pulsepress'),
+                    'clap_counter'   => __('Clap counter', 'pulsepress'),
                 ],
-                'iconStyleLabel'            => __('Icon style', 'pulse-press'),
-                'iconStyleHelper'           => __('Choose between hand-curated outline icons or emoji glyphs.', 'pulse-press'),
+                'iconStyleLabel'            => __('Icon style', 'pulsepress'),
+                'iconStyleHelper'           => __('Choose between hand-curated outline icons or emoji glyphs.', 'pulsepress'),
                 'iconStyleChoices'          => [
-                    'classic' => __('Classic', 'pulse-press'),
-                    'emoji'   => __('Emoji', 'pulse-press'),
+                    'classic' => __('Classic', 'pulsepress'),
+                    'emoji'   => __('Emoji', 'pulsepress'),
                 ],
-                'themeModeLabel'            => __('Theme mode', 'pulse-press'),
-                'themeModeHelper'           => __('Follow the visitor system preference or force a mode.', 'pulse-press'),
+                'themeModeLabel'            => __('Theme mode', 'pulsepress'),
+                'themeModeHelper'           => __('Follow the visitor system preference or force a mode.', 'pulsepress'),
                 'themeModeChoices'          => [
-                    'light' => __('Light', 'pulse-press'),
-                    'dark'  => __('Dark', 'pulse-press'),
-                    'auto'  => __('Match system', 'pulse-press'),
+                    'light' => __('Light', 'pulsepress'),
+                    'dark'  => __('Dark', 'pulsepress'),
+                    'auto'  => __('Match system', 'pulsepress'),
                 ],
-                'autoInsertPostTypesLabel'  => __('Auto-insert on', 'pulse-press'),
-                'autoInsertPostTypesHelper' => __('Where the widget appears automatically.', 'pulse-press'),
-                'hideOnPostTypesLabel'      => __('Never show on', 'pulse-press'),
-                'hideOnPostTypesHelper'     => __('Suppress the widget on these post types, even when placed via block or shortcode. Per-post overrides set to "Always show" still win.', 'pulse-press'),
-                'autoInsertPositionLabel'   => __('Position', 'pulse-press'),
-                'autoInsertPositionHelper'  => __('Above the post body, below it, or both.', 'pulse-press'),
+                'animationModeLabel'        => __('Animation', 'pulsepress'),
+                'animationModeHelper'       => __('Control the amount of motion used when visitors press a reaction.', 'pulsepress'),
+                'animationModeChoices'      => [
+                    'none'       => __('None', 'pulsepress'),
+                    'subtle'     => __('Subtle', 'pulsepress'),
+                    'spring'     => __('Spring', 'pulsepress'),
+                    'burst'      => __('Burst', 'pulsepress'),
+                    'float'      => __('Float', 'pulsepress'),
+                    'glow'       => __('Glow', 'pulsepress'),
+                    'count_bump' => __('Count bump', 'pulsepress'),
+                    'trail'      => __('Trail', 'pulsepress'),
+                ],
+                'autoInsertPostTypesLabel'  => __('Auto-insert on', 'pulsepress'),
+                'autoInsertPostTypesHelper' => __('Where the widget appears automatically.', 'pulsepress'),
+                'hideOnPostTypesLabel'      => __('Never show on', 'pulsepress'),
+                'hideOnPostTypesHelper'     => __('Suppress the widget on these post types, even when placed via block or shortcode. Per-post overrides set to "Always show" still win.', 'pulsepress'),
+                'hideOnPostIdsLabel'        => __('Never show on posts/pages', 'pulsepress'),
+                'hideOnPostIdsHelper'       => __('Enter comma-separated post IDs, or choose a published post/page below. These IDs always suppress the widget.', 'pulsepress'),
+                'hideOnPostIdsPlaceholder'  => __('Example: 12, 48, 103', 'pulsepress'),
+                'hideOnPostIdsSelectLabel'  => __('Add by title', 'pulsepress'),
+                'hideOnPostIdsSelectOption' => __('Select a post or page…', 'pulsepress'),
+                'autoInsertPositionLabel'   => __('Position', 'pulsepress'),
+                'autoInsertPositionHelper'  => __('Above the post body, below it, or both.', 'pulsepress'),
                 'autoInsertPositionChoices' => [
-                    'above' => __('Above content', 'pulse-press'),
-                    'below' => __('Below content', 'pulse-press'),
-                    'both'  => __('Above and below', 'pulse-press'),
+                    'above' => __('Above content', 'pulsepress'),
+                    'below' => __('Below content', 'pulsepress'),
+                    'both'  => __('Above and below', 'pulsepress'),
                 ],
-                'positiveReactionsLabel'    => __('Positive reactions', 'pulse-press'),
-                'positiveReactionsHelper'   => __('These reactions trigger the email capture prompt.', 'pulse-press'),
+                'enabledReactionsLabel'     => __('Visible reactions', 'pulsepress'),
+                'enabledReactionsHelper'    => __('Only selected reactions appear on the frontend widget.', 'pulsepress'),
+                'positiveReactionsLabel'    => __('Positive reactions', 'pulsepress'),
+                'positiveReactionsHelper'   => __('These reactions trigger the email capture prompt.', 'pulsepress'),
                 'reactionLabels'            => [
-                    'love'       => __('Love', 'pulse-press'),
-                    'insightful' => __('Insightful', 'pulse-press'),
-                    'funny'      => __('Funny', 'pulse-press'),
-                    'sad'        => __('Sad', 'pulse-press'),
-                    'surprised'  => __('Surprised', 'pulse-press'),
-                    'angry'      => __('Angry', 'pulse-press'),
+                    'love'       => __('Love', 'pulsepress'),
+                    'insightful' => __('Insightful', 'pulsepress'),
+                    'funny'      => __('Funny', 'pulsepress'),
+                    'sad'        => __('Sad', 'pulsepress'),
+                    'surprised'  => __('Surprised', 'pulsepress'),
+                    'angry'      => __('Angry', 'pulsepress'),
                 ],
-                'allowGuestReactionsLabel'  => __('Allow guest reactions', 'pulse-press'),
-                'allowGuestReactionsHelper' => __('When off, visitors must sign in before reacting.', 'pulse-press'),
-                'consentTextLabel'          => __('Consent statement', 'pulse-press'),
-                'consentTextHelper'         => __('Shown next to the email capture consent checkbox.', 'pulse-press'),
-                'consentVersionLabel'       => __('Consent version', 'pulse-press'),
-                'consentVersionHelper'      => __('Bump this whenever you change the consent text.', 'pulse-press'),
-                'retentionDaysLabel'        => __('Reaction retention (days)', 'pulse-press'),
-                'retentionDaysHelper'       => __('Set to 0 to keep reactions indefinitely.', 'pulse-press'),
-                'deleteOnUninstallLabel'    => __('Delete data on uninstall', 'pulse-press'),
-                'deleteOnUninstallHelper'   => __('When on, PulsePress drops its tables and options when the plugin is deleted. Default is to keep your data.', 'pulse-press'),
+                'allowGuestReactionsLabel'  => __('Allow guest reactions', 'pulsepress'),
+                'allowGuestReactionsHelper' => __('When off, visitors must sign in before reacting.', 'pulsepress'),
+                'consentTextLabel'          => __('Consent statement', 'pulsepress'),
+                'consentTextHelper'         => __('Shown next to the email capture consent checkbox.', 'pulsepress'),
+                'consentVersionLabel'       => __('Consent version', 'pulsepress'),
+                'consentVersionHelper'      => __('Bump this whenever you change the consent text.', 'pulsepress'),
+                'retentionDaysLabel'        => __('Reaction retention (days)', 'pulsepress'),
+                'retentionDaysHelper'       => __('Set to 0 to keep reactions indefinitely.', 'pulsepress'),
+                'deleteOnUninstallLabel'    => __('Delete data on uninstall', 'pulsepress'),
+                'deleteOnUninstallHelper'   => __('When on, PulsePress drops its tables and options when the plugin is deleted. Default is to keep your data.', 'pulsepress'),
             ],
         ];
     }
