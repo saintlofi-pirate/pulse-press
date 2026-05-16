@@ -1,5 +1,5 @@
 === PulsePress ===
-Contributors: pulsepress
+Contributors: saintlofi
 Tags: reactions, email capture, analytics, sentiment, engagement
 Requires at least: 6.2
 Tested up to: 6.9

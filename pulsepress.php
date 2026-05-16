@@ -1,10 +1,11 @@
 <?php
 /**
  * Plugin Name:       PulsePress
- * Plugin URI:        https://pulsepress.dev
+ * Plugin URI:        https://github.com/saintlofi-pirate/pulse-press
  * Description:       Reactions, inline email capture, and analytics — privacy-first and built for WordPress.
  * Version:           0.1.0
- * Author:            PulsePress
+ * Author:            SaintLofi
+ * Author URI:        https://saintlofi-pirate.github.io/
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       pulse-press
