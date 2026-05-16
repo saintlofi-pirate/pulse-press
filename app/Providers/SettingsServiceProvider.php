@@ -8,10 +8,11 @@ use PulsePress\Http\Controllers\SettingsController;
 use PulsePress\Settings\Settings;
 use PulsePress\Settings\SettingsRepository;
 
+defined('ABSPATH') || exit;
 final class SettingsServiceProvider extends ServiceProvider
 {
     public const REST_NAMESPACE = 'pulsepress/v1';
-    public const ADMIN_SLUG     = 'pulsepress';
+    public const ADMIN_SLUG     = 'pulse-press';
 
     public function register(): void
     {
@@ -59,8 +60,8 @@ final class SettingsServiceProvider extends ServiceProvider
         }
 
         add_options_page(
-            __('PulsePress', 'pulsepress'),
-            __('PulsePress', 'pulsepress'),
+            __('PulsePress', 'pulse-press'),
+            __('PulsePress', 'pulse-press'),
             'manage_options',
             self::ADMIN_SLUG,
             $renderCallback
@@ -69,7 +70,7 @@ final class SettingsServiceProvider extends ServiceProvider
 
     public function renderAdminPage(): void
     {
-        echo '<div class="wrap"><div id="pulsepress-admin">' . esc_html__('Loading…', 'pulsepress') . '</div></div>';
+        echo '<div class="wrap"><div id="pulsepress-admin">' . esc_html__('Loading…', 'pulse-press') . '</div></div>';
     }
 
     public function filterPositiveReactions(mixed $value): array

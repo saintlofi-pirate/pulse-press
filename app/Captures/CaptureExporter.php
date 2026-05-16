@@ -21,35 +21,35 @@ final class CaptureExporter
     {
         return [
             'consent_at' => [
-                'label'  => __('Consent timestamp', 'pulsepress'),
+                'label'  => __('Consent timestamp', 'pulse-press'),
                 'render' => static fn (array $row): string => (string) ($row['consent_at'] ?? ''),
             ],
             'email' => [
-                'label'  => __('Email', 'pulsepress'),
+                'label'  => __('Email', 'pulse-press'),
                 'render' => static fn (array $row): string => (string) ($row['email'] ?? ''),
             ],
             'post_id' => [
-                'label'  => __('Post ID', 'pulsepress'),
+                'label'  => __('Post ID', 'pulse-press'),
                 'render' => static fn (array $row): string => (string) ($row['post_id'] ?? ''),
             ],
             'post_title' => [
-                'label'  => __('Post title', 'pulsepress'),
+                'label'  => __('Post title', 'pulse-press'),
                 'render' => static fn (array $row): string => (string) ($row['_post_title'] ?? ''),
             ],
             'reaction_type' => [
-                'label'  => __('Reaction', 'pulsepress'),
+                'label'  => __('Reaction', 'pulse-press'),
                 'render' => static fn (array $row): string => (string) ($row['reaction_type'] ?? ''),
             ],
             'consent_text_version' => [
-                'label'  => __('Consent version', 'pulsepress'),
+                'label'  => __('Consent version', 'pulse-press'),
                 'render' => static fn (array $row): string => (string) ($row['consent_text_version'] ?? ''),
             ],
             'source' => [
-                'label'  => __('Source', 'pulsepress'),
+                'label'  => __('Source', 'pulse-press'),
                 'render' => static fn (array $row): string => (string) ($row['source'] ?? ''),
             ],
             'created_at' => [
-                'label'  => __('Captured at', 'pulsepress'),
+                'label'  => __('Captured at', 'pulse-press'),
                 'render' => static fn (array $row): string => (string) ($row['created_at'] ?? ''),
             ],
         ];
@@ -83,10 +83,12 @@ final class CaptureExporter
 
         while (true) {
             $sql = $this->wpdb->prepare(
-                "SELECT * FROM {$table} ORDER BY id ASC LIMIT %d OFFSET %d",
+                'SELECT * FROM %i ORDER BY id ASC LIMIT %d OFFSET %d',
+                $table,
                 $chunk,
                 $offset
             );
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Prepared above with a table identifier placeholder.
             $rows = $this->wpdb->get_results($sql, ARRAY_A);
             if (!is_array($rows) || $rows === []) {
                 break;
@@ -125,7 +127,7 @@ final class CaptureExporter
             $label  = $entry['label']  ?? null;
             $render = $entry['render'] ?? null;
             if (!is_string($label) || !is_callable($render)) {
-                error_log(sprintf('[PulsePress] export column "%s" skipped: invalid label or render.', $key));
+                do_action('pulsepress_export_column_skipped', $key, $entry);
                 continue;
             }
             $clean[$key] = ['label' => $label, 'render' => $render];
@@ -174,7 +176,7 @@ final class CaptureExporter
             return $cache[$postId];
         }
         $title = get_the_title($postId);
-        $resolved = is_string($title) && $title !== '' ? $title : __('(deleted post)', 'pulsepress');
+        $resolved = is_string($title) && $title !== '' ? $title : __('(deleted post)', 'pulse-press');
         $cache[$postId] = $resolved;
         return $resolved;
     }

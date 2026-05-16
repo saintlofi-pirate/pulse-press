@@ -9,6 +9,7 @@ use PulsePress\Reactions\ReactionRepository;
 use PulsePress\Reactions\Reactions;
 use PulsePress\Settings\SettingsRepository;
 
+defined('ABSPATH') || exit;
 final class RestServiceProvider extends ServiceProvider
 {
     public const REST_NAMESPACE = 'pulsepress/v1';
@@ -49,7 +50,7 @@ final class RestServiceProvider extends ServiceProvider
                     if (!$allowGuests && !is_user_logged_in()) {
                         return new \WP_Error(
                             'pulsepress_login_required',
-                            __('Please sign in to react.', 'pulsepress'),
+                            __('Please sign in to react.', 'pulse-press'),
                             ['status' => 401]
                         );
                     }

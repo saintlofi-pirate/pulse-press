@@ -6,6 +6,7 @@ namespace PulsePress\Admin;
 use PulsePress\Visibility\VisibilityResolver;
 use WP_Post;
 
+defined('ABSPATH') || exit;
 final class WidgetStateMetaBox
 {
     public const META_BOX_ID    = 'pulsepress-widget-state';
@@ -39,7 +40,7 @@ final class WidgetStateMetaBox
         foreach ($this->applicablePostTypes() as $postType) {
             add_meta_box(
                 self::META_BOX_ID,
-                __('PulsePress reactions', 'pulsepress'),
+                __('PulsePress reactions', 'pulse-press'),
                 [$this, 'render'],
                 $postType,
                 'side',
@@ -58,21 +59,21 @@ final class WidgetStateMetaBox
 
         $options = [
             VisibilityResolver::MODE_AUTO => [
-                'label' => __('Auto (follow global settings)', 'pulsepress'),
-                'help'  => __('Use the site-wide auto-insert configuration.', 'pulsepress'),
+                'label' => __('Auto (follow global settings)', 'pulse-press'),
+                'help'  => __('Use the site-wide auto-insert configuration.', 'pulse-press'),
             ],
             VisibilityResolver::MODE_ON => [
-                'label' => __('Always show', 'pulsepress'),
-                'help'  => __('Force the widget to render on this post, even if its post type is excluded globally.', 'pulsepress'),
+                'label' => __('Always show', 'pulse-press'),
+                'help'  => __('Force the widget to render on this post, even if its post type is excluded globally.', 'pulse-press'),
             ],
             VisibilityResolver::MODE_OFF => [
-                'label' => __('Always hide', 'pulsepress'),
-                'help'  => __('Suppress the widget on this post, including via block or shortcode.', 'pulsepress'),
+                'label' => __('Always hide', 'pulse-press'),
+                'help'  => __('Suppress the widget on this post, including via block or shortcode.', 'pulse-press'),
             ],
         ];
 
         echo '<fieldset class="pulsepress-meta-box">';
-        echo '<legend class="screen-reader-text">' . esc_html__('PulsePress widget visibility', 'pulsepress') . '</legend>';
+        echo '<legend class="screen-reader-text">' . esc_html__('PulsePress widget visibility', 'pulse-press') . '</legend>';
         foreach ($options as $value => $entry) {
             $id = 'pulsepress-state-' . $value;
             printf(
@@ -92,7 +93,11 @@ final class WidgetStateMetaBox
         if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
             return;
         }
-        if (!isset($_POST[self::NONCE_FIELD]) || !wp_verify_nonce((string) $_POST[self::NONCE_FIELD], self::NONCE_ACTION)) {
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized immediately after unslashing.
+        $rawNonce = isset($_POST[self::NONCE_FIELD]) ? wp_unslash($_POST[self::NONCE_FIELD]) : '';
+        $nonce    = is_string($rawNonce) ? sanitize_text_field($rawNonce) : '';
+
+        if ($nonce === '' || !wp_verify_nonce($nonce, self::NONCE_ACTION)) {
             return;
         }
         if (!current_user_can('edit_post', $postId)) {
@@ -102,7 +107,9 @@ final class WidgetStateMetaBox
             return;
         }
 
-        $value = VisibilityResolver::sanitiseMode((string) wp_unslash($_POST['pulsepress_widget_state']));
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized immediately after unslashing.
+        $rawValue = wp_unslash($_POST['pulsepress_widget_state']);
+        $value    = VisibilityResolver::sanitiseMode(is_string($rawValue) ? sanitize_key($rawValue) : '');
         update_post_meta($postId, VisibilityResolver::META_KEY, $value);
     }
 

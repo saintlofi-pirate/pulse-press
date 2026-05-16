@@ -4,6 +4,7 @@
 /.distignore
 /.idea
 /.vscode
+/.claude
 /.DS_Store
 /.phpunit.result.cache
 /.phpunit.cache
@@ -11,6 +12,7 @@
 /tests
 /openspec
 /docs
+/AGENTS.md
 /phpunit.xml
 /playwright.config.ts
 /vite.config.js
@@ -18,6 +20,8 @@
 /package-lock.json
 /composer.lock
 /resources/widget
+/resources/social_engagement_content_card_icon.png
+/wordpress-org-assets
 /test-results
 /playwright-report
 /coverage

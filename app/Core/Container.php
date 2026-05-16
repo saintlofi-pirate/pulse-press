@@ -67,18 +67,19 @@ class Container
             return $concrete($this);
         }
 
+        // phpcs:disable WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception messages are not rendered output.
         if (!is_string($concrete) || !class_exists($concrete)) {
-            throw new RuntimeException(sprintf('Target [%s] is not buildable.', is_string($concrete) ? $concrete : gettype($concrete)));
+            throw new RuntimeException(sprintf('Target [%s] is not buildable.', $this->exceptionFragment(is_string($concrete) ? $concrete : gettype($concrete))));
         }
 
         try {
             $reflector = new ReflectionClass($concrete);
         } catch (ReflectionException $e) {
-            throw new RuntimeException(sprintf('Cannot reflect [%s]: %s', $concrete, $e->getMessage()), 0, $e);
+            throw new RuntimeException(sprintf('Cannot reflect [%s]: %s', $this->exceptionFragment($concrete), $this->exceptionFragment($e->getMessage())), 0, $e);
         }
 
         if (!$reflector->isInstantiable()) {
-            throw new RuntimeException(sprintf('Class [%s] is not instantiable.', $concrete));
+            throw new RuntimeException(sprintf('Class [%s] is not instantiable.', $this->exceptionFragment($concrete)));
         }
 
         $constructor = $reflector->getConstructor();
@@ -103,11 +104,17 @@ class Container
 
             throw new RuntimeException(sprintf(
                 'Cannot resolve parameter [$%s] of [%s::__construct()].',
-                $parameter->getName(),
-                $concrete
+                $this->exceptionFragment($parameter->getName()),
+                $this->exceptionFragment($concrete)
             ));
         }
+        // phpcs:enable WordPress.Security.EscapeOutput.ExceptionNotEscaped
 
         return $reflector->newInstanceArgs($dependencies);
+    }
+
+    private function exceptionFragment(string $value): string
+    {
+        return function_exists('esc_html') ? esc_html($value) : htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
     }
 }

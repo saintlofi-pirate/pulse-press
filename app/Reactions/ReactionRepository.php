@@ -23,11 +23,12 @@ final class ReactionRepository
         $timestamp = $now->format('Y-m-d H:i:s');
 
         $sql = $this->wpdb->prepare(
-            "INSERT INTO {$table} (post_id, reaction_type, user_hash, created_at, updated_at)
+            "INSERT INTO %i (post_id, reaction_type, user_hash, created_at, updated_at)
              VALUES (%d, %s, %s, %s, %s)
              ON DUPLICATE KEY UPDATE
                  reaction_type = VALUES(reaction_type),
                  updated_at    = VALUES(updated_at)",
+            $table,
             $postId,
             $reactionType,
             $userHash,
@@ -35,6 +36,7 @@ final class ReactionRepository
             $timestamp
         );
 
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Prepared above with a table identifier placeholder.
         $this->wpdb->query($sql);
 
         // MySQL's ON DUPLICATE KEY UPDATE returns 1 for a fresh insert and 2 for an update.
@@ -55,10 +57,12 @@ final class ReactionRepository
         $this->lastReadWasCached = false;
         $table = Schema::tableName($this->wpdb, Schema::TABLE_REACTIONS);
         $sql   = $this->wpdb->prepare(
-            "SELECT reaction_type, COUNT(*) AS c FROM {$table} WHERE post_id = %d GROUP BY reaction_type",
+            'SELECT reaction_type, COUNT(*) AS c FROM %i WHERE post_id = %d GROUP BY reaction_type',
+            $table,
             $postId
         );
 
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Prepared above with a table identifier placeholder.
         $rows = $this->wpdb->get_results($sql, ARRAY_A) ?: [];
 
         $counts = [];

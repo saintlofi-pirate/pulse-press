@@ -7,8 +7,7 @@
  * Author:            PulsePress
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       pulsepress
- * Domain Path:       /languages
+ * Text Domain:       pulse-press
  * Requires at least: 6.2
  * Requires PHP:      8.1
  */
@@ -29,11 +28,11 @@ if (PHP_VERSION_ID < 80100 || version_compare($GLOBALS['wp_version'] ?? '0', PUL
     add_action('admin_notices', static function () {
         $message = sprintf(
             /* translators: 1: required PHP version, 2: required WordPress version */
-            esc_html__('PulsePress requires PHP %1$s or newer and WordPress %2$s or newer. The plugin is inactive until the host is upgraded.', 'pulsepress'),
+            esc_html__('PulsePress requires PHP %1$s or newer and WordPress %2$s or newer. The plugin is inactive until the host is upgraded.', 'pulse-press'),
             PULSEPRESS_MIN_PHP,
             PULSEPRESS_MIN_WP
         );
-        printf('<div class="notice notice-error"><p>%s</p></div>', $message);
+        printf('<div class="notice notice-error"><p>%s</p></div>', esc_html($message));
     });
     return;
 }

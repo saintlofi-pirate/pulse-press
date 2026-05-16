@@ -31,7 +31,7 @@ final class SettingsController
         if (!is_array($body)) {
             return new WP_Error(
                 'pulsepress_settings_invalid',
-                __('Settings payload must be a JSON object.', 'pulsepress'),
+                __('Settings payload must be a JSON object.', 'pulse-press'),
                 ['status' => 422]
             );
         }

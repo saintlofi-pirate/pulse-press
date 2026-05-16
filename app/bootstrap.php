@@ -11,6 +11,7 @@ use PulsePress\Providers\RestServiceProvider;
 use PulsePress\Providers\SettingsServiceProvider;
 use PulsePress\Providers\WidgetServiceProvider;
 
+defined('ABSPATH') || exit;
 return [
     'providers' => [
         AppServiceProvider::class,

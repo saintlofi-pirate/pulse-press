@@ -12,6 +12,7 @@ use PulsePress\Http\Controllers\CaptureController;
 use PulsePress\Http\Controllers\ExportController;
 use PulsePress\Reactions\Reactions;
 
+defined('ABSPATH') || exit;
 final class CaptureServiceProvider extends ServiceProvider
 {
     public const REST_NAMESPACE = 'pulsepress/v1';

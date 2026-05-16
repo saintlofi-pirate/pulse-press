@@ -57,10 +57,12 @@ final class CaptureRepository
     {
         $table = Schema::tableName($this->wpdb, Schema::TABLE_CAPTURES);
         $sql   = $this->wpdb->prepare(
-            "SELECT id FROM {$table} WHERE email = %s AND post_id = %d LIMIT 1",
+            'SELECT id FROM %i WHERE email = %s AND post_id = %d LIMIT 1',
+            $table,
             $email,
             $postId
         );
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Prepared above with a table identifier placeholder.
         $rows = $this->wpdb->get_results($sql, ARRAY_A);
         return is_array($rows) && isset($rows[0]) ? $rows[0] : null;
     }

@@ -2,7 +2,7 @@
 Contributors: pulsepress
 Tags: reactions, email capture, analytics, sentiment, engagement
 Requires at least: 6.2
-Tested up to: 6.6
+Tested up to: 6.9
 Requires PHP: 8.1
 Stable tag: 0.1.0
 License: GPLv2 or later

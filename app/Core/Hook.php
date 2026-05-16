@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace PulsePress\Core;
 
+defined('ABSPATH') || exit;
 class Hook
 {
     /** @var list<array{hook:string, callback:callable, priority:int, accepted_args:int}> */

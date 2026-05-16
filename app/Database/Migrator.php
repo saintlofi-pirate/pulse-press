@@ -32,12 +32,12 @@ final class Migrator
 
         foreach (array_keys($this->schema::tables($this->wpdb)) as $unprefixed) {
             $tableName = Schema::tableName($this->wpdb, $unprefixed);
-            $exists    = $this->wpdb->get_var(
-                $this->wpdb->prepare('SHOW TABLES LIKE %s', $tableName)
-            );
+            $sql       = $this->wpdb->prepare('SHOW TABLES LIKE %s', $tableName);
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Prepared on the previous line.
+            $exists    = $this->wpdb->get_var($sql);
 
             if ($exists !== $tableName) {
-                error_log(sprintf('[PulsePress] migration failed: missing table %s', $tableName));
+                do_action('pulsepress_migration_table_missing', $tableName);
                 return false;
             }
         }

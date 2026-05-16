@@ -19,7 +19,7 @@ final class ExportController
     public function download(WP_REST_Request $request): WP_REST_Response|WP_Error
     {
         if (!current_user_can('manage_options')) {
-            return new WP_Error('rest_forbidden', __('You do not have permission to export captures.', 'pulsepress'), ['status' => 403]);
+            return new WP_Error('rest_forbidden', __('You do not have permission to export captures.', 'pulse-press'), ['status' => 403]);
         }
 
         $timestamp = (new DateTimeImmutable('now', wp_timezone()))->format('Ymd\THis\Z');
@@ -36,6 +36,7 @@ final class ExportController
 
         try {
             $this->exporter->stream(static function (string $line): void {
+                // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CaptureExporter emits RFC 4180 CSV rows, not HTML.
                 echo $line;
             }, ['request' => $request]);
         } catch (RestException $e) {

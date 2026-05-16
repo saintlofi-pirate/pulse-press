@@ -27,7 +27,7 @@ final class ReactionController
         if (!$this->postIsPublic($postId)) {
             return new WP_Error(
                 'pulsepress_post_not_found',
-                __('Post not found or not publicly viewable.', 'pulsepress'),
+                __('Post not found or not publicly viewable.', 'pulse-press'),
                 ['status' => 404]
             );
         }
@@ -35,7 +35,7 @@ final class ReactionController
         if (!Reactions::isValid($reactionType)) {
             return new WP_Error(
                 'pulsepress_invalid_reaction_type',
-                __('Reaction type is not in the allowlist.', 'pulsepress'),
+                __('Reaction type is not in the allowlist.', 'pulse-press'),
                 ['status' => 422]
             );
         }
@@ -69,7 +69,7 @@ final class ReactionController
         if (!$this->postIsPublic($postId)) {
             return new WP_Error(
                 'pulsepress_post_not_found',
-                __('Post not found or not publicly viewable.', 'pulsepress'),
+                __('Post not found or not publicly viewable.', 'pulse-press'),
                 ['status' => 404]
             );
         }

@@ -3,8 +3,8 @@
  * PulsePress uninstall handler.
  *
  * Invoked by WordPress when the admin clicks "Delete" on the plugin row.
- * Non-destructive by default; only drops tables and removes options when
- * `pulsepress_delete_on_uninstall` is explicitly `'1'`.
+ * Non-destructive by default; only drops tables and removes options when the
+ * saved privacy setting explicitly enables full cleanup.
  */
 
 declare(strict_types=1);
@@ -13,30 +13,42 @@ if (!defined('WP_UNINSTALL_PLUGIN')) {
     exit;
 }
 
-if (get_option('pulsepress_delete_on_uninstall') !== '1') {
+$pulsepressSettings = get_option('pulsepress_settings', []);
+$pulsepressDeleteOnUninstall = is_array($pulsepressSettings)
+    ? (bool) ($pulsepressSettings['delete_on_uninstall'] ?? false)
+    : get_option('pulsepress_delete_on_uninstall') === '1';
+
+if (!$pulsepressDeleteOnUninstall) {
     return;
 }
 
 /** @var wpdb $wpdb */
 global $wpdb;
 
-$tables = [
+$pulsepressTables = [
     $wpdb->prefix . 'pulsepress_reactions',
     $wpdb->prefix . 'pulsepress_captures',
     $wpdb->prefix . 'pulsepress_daily_agg',
 ];
 
-foreach ($tables as $table) {
-    $wpdb->query("DROP TABLE IF EXISTS `{$table}`"); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery
+foreach ($pulsepressTables as $pulsepressTable) {
+    // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange -- Uninstall intentionally drops plugin tables.
+    $wpdb->query(
+        $wpdb->prepare('DROP TABLE IF EXISTS %i', $pulsepressTable)
+    );
+    // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
 }
 
-$optionKeys = $wpdb->get_col(
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Uninstall must discover plugin-owned options.
+$pulsepressOptionKeys = $wpdb->get_col(
     $wpdb->prepare(
-        "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s",
+        'SELECT option_name FROM %i WHERE option_name LIKE %s',
+        $wpdb->options,
         $wpdb->esc_like('pulsepress_') . '%'
     )
 );
+// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
-foreach ($optionKeys as $key) {
-    delete_option($key);
+foreach ($pulsepressOptionKeys as $pulsepressKey) {
+    delete_option($pulsepressKey);
 }

@@ -13,6 +13,7 @@ use PulsePress\Core\ServiceProvider;
 use PulsePress\Http\Controllers\AnalyticsController;
 use PulsePress\Settings\SettingsRepository;
 
+defined('ABSPATH') || exit;
 final class AnalyticsServiceProvider extends ServiceProvider
 {
     public const CRON_HOOK = 'pulsepress_aggregate_reactions';

@@ -19,13 +19,15 @@ final class AnalyticsRepository
         $table = Schema::tableName($this->wpdb, Schema::TABLE_DAILY_AGG);
         $sql   = $this->wpdb->prepare(
             "SELECT agg_date, reaction_type, SUM(count) AS c
-             FROM {$table}
+             FROM %i
              WHERE agg_date >= %s AND agg_date < %s
              GROUP BY agg_date, reaction_type
              ORDER BY agg_date ASC",
+            $table,
             $fromUtc->format('Y-m-d'),
             $toUtc->format('Y-m-d')
         );
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Prepared above with a table identifier placeholder.
         $rows = $this->wpdb->get_results($sql, ARRAY_A);
         if (!is_array($rows)) {
             return [];
@@ -57,21 +59,16 @@ final class AnalyticsRepository
 
         $placeholders = implode(',', array_fill(0, count($positiveSet), '%s'));
 
-        $args   = array_merge(
-            [$fromUtc->format('Y-m-d'), $toUtc->format('Y-m-d')],
-            $positiveSet,
-            [$fromUtc->format('Y-m-d H:i:s'), $toUtc->format('Y-m-d H:i:s'), $limit]
-        );
-
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Dynamic placeholders are generated from sanitized reaction strings.
         $sql = $this->wpdb->prepare(
             "SELECT agg.post_id,
                     SUM(agg.count) AS total,
                     SUM(CASE WHEN agg.reaction_type IN ({$placeholders}) THEN agg.count ELSE 0 END) AS positive,
                     COALESCE(caps.captures, 0) AS captures
-             FROM {$aggTable} AS agg
+             FROM %i AS agg
              LEFT JOIN (
                  SELECT post_id, COUNT(*) AS captures
-                 FROM {$capTable}
+                 FROM %i
                  WHERE consent_at >= %s AND consent_at < %s
                  GROUP BY post_id
              ) AS caps ON caps.post_id = agg.post_id
@@ -79,9 +76,11 @@ final class AnalyticsRepository
              GROUP BY agg.post_id, caps.captures
              ORDER BY total DESC
              LIMIT %d",
-            ...$this->reorderTopPostArgs($fromUtc, $toUtc, $positiveSet, $limit)
+            ...$this->reorderTopPostArgs($fromUtc, $toUtc, $positiveSet, $limit, $aggTable, $capTable)
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Prepared above with table identifier placeholders.
         $rows = $this->wpdb->get_results($sql, ARRAY_A);
         if (!is_array($rows)) {
             return [];
@@ -105,12 +104,14 @@ final class AnalyticsRepository
         $table = Schema::tableName($this->wpdb, Schema::TABLE_CAPTURES);
         $sql   = $this->wpdb->prepare(
             "SELECT post_id, COUNT(*) AS c
-             FROM {$table}
+             FROM %i
              WHERE consent_at >= %s AND consent_at < %s
              GROUP BY post_id",
+            $table,
             $fromUtc->format('Y-m-d H:i:s'),
             $toUtc->format('Y-m-d H:i:s')
         );
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Prepared above with a table identifier placeholder.
         $rows = $this->wpdb->get_results($sql, ARRAY_A);
         if (!is_array($rows)) {
             return [];
@@ -122,11 +123,12 @@ final class AnalyticsRepository
         return $out;
     }
 
-    private function reorderTopPostArgs(DateTimeImmutable $fromUtc, DateTimeImmutable $toUtc, array $positiveSet, int $limit): array
+    private function reorderTopPostArgs(DateTimeImmutable $fromUtc, DateTimeImmutable $toUtc, array $positiveSet, int $limit, string $aggTable, string $capTable): array
     {
-        // SQL placeholder order: positive IN(...), captures join (from, to), main WHERE (from, to), LIMIT
+        // SQL placeholder order: positive IN(...), agg table, cap table, captures join (from, to), main WHERE (from, to), LIMIT.
         return array_merge(
             $positiveSet,
+            [$aggTable, $capTable],
             [$fromUtc->format('Y-m-d H:i:s'), $toUtc->format('Y-m-d H:i:s')],
             [$fromUtc->format('Y-m-d'), $toUtc->format('Y-m-d')],
             [$limit]

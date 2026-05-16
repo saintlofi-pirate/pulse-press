@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace PulsePress\Core;
 
+defined('ABSPATH') || exit;
 class Router
 {
     /** @var list<array{method:string, uri:string, action:mixed, permissions:mixed}> */

@@ -29,19 +29,18 @@ final class Aggregator
 
         $selectSql = $this->wpdb->prepare(
             "SELECT post_id, reaction_type, COUNT(*) AS c
-             FROM {$reactionsTable}
+             FROM %i
              WHERE updated_at >= %s AND updated_at < %s
              GROUP BY post_id, reaction_type",
+            $reactionsTable,
             $utcStart,
             $utcEnd
         );
 
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Prepared above with a table identifier placeholder.
         $rows = $this->wpdb->get_results($selectSql, ARRAY_A);
         if (!is_array($rows)) {
-            error_log(sprintf(
-                '[PulsePress] aggregation failed: %s',
-                (string) ($this->wpdb->last_error ?? 'unknown error')
-            ));
+            do_action('pulsepress_aggregation_failed', (string) ($this->wpdb->last_error ?? 'unknown error'));
             return new AggregationResult($localStart, 0, 0, (int) ((microtime(true) - $start) * 1_000_000));
         }
 
@@ -52,18 +51,20 @@ final class Aggregator
 
         foreach ($rows as $row) {
             $sql = $this->wpdb->prepare(
-                "INSERT INTO {$aggTable}
+                "INSERT INTO %i
                   (agg_date, post_id, reaction_type, count, updated_at)
                  VALUES (%s, %d, %s, %d, %s)
                  ON DUPLICATE KEY UPDATE
                    count      = VALUES(count),
                    updated_at = VALUES(updated_at)",
+                $aggTable,
                 $aggDate,
                 (int) $row['post_id'],
                 (string) $row['reaction_type'],
                 (int) $row['c'],
                 $now
             );
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Prepared above with a table identifier placeholder.
             $this->wpdb->query($sql);
             $written++;
         }

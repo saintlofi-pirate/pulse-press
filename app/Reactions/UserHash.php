@@ -47,11 +47,14 @@ final class UserHash
     /** @return array{0: string, 1: string} */
     private static function resolveFromRequest(WP_REST_Request $request): array
     {
-        $remote = isset($_SERVER['REMOTE_ADDR']) ? (string) $_SERVER['REMOTE_ADDR'] : '';
+        $remote = isset($_SERVER['REMOTE_ADDR'])
+            ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR']))
+            : '';
         $ip     = (string) apply_filters('pulsepress_client_ip', $remote, $request);
 
-        $rawUa     = $_SERVER['HTTP_USER_AGENT'] ?? '';
-        $userAgent = sanitize_text_field(wp_unslash($rawUa));
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized immediately after unslashing.
+        $rawUa     = isset($_SERVER['HTTP_USER_AGENT']) ? wp_unslash($_SERVER['HTTP_USER_AGENT']) : '';
+        $userAgent = sanitize_text_field($rawUa);
 
         return [$ip, $userAgent];
     }

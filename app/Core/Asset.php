@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace PulsePress\Core;
 
+defined('ABSPATH') || exit;
 class Asset
 {
     /** @var array<string, array{handle:string, path:string, deps:array, ver:string, in_footer:bool, context:string, condition:?callable, localize:array}> */

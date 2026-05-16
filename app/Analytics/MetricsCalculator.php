@@ -76,7 +76,7 @@ final class MetricsCalculator
         foreach ($postIds as $id) {
             $title = get_the_title($id);
             if (!is_string($title) || $title === '') {
-                $out[$id] = __('(deleted post)', 'pulsepress');
+                $out[$id] = __('(deleted post)', 'pulse-press');
             } else {
                 $out[$id] = $title;
             }
