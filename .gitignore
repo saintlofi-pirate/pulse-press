@@ -1,6 +1,7 @@
 vendor/
 node_modules/
 dist/
+build/
 .claude/settings.local.json
 .idea/
 .vscode/

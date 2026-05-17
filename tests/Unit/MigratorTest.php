@@ -4,7 +4,7 @@ declare(strict_types=1);
 use PulsePress\Database\Migrator;
 use PulsePress\Database\Schema;
 use Tests\Stubs\DbDeltaSpy;
-use Tests\Stubs\FilterRegistry;
+use Tests\Stubs\ErrorLogSpy;
 use Tests\Stubs\OptionStore;
 use Tests\Stubs\WpdbStub;
 
@@ -63,8 +63,8 @@ it('does not bump the version when a declared table is missing post-flight', fun
 
     expect($result)->toBeFalse();
     expect(OptionStore::get(Migrator::VERSION_OPTION))->toBe('0');
-    expect(FilterRegistry::actionCalls('pulsepress_migration_table_missing'))
-        ->toBe([['wp_pulsepress_captures']]);
+    expect(ErrorLogSpy::messages())
+        ->toContain('[PulsePress] migration failed: missing table wp_pulsepress_captures');
 });
 
 it('does not run dbDelta twice across two invocations in the same release', function () {

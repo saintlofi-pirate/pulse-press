@@ -32,22 +32,16 @@ $pulsepressTables = [
 ];
 
 foreach ($pulsepressTables as $pulsepressTable) {
-    // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange -- Uninstall intentionally drops plugin tables.
-    $wpdb->query(
-        $wpdb->prepare('DROP TABLE IF EXISTS %i', $pulsepressTable)
-    );
-    // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+    $wpdb->query("DROP TABLE IF EXISTS `{$pulsepressTable}`"); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 }
 
-// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Uninstall must discover plugin-owned options.
+// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Uninstall cleanup intentionally scans only namespaced PulsePress options.
 $pulsepressOptionKeys = $wpdb->get_col(
     $wpdb->prepare(
-        'SELECT option_name FROM %i WHERE option_name LIKE %s',
-        $wpdb->options,
+        "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s",
         $wpdb->esc_like('pulsepress_') . '%'
     )
 );
-// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 foreach ($pulsepressOptionKeys as $pulsepressKey) {
     delete_option($pulsepressKey);

@@ -13,7 +13,6 @@
 /docs
 /designs
 /landing-page
-/resources
 /wordpress-org-assets
 /scripts
 /build
@@ -23,10 +22,6 @@
 /playwright-report
 /phpunit.xml
 /playwright.config.ts
-/vite.config.js
 /tsconfig.json
-/package.json
 /package-lock.json
-/composer.json
-/composer.lock
 /composer.phar

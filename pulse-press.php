@@ -1,16 +1,17 @@
 <?php
 /**
  * Plugin Name:       PulsePress
- * Plugin URI:        https://github.com/saintlofi-pirate/pulse-press
+ * Plugin URI:        https://saintlofi-pirate.github.io/pulse-press/
  * Description:       Reactions, inline email capture, and analytics — privacy-first and built for WordPress.
  * Version:           0.1.0
- * Author:            SaintLofi
- * Author URI:        https://saintlofi-pirate.github.io/
+ * Author:            Alp Arsalan
+ * Author URI:        https://profiles.wordpress.org/saintlofi/
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       pulse-press
+ * Domain Path:       /languages
  * Requires at least: 6.2
- * Requires PHP:      8.1
+ * Requires PHP:      7.4
  */
 
 if (!defined('ABSPATH')) {
@@ -22,10 +23,10 @@ define('PULSEPRESS_FILE', __FILE__);
 define('PULSEPRESS_DIR', plugin_dir_path(__FILE__));
 define('PULSEPRESS_URL', plugin_dir_url(__FILE__));
 define('PULSEPRESS_BASENAME', plugin_basename(__FILE__));
-define('PULSEPRESS_MIN_PHP', '8.1');
+define('PULSEPRESS_MIN_PHP', '7.4');
 define('PULSEPRESS_MIN_WP', '6.2');
 
-if (PHP_VERSION_ID < 80100 || version_compare($GLOBALS['wp_version'] ?? '0', PULSEPRESS_MIN_WP, '<')) {
+if (PHP_VERSION_ID < 70400 || version_compare($GLOBALS['wp_version'] ?? '0', PULSEPRESS_MIN_WP, '<')) {
     add_action('admin_notices', static function () {
         $message = sprintf(
             /* translators: 1: required PHP version, 2: required WordPress version */
@@ -33,7 +34,7 @@ if (PHP_VERSION_ID < 80100 || version_compare($GLOBALS['wp_version'] ?? '0', PUL
             PULSEPRESS_MIN_PHP,
             PULSEPRESS_MIN_WP
         );
-        printf('<div class="notice notice-error"><p>%s</p></div>', esc_html($message));
+        printf('<div class="notice notice-error"><p>%s</p></div>', wp_kses_post($message));
     });
     return;
 }

@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 it('ships a plugin entry file that declares the version constant', function () {
-    $entry = file_get_contents(dirname(__DIR__, 2) . '/pulsepress.php');
+    $entry = file_get_contents(dirname(__DIR__, 2) . '/pulse-press.php');
     expect($entry)
         ->toContain("define('PULSEPRESS_VERSION'")
         ->and($entry)->toContain("define('PULSEPRESS_FILE'")
@@ -49,7 +49,7 @@ it('autoloads the capture domain, controller, and provider', function () {
 it('does not retain starter strings in PulsePress-owned files', function () {
     $root = dirname(__DIR__, 2);
     $paths = [
-        $root . '/pulsepress.php',
+        $root . '/pulse-press.php',
         $root . '/composer.json',
         $root . '/package.json',
         $root . '/vite.config.js',
