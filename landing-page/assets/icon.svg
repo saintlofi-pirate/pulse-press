@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">PulsePress PP monogram logo</title>
+  <desc id="desc">A double P monogram with a subtle analytics pulse.</desc>
+  <defs>
+    <linearGradient id="bg" x1="28" y1="28" x2="226" y2="226" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#102F3B"/>
+      <stop offset="1" stop-color="#0A1C25"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="58" y1="124" x2="201" y2="124" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#83DED2"/>
+      <stop offset="1" stop-color="#35AAA2"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="46" fill="url(#bg)"/>
+  <path d="M62 190V62h51c32 0 52 18 52 48s-20 47-52 47H97v33H62Zm35-63h17c11 0 18-6 18-17 0-12-7-18-18-18H97v35Z" fill="#F8FAF7"/>
+  <path d="M130 190V62h42c31 0 51 18 51 48s-20 47-51 47h-7v33h-35Zm35-63h8c11 0 18-6 18-17 0-12-7-18-18-18h-8v35Z" fill="#F8FAF7" opacity="0.92"/>
+  <path d="M48 151h42l12-24 19 43 16-31 10 12h61" fill="none" stroke="#071820" stroke-width="15" stroke-linecap="round" stroke-linejoin="round" opacity="0.38"/>
+  <path d="M48 151h42l12-24 19 43 16-31 10 12h61" fill="none" stroke="url(#accent)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

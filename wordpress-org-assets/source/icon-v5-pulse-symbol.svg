@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">PulsePress pulse symbol logo</title>
+  <desc id="desc">A no-letter professional pulse and reader signal symbol.</desc>
+  <defs>
+    <linearGradient id="bg" x1="28" y1="30" x2="226" y2="226" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#173B44"/>
+      <stop offset="1" stop-color="#0B1F28"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="58" y1="128" x2="198" y2="128" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#72D9CD"/>
+      <stop offset="1" stop-color="#2BA7A0"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="46" fill="url(#bg)"/>
+  <circle cx="128" cy="128" r="67" fill="none" stroke="#F8FAF7" stroke-width="18"/>
+  <path d="M83 128c11-27 27-41 45-41s34 14 45 41c-11 27-27 41-45 41s-34-14-45-41Z" fill="#0B1F28" stroke="#F8FAF7" stroke-width="9" stroke-linejoin="round"/>
+  <circle cx="128" cy="128" r="13" fill="#F8FAF7"/>
+  <path d="M48 142h43l14-31 24 56 22-45 12 20h45" fill="none" stroke="#071820" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" opacity="0.40"/>
+  <path d="M48 142h43l14-31 24 56 22-45 12 20h45" fill="none" stroke="url(#accent)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

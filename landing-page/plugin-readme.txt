@@ -1,6 +1,6 @@
 === PulsePress ===
 Contributors: pulsepress
-Tags: reactions, email capture, analytics, sentiment, engagement
+Tags: reactions, email capture, analytics, sentiment, leads
 Requires at least: 6.2
 Tested up to: 6.6
 Requires PHP: 7.4
@@ -8,13 +8,15 @@ Stable tag: 0.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Privacy-first reactions, inline email capture, and analytics for WordPress publishers.
+Privacy-first reactions, inline email capture, and analytics for WordPress publishers and small businesses.
 
 == Description ==
 
-PulsePress helps publishers understand how readers feel about each post and gives happy readers a simple way to subscribe.
+PulsePress helps publishers and small business owners understand how visitors respond to each post, page, or offer, then gives interested visitors a simple way to subscribe.
 
 The free plugin is built to be useful on its own. It includes a front-end reaction widget, inline email capture after positive reactions, CSV export, a settings screen, 30-day analytics, Gutenberg block placement, shortcode placement, per-post overrides, and privacy controls.
+
+PulsePress is not just a like button. It is a lightweight feedback-to-lead workflow for WordPress: visitors react, high-intent reactions can open an email capture prompt, and site owners can see which content creates subscribers.
 
 = What you can do with PulsePress =
 
@@ -27,9 +29,26 @@ The free plugin is built to be useful on its own. It includes a front-end reacti
 * See top posts and sentiment/capture rates.
 * Place the widget automatically, with a Gutenberg block, or with the `[pulsepress]` shortcode.
 * Disable the widget on individual posts.
-* Choose reaction labels, positive reactions, icon style, theme mode, count visibility, and guest reaction behavior.
+* Choose visible reactions, positive reactions, icon style, theme mode, primary color, animation style, count visibility, and guest reaction behavior.
+* Hide the widget by post type or by specific post/page IDs.
 * Purge fraud-review metadata after the configured retention window.
 * Delete PulsePress data on uninstall when you explicitly enable that option.
+
+= Useful for small business sites =
+
+PulsePress is designed for business owners who need simple engagement and lead capture without a heavy CRM setup.
+
+* Learn which service pages, offers, announcements, guides, or blog posts create real interest.
+* Capture emails at the moment a visitor shows intent instead of interrupting every visitor with a popup.
+* Keep leads in WordPress first, then export CSV when you are ready to move them into another tool.
+* Use reaction analytics to spot confusing, helpful, or high-intent content.
+* Keep the front end lightweight and mobile-friendly for brochure sites, blogs, local services, creators, and niche publishers.
+
+= Why PulsePress is different =
+
+Many reaction plugins focus on icon packs and visual customization. Many lead plugins focus on forms and popups. PulsePress connects the two: visitor feedback, consent-aware capture, and useful post-level analytics in one WordPress-native workflow.
+
+The upcoming roadmap focuses on practical small-business workflows: email provider connections, reaction-based tagging, stronger lead inbox views, provider/webhook sync, anti-spam controls, and clearer widget health checks for cache/CDN/theme issues.
 
 = Built for privacy =
 
@@ -37,7 +56,7 @@ PulsePress does not need third-party tracking scripts. Reaction deduplication us
 
 = Developer friendly =
 
-PulsePress exposes WordPress hooks for reaction types, widget data, settings, capture flow, CSV export columns, analytics windows, block/shortcode placement, and upcoming admin extensions. Hooks are namespaced under `pulsepress_` so developers can extend the free plugin without editing plugin files.
+PulsePress exposes WordPress hooks for reaction types, widget data, settings, capture flow, CSV export columns, analytics windows, block/shortcode placement, and Pro-style admin extensions. Hooks are namespaced under `pulsepress_` so developers can extend the free plugin without editing plugin files.
 
 == Installation ==
 
@@ -49,7 +68,7 @@ PulsePress exposes WordPress hooks for reaction types, widget data, settings, ca
 
 == Frequently Asked Questions ==
 
-= Does PulsePress work on its own? =
+= Does PulsePress work without a Pro add-on? =
 
 Yes. The free plugin includes reactions, inline email capture, CSV export, settings, block/shortcode placement, per-post overrides, and 30-day analytics.
 
@@ -64,6 +83,10 @@ PulsePress stores privacy-safe hashes for reaction deduplication and short-lived
 = Can I export captured emails? =
 
 Yes. Site admins can export captures as a CSV from the PulsePress admin screen.
+
+= Is PulsePress useful for small business websites? =
+
+Yes. PulsePress can help service businesses, creators, local publishers, and niche sites learn which content creates interest and capture emails from visitors who already reacted positively.
 
 = Can I place the widget manually? =
 

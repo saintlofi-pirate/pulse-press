@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">PulsePress P icon</title>
+  <desc id="desc">A professional PulsePress P monogram with a restrained pulse signal.</desc>
+  <defs>
+    <linearGradient id="bg" x1="32" y1="28" x2="224" y2="228" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#173B44"/>
+      <stop offset="1" stop-color="#0D2029"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="80" y1="90" x2="184" y2="150" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5AD6C7"/>
+      <stop offset="1" stop-color="#2AA7A0"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <path fill="#F8FAF7" d="M72 194V62h62c38 0 62 21 62 56s-24 56-62 56h-26v20H72Zm36-52h26c16 0 25-9 25-24s-9-24-25-24h-26v48Z"/>
+  <path d="M53 149h34l12-26 23 52 20-42 12 16h49" fill="none" stroke="#0D2029" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" opacity="0.46"/>
+  <path d="M53 149h34l12-26 23 52 20-42 12 16h49" fill="none" stroke="url(#accent)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M53 149h34l12-26 23 52 20-42 12 16h49" fill="none" stroke="#F8FAF7" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>
+</svg>

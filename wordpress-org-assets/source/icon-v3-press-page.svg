@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">PulsePress press page logo</title>
+  <desc id="desc">A professional page and pulse mark for publishing analytics.</desc>
+  <defs>
+    <linearGradient id="bg" x1="30" y1="28" x2="226" y2="228" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#173B44"/>
+      <stop offset="1" stop-color="#0C2028"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="75" y1="83" x2="180" y2="179" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5DD3C7"/>
+      <stop offset="1" stop-color="#2C9FA0"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="46" fill="url(#bg)"/>
+  <path d="M78 52h76l30 31v121H78V52Z" fill="#F8FAF7"/>
+  <path d="M154 52v32h30" fill="#DCE8E6"/>
+  <rect x="100" y="92" width="60" height="9" rx="4.5" fill="#173B44" opacity="0.74"/>
+  <rect x="100" y="112" width="80" height="9" rx="4.5" fill="#173B44" opacity="0.28"/>
+  <rect x="100" y="132" width="48" height="9" rx="4.5" fill="#173B44" opacity="0.28"/>
+  <path d="M55 159h40l15-28 24 52 20-39 12 15h36" fill="none" stroke="#0C2028" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" opacity="0.40"/>
+  <path d="M55 159h40l15-28 24 52 20-39 12 15h36" fill="none" stroke="url(#accent)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

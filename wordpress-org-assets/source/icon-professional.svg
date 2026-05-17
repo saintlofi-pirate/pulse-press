@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">PulsePress professional icon</title>
+  <desc id="desc">A refined PulsePress monogram with a subtle analytics pulse and reader response signal.</desc>
+  <defs>
+    <linearGradient id="bg" x1="32" y1="28" x2="224" y2="228" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#173B44"/>
+      <stop offset="1" stop-color="#0D2029"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="75" y1="74" x2="181" y2="181" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#58D0C2"/>
+      <stop offset="1" stop-color="#2AA7A0"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <path d="M74 78h56c36 0 58 20 58 51 0 30-22 50-58 50H94v-38h36c12 0 20-5 20-14s-8-14-20-14H74V78Z" fill="#F8FAF7"/>
+  <path d="M94 179V78H74v101h20Z" fill="#F8FAF7"/>
+  <path d="M54 142h32l14-28 25 62 23-47 13 13h41" fill="none" stroke="url(#accent)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M54 142h32l14-28 25 62 23-47 13 13h41" fill="none" stroke="#F8FAF7" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.92"/>
+</svg>

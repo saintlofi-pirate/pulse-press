@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 220" role="img" aria-labelledby="title desc">
+  <title id="title">PulsePress professional logo</title>
+  <desc id="desc">A restrained PulsePress wordmark with a refined monogram mark.</desc>
+  <defs>
+    <linearGradient id="markBg" x1="26" y1="24" x2="190" y2="188" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#173B44"/>
+      <stop offset="1" stop-color="#0D2029"/>
+    </linearGradient>
+    <linearGradient id="markAccent" x1="72" y1="70" x2="152" y2="155" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#58D0C2"/>
+      <stop offset="1" stop-color="#2AA7A0"/>
+    </linearGradient>
+  </defs>
+  <rect x="24" y="24" width="172" height="172" rx="38" fill="url(#markBg)"/>
+  <path d="M72 72h49c31 0 50 17 50 44 0 26-19 43-50 43H90v-32h31c11 0 18-4 18-12s-7-12-18-12H72V72Z" fill="#F8FAF7"/>
+  <path d="M90 159V72H72v87h18Z" fill="#F8FAF7"/>
+  <path d="M52 127h27l12-24 21 54 20-41 11 11h35" fill="none" stroke="url(#markAccent)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M52 127h27l12-24 21 54 20-41 11 11h35" fill="none" stroke="#F8FAF7" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.92"/>
+  <text x="230" y="120" fill="#102A36" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="74" font-weight="760" letter-spacing="0">PulsePress</text>
+  <rect x="235" y="143" width="188" height="4" rx="2" fill="#2AA7A0"/>
+  <text x="235" y="178" fill="#5B7179" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="23" font-weight="500" letter-spacing="0">reader sentiment for WordPress</text>
+</svg>

@@ -1,34 +1,49 @@
-# WordPress.org Assets
+# WordPress.org Assets Checklist
 
-PulsePress brand/banner assets are generated from source files in `wordpress-org-assets/source/` and exported to `wordpress-org-assets/final/`.
+Session 12 records the required WordPress.org submission assets. Final image production needs brand approval before upload.
 
-## Current Logo Source
+## Required Files
 
-- Runtime/reference logo: `resources/social_engagement_content_card_icon.png`
-- WordPress.org icon source: `wordpress-org-assets/source/icon.svg`
-- Final icon exports:
-  - `wordpress-org-assets/final/icon.svg`
-  - `wordpress-org-assets/final/icon-256x256.svg`
-  - `wordpress-org-assets/final/icon-128x128.svg`
-  - `wordpress-org-assets/final/icon-256x256.png`
-  - `wordpress-org-assets/final/icon-128x128.png`
+Place final assets in the WordPress.org assets/SVN area, not inside the runtime plugin zip unless WordPress.org specifically requires it.
 
-WordPress.org supports SVG for plugin icons. Keep the PNG files as fallbacks for older browsers or any renderer that fails to display the SVG.
+- `banner-1544x500.png`
+- `banner-772x250.png`
+- `icon-256x256.png`
+- `icon-128x128.png`
+- `screenshot-1.png`
+- `screenshot-2.png`
+- `screenshot-3.png`
+- `screenshot-4.png`
+- `screenshot-5.png`
+- `screenshot-6.png`
 
-## Current Banner Source
+## Screenshot Sequence
 
-- Source: `wordpress-org-assets/source/banner-1544x500.svg`
-- Final exports:
-  - `wordpress-org-assets/final/banner-1544x500.png`
-  - `wordpress-org-assets/final/banner-772x250.png`
+1. Display settings with live widget preview.
+2. Front-end reaction widget on a single post.
+3. Inline email capture after a positive reaction.
+4. Analytics dashboard with totals, sentiment, captures, and top posts.
+5. Per-post visibility controls in the editor.
+6. CSV export controls for captured emails.
 
-WordPress.org does not support SVG banners, so the banner source SVG is only a local generation file. Upload/use the PNG banner exports.
+These captions match `readme.txt` and should stay in the same order.
 
-The banner keeps the visual direction from session `019e278d-71d2-7d61-b541-f65f34efe9eb`, but replaces the previous heart mark with the supplied social engagement content-card logo.
+## Visual Direction
 
-## Regeneration Notes
+- Calm WordPress-admin product polish.
+- One primary accent.
+- Real product UI, not abstract marketing art.
+- No fake analytics numbers that imply live customer data.
+- No Pro-only screens in Free plugin screenshots.
 
-- The banner SVG source references `resources/social_engagement_content_card_icon.png`.
-- The final SVG icons embed the logo image as a data URI so they can stand alone in the WordPress.org assets directory.
-- Exported PNGs should stay exactly `1544x500`, `772x250`, `256x256`, and `128x128`.
-- Keep the banner copy short enough that it does not sit underneath the right analytics card.
+## Current Draft Assets
+
+Draft source and PNG exports are stored in `wordpress-org-assets/`.
+
+## Final Approval Needed
+
+- Brand mark and color lock.
+- Banner composition.
+- Icon concept.
+- Whether screenshots should use a local demo site name or a neutral publisher example.
+- WordPress.org account/SVN access and final plugin slug.

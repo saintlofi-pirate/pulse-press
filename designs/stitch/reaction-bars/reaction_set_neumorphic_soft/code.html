@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-bright": "#f8f9ff",
+                    "primary": "#0058be",
+                    "surface-container-low": "#eff4ff",
+                    "error-container": "#ffdad6",
+                    "inverse-on-surface": "#eaf1ff",
+                    "primary-fixed-dim": "#adc6ff",
+                    "secondary-fixed": "#6ffbbe",
+                    "on-secondary-container": "#00714d",
+                    "on-secondary-fixed": "#002113",
+                    "surface-container-lowest": "#ffffff",
+                    "surface": "#f8f9ff",
+                    "surface-container-high": "#dce9ff",
+                    "on-primary-container": "#fefcff",
+                    "secondary-container": "#6cf8bb",
+                    "on-primary-fixed": "#001a42",
+                    "outline-variant": "#c2c6d6",
+                    "tertiary-fixed": "#ffdadb",
+                    "primary-fixed": "#d8e2ff",
+                    "background": "#f8f9ff",
+                    "tertiary": "#b90538",
+                    "surface-container-highest": "#d3e4fe",
+                    "tertiary-fixed-dim": "#ffb2b7",
+                    "secondary": "#006c49",
+                    "error": "#ba1a1a",
+                    "on-error": "#ffffff",
+                    "on-surface-variant": "#424754",
+                    "on-tertiary-fixed-variant": "#92002a",
+                    "on-background": "#0b1c30",
+                    "inverse-surface": "#213145",
+                    "secondary-fixed-dim": "#4edea3",
+                    "on-primary-fixed-variant": "#004395",
+                    "surface-dim": "#cbdbf5",
+                    "on-tertiary-fixed": "#40000d",
+                    "surface-container": "#e5eeff",
+                    "surface-variant": "#d3e4fe",
+                    "primary-container": "#2170e4",
+                    "on-primary": "#ffffff",
+                    "tertiary-container": "#dc2c4f",
+                    "on-surface": "#0b1c30",
+                    "on-secondary-fixed-variant": "#005236",
+                    "surface-tint": "#005ac2",
+                    "on-tertiary": "#ffffff",
+                    "on-tertiary-container": "#fffbff",
+                    "on-secondary": "#ffffff",
+                    "inverse-primary": "#adc6ff",
+                    "on-error-container": "#93000a",
+                    "outline": "#727785"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xl": "40px",
+                    "container-max": "1200px",
+                    "gutter": "24px",
+                    "sm": "8px",
+                    "margin-mobile": "16px",
+                    "md": "16px",
+                    "xs": "4px",
+                    "lg": "24px",
+                    "unit": "4px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "label-md": ["Inter"]
+            },
+            "fontSize": {
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "headline-md": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "label-md": ["14px", {"lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .neumorphic-recessed {
+            background: #eff4ff; /* surface-container-low */
+            box-shadow: inset 4px 4px 8px #d1d8e6, inset -4px -4px 8px #ffffff;
+        }
+        .neumorphic-raised {
+            background: #eff4ff; /* surface-container-low */
+            box-shadow: 6px 6px 12px #d1d8e6, -6px -6px 12px #ffffff;
+        }
+        .spring-transition {
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+<!-- TopAppBar -->
+<header class="bg-surface-bright dark:bg-inverse-surface border-b border-outline-variant dark:border-outline shadow-sm docked full-width top-0 z-50 h-16">
+<div class="flex justify-between items-center w-full px-lg max-w-container-max mx-auto h-full">
+<div class="flex items-center gap-lg">
+<span class="font-headline-lg text-headline-lg font-bold text-primary dark:text-primary-fixed-dim">WordPress Pulse</span>
+<nav class="hidden md:flex items-center gap-lg ml-xl">
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors duration-200 font-body-lg text-body-lg" href="#">Dashboard</a>
+<a class="text-primary dark:text-primary-fixed-dim border-b-2 border-primary font-bold font-body-lg text-body-lg" href="#">Posts</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors duration-200 font-body-lg text-body-lg" href="#">Analytics</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors duration-200 font-body-lg text-body-lg" href="#">Library</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<div class="hidden md:flex items-center bg-surface-container h-10 px-md rounded-full">
+<span class="material-symbols-outlined text-on-surface-variant mr-sm">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-sm w-48" placeholder="Search..." type="text"/>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors duration-200 p-2 rounded-full">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors duration-200 p-2 rounded-full">settings</button>
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-bold overflow-hidden">
+<img alt="User profile" data-alt="A clean, professional profile avatar with a minimalist style. The character has a friendly expression and is depicted with flat, modern vector illustrations. The background is a soft, solid pastel blue that complements the overall light-mode UI design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAN7ZLd64d63WvK7cOqDQSL5ZrOAsRrAHGzEhPCM9RkJ11eiDrpHino7bPR4mNEBPR0CTVNpOKdJsI_xm7XhoYRQjmUCRTxaGW_mXO14_Miq3mPm5FM6pT9wdKdw1BWSil2DGUsPI0ZOJS5ZIx1JK3X5UvAESvBEcwRX0O3qhLKXr-2-MekLDq-nzbBDhuSFyjPhhIRJT9cBtoMgRTXv1F1s1Q8-qvs6OWIr42lQ06zvVZmdnqKgnfRlfmeCA8HPibuHKYHCZQKTjuw"/>
+</div>
+</div>
+</div>
+</header>
+<div class="flex max-w-container-max mx-auto">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col h-screen py-md gap-sm fixed left-0 top-16 h-full w-64 bg-surface-container-lowest dark:bg-surface-dim border-r border-outline-variant dark:border-outline shadow-md dark:shadow-none z-40">
+<div class="px-md mb-lg">
+<div class="flex items-center gap-sm mb-xs">
+<div class="w-10 h-10 rounded-lg bg-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-secondary-container">bolt</span>
+</div>
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Post Insights</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Engagement Dashboard</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1 px-sm">
+<a class="flex items-center gap-md text-on-surface-variant dark:text-on-surface-variant px-4 py-3 hover:bg-surface-container-low transition-all cubic-bezier(0.34, 1.56, 0.64, 1) hover:translate-x-1 rounded-lg" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-md text-label-md">Home</span>
+</a>
+<a class="flex items-center gap-md bg-secondary-container dark:bg-secondary text-on-secondary-container dark:text-on-secondary rounded-lg px-4 py-3 transition-all cubic-bezier(0.34, 1.56, 0.64, 1)" href="#">
+<span class="material-symbols-outlined">trending_up</span>
+<span class="font-label-md text-label-md">Trending</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant dark:text-on-surface-variant px-4 py-3 hover:bg-surface-container-low transition-all cubic-bezier(0.34, 1.56, 0.64, 1) hover:translate-x-1 rounded-lg" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="font-label-md text-label-md">Recent</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant dark:text-on-surface-variant px-4 py-3 hover:bg-surface-container-low transition-all cubic-bezier(0.34, 1.56, 0.64, 1) hover:translate-x-1 rounded-lg" href="#">
+<span class="material-symbols-outlined">edit_note</span>
+<span class="font-label-md text-label-md">Drafts</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant dark:text-on-surface-variant px-4 py-3 hover:bg-surface-container-low transition-all cubic-bezier(0.34, 1.56, 0.64, 1) hover:translate-x-1 rounded-lg" href="#">
+<span class="material-symbols-outlined">delete</span>
+<span class="font-label-md text-label-md">Trash</span>
+</a>
+</nav>
+<div class="px-md mt-auto py-lg">
+<button class="w-full py-md bg-primary text-on-primary rounded-lg font-label-md text-label-md hover:bg-primary-container transition-colors shadow-sm active:scale-95 duration-200">View All Reactions</button>
+</div>
+<footer class="px-sm pb-md space-y-1">
+<a class="flex items-center gap-md text-on-surface-variant dark:text-on-surface-variant px-4 py-2 hover:bg-surface-container-low transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-body-sm text-body-sm">Help</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant dark:text-on-surface-variant px-4 py-2 hover:bg-surface-container-low transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">feedback</span>
+<span class="font-body-sm text-body-sm">Feedback</span>
+</a>
+</footer>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 md:ml-64 p-lg">
+<div class="max-w-4xl mx-auto py-xl">
+<header class="mb-xl">
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-sm">Reaction Set: Neumorphic Soft</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">A showcase of soft, recessed tactile interactions. These buttons bridge the physical and digital, using delicate shadows to create a sense of depth and tangible response.</p>
+</header>
+<!-- Bento Grid Layout for Showcasing Reactions -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-lg mb-xl">
+<!-- Featured Showcase Card -->
+<div class="md:col-span-2 neumorphic-raised rounded-xl p-lg flex flex-col justify-center items-center min-h-[300px]">
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-widest mb-lg">Live Playground</span>
+<!-- The Primary Reaction Bar -->
+<div class="bg-surface-container-low rounded-full px-lg py-md flex gap-lg items-center neumorphic-raised spring-transition hover:scale-[1.02]">
+<!-- Support Reaction -->
+<button class="group flex flex-col items-center gap-xs">
+<div class="w-16 h-16 rounded-full flex items-center justify-center spring-transition neumorphic-raised group-active:neumorphic-recessed text-tertiary">
+<span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 0;">favorite</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface mt-sm">Support</span>
+</button>
+<!-- Celebrate Reaction -->
+<button class="group flex flex-col items-center gap-xs">
+<div class="w-16 h-16 rounded-full flex items-center justify-center spring-transition neumorphic-raised group-active:neumorphic-recessed text-secondary">
+<span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 0;">celebration</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface mt-sm">Celebrate</span>
+</button>
+<!-- Idea Reaction -->
+<button class="group flex flex-col items-center gap-xs">
+<div class="w-16 h-16 rounded-full flex items-center justify-center spring-transition neumorphic-raised group-active:neumorphic-recessed text-primary">
+<span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 0;">lightbulb</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface mt-sm">Idea</span>
+</button>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xl text-center">Click and hold the icons to feel the recessed "press" effect.</p>
+</div>
+<!-- Side Specs Card -->
+<div class="md:col-span-1 bg-surface-container rounded-xl p-lg flex flex-col gap-md">
+<h3 class="font-headline-md text-headline-md text-on-surface">Design Tokens</h3>
+<div class="space-y-sm">
+<div class="flex justify-between items-center p-sm bg-surface-container-low rounded-lg border border-outline-variant">
+<span class="font-label-md text-label-md">Base Color</span>
+<span class="font-body-sm text-body-sm text-primary">#eff4ff</span>
+</div>
+<div class="flex justify-between items-center p-sm bg-surface-container-low rounded-lg border border-outline-variant">
+<span class="font-label-md text-label-md">Soft Shadow</span>
+<span class="font-body-sm text-body-sm text-primary">#d1d8e6</span>
+</div>
+<div class="flex justify-between items-center p-sm bg-surface-container-low rounded-lg border border-outline-variant">
+<span class="font-label-md text-label-md">High Shadow</span>
+<span class="font-body-sm text-body-sm text-primary">#ffffff</span>
+</div>
+</div>
+<div class="mt-auto">
+<p class="font-body-sm text-body-sm text-on-surface-variant italic">"The goal is momentum—making every reaction feel like a physical engagement with the platform."</p>
+</div>
+</div>
+<!-- Secondary Context Cards -->
+<div class="bg-surface-bright border border-outline-variant rounded-xl overflow-hidden hover:shadow-md transition-shadow">
+<div class="h-32 bg-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-[48px] text-on-secondary-container">group</span>
+</div>
+<div class="p-md">
+<h4 class="font-label-md text-label-md text-on-surface mb-xs">Community Support</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">The 'Support' reaction uses the Rose-tinted tertiary color for warmth.</p>
+</div>
+</div>
+<div class="bg-surface-bright border border-outline-variant rounded-xl overflow-hidden hover:shadow-md transition-shadow">
+<div class="h-32 bg-primary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-[48px] text-on-primary-fixed">psychology</span>
+</div>
+<div class="p-md">
+<h4 class="font-label-md text-label-md text-on-surface mb-xs">Intellectual Growth</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">The 'Idea' reaction highlights cognitive contributions with Primary Blue.</p>
+</div>
+</div>
+<div class="bg-surface-bright border border-outline-variant rounded-xl overflow-hidden hover:shadow-md transition-shadow">
+<div class="h-32 bg-secondary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-[48px] text-on-secondary-fixed">workspace_premium</span>
+</div>
+<div class="p-md">
+<h4 class="font-label-md text-label-md text-on-surface mb-xs">Celebratory Milestones</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Verdant green signals progress and achievement through 'Celebrate'.</p>
+</div>
+</div>
+</div>
+<!-- Detail Section -->
+<section class="mt-xl py-xl border-t border-outline-variant">
+<div class="flex flex-col md:flex-row gap-xl items-center">
+<div class="w-full md:w-1/2">
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-md">Tactile Feedback Loops</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-lg">
+                                Our Neumorphic Soft set uses 4px baseline rhythms to ensure every element fits perfectly within the grid. When a user interacts, the scaling micro-interaction combined with the shadow shift provides immediate, satisfying feedback.
+                            </p>
+<div class="flex gap-md">
+<div class="flex items-center gap-sm">
+<span class="w-3 h-3 rounded-full bg-primary"></span>
+<span class="font-label-sm text-label-sm text-on-surface">Spring Animation</span>
+</div>
+<div class="flex items-center gap-sm">
+<span class="w-3 h-3 rounded-full bg-secondary"></span>
+<span class="font-label-sm text-label-sm text-on-surface">Glassmorphic Touches</span>
+</div>
+<div class="flex items-center gap-sm">
+<span class="w-3 h-3 rounded-full bg-tertiary"></span>
+<span class="font-label-sm text-label-sm text-on-surface">Tonal Layers</span>
+</div>
+</div>
+</div>
+<div class="w-full md:w-1/2 rounded-xl overflow-hidden shadow-xl">
+<img class="w-full h-auto" data-alt="A macro shot of a sleek, modern touch interface with glowing blue accents and soft, recessed digital buttons. The lighting is low and focused, highlighting the subtle shadows and textures that create a three-dimensional tactile effect on a flat screen. The overall aesthetic is high-tech, futuristic, and premium." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAECksthhU4vD1ACjW-l56Jpw2RwLGATUqx73iMPlZN3YyadYDdtcjx1_wmvloQ1cPhNdtNedkgDc-b__k9wZfX4tn4PsW4mllI_GOy40473KLYXKxVYeDhpgz9Jxx4a-M8mnU-JRNnVAcM5_vDuLoBPFCd-xF9zu-71gsRDbckd1zzUygy00BsgZ9A9Ik1NeCs_pzyDhhzSPynsauKSj7iEPARghZ4hTeY3OXH6V87hgO0WEVe9j4R2dqEywYKLVUYorwQ9nPX5Kb-"/>
+</div>
+</div>
+</section>
+</div>
+</main>
+</div>
+<!-- Footer -->
+<footer class="bg-surface-container-high dark:bg-inverse-surface border-t border-outline-variant mt-xl bottom-0 full-width">
+<div class="flex flex-col md:flex-row justify-between items-center px-lg py-md w-full max-w-container-max mx-auto gap-md">
+<div class="flex flex-col md:flex-row items-center gap-md">
+<span class="font-label-md text-label-md font-bold text-on-surface">WordPress Pulse</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">© 2024 Kinetic Pulse WP. Tactile Engagement Powered by WordPress.</span>
+</div>
+<nav class="flex gap-lg">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Terms of Service</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">API Documentation</a>
+</nav>
+</div>
+</footer>
+</body></html>

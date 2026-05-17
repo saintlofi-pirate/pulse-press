@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .reaction-spring {
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .reaction-spring:hover {
+      transform: scale(1.15);
+    }
+    .reaction-active:active {
+      transform: scale(0.95);
+    }
+  </style>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-bright": "#f8f9ff",
+            "primary": "#0058be",
+            "surface-container-low": "#eff4ff",
+            "error-container": "#ffdad6",
+            "inverse-on-surface": "#eaf1ff",
+            "primary-fixed-dim": "#adc6ff",
+            "secondary-fixed": "#6ffbbe",
+            "on-secondary-container": "#00714d",
+            "on-secondary-fixed": "#002113",
+            "surface-container-lowest": "#ffffff",
+            "surface": "#f8f9ff",
+            "surface-container-high": "#dce9ff",
+            "on-primary-container": "#fefcff",
+            "secondary-container": "#6cf8bb",
+            "on-primary-fixed": "#001a42",
+            "outline-variant": "#c2c6d6",
+            "tertiary-fixed": "#ffdadb",
+            "primary-fixed": "#d8e2ff",
+            "background": "#f8f9ff",
+            "tertiary": "#b90538",
+            "surface-container-highest": "#d3e4fe",
+            "tertiary-fixed-dim": "#ffb2b7",
+            "secondary": "#006c49",
+            "error": "#ba1a1a",
+            "on-error": "#ffffff",
+            "on-surface-variant": "#424754",
+            "on-tertiary-fixed-variant": "#92002a",
+            "on-background": "#0b1c30",
+            "inverse-surface": "#213145",
+            "secondary-fixed-dim": "#4edea3",
+            "on-primary-fixed-variant": "#004395",
+            "surface-dim": "#cbdbf5",
+            "on-tertiary-fixed": "#40000d",
+            "surface-container": "#e5eeff",
+            "surface-variant": "#d3e4fe",
+            "primary-container": "#2170e4",
+            "on-primary": "#ffffff",
+            "tertiary-container": "#dc2c4f",
+            "on-surface": "#0b1c30",
+            "on-secondary-fixed-variant": "#005236",
+            "surface-tint": "#005ac2",
+            "on-tertiary": "#ffffff",
+            "on-tertiary-container": "#fffbff",
+            "on-secondary": "#ffffff",
+            "inverse-primary": "#adc6ff",
+            "on-error-container": "#93000a",
+            "outline": "#727785"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "xl": "40px",
+            "container-max": "1200px",
+            "gutter": "24px",
+            "sm": "8px",
+            "margin-mobile": "16px",
+            "md": "16px",
+            "xs": "4px",
+            "lg": "24px",
+            "unit": "4px"
+          },
+          "fontFamily": {
+            "body-lg": ["Inter"],
+            "label-sm": ["Inter"],
+            "headline-lg": ["Inter"],
+            "headline-lg-mobile": ["Inter"],
+            "body-sm": ["Inter"],
+            "headline-md": ["Inter"],
+            "label-md": ["Inter"]
+          },
+          "fontSize": {
+            "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+            "label-sm": ["12px", {"lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+            "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+            "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+            "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+            "headline-md": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+            "label-md": ["14px", {"lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "600"}]
+          }
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-background text-on-background font-body-lg min-h-screen">
+<!-- TopAppBar -->
+<header class="bg-surface-bright dark:bg-inverse-surface border-b border-outline-variant dark:border-outline docked full-width top-0 z-50 shadow-sm">
+<div class="flex justify-between items-center w-full px-lg max-w-container-max mx-auto h-16">
+<div class="font-headline-lg text-headline-lg font-bold text-primary dark:text-primary-fixed-dim">WordPress Pulse</div>
+<nav class="hidden md:flex items-center gap-lg h-full">
+<a class="h-full flex items-center text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Dashboard</a>
+<a class="h-full flex items-center text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Posts</a>
+<a class="h-full flex items-center text-primary dark:text-primary-fixed-dim border-b-2 border-primary font-bold" href="#">Analytics</a>
+<a class="h-full flex items-center text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Library</a>
+</nav>
+<div class="flex items-center gap-md">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container border-none rounded-full text-body-sm focus:ring-2 focus:ring-primary w-48" placeholder="Search insights..." type="text"/>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-colors">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-colors">settings</button>
+<div class="w-8 h-8 rounded-full bg-primary-container overflow-hidden border border-outline-variant">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="A professional studio portrait of a modern digital professional with soft, high-key lighting. The individual has a friendly expression and is positioned against a clean, minimalist background that complements the WordPress Pulse UI aesthetic. The color palette is warm yet professional, highlighting the high-quality, dependable brand personality." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDktjOGeMppnhT278TcqPyxxpOuWl-od7eKLAFl_EbcftM4c2_R0g1FCXRWwS73T7KToRe0uHhcr7hoaNmna7tnnDEAb574ygn-i5e7X2Jg4X3L1kq_cBt-RohCXq27k1s2s6UB-PVeUk3AQIRpPNaOX8EoVa3cS7J7rjaIb87ttLVcFwWJ8ZrDT8OqmqGnwONeOwpCZmEAeKHmdsRKfqaXYeY1vi2PjTX5lgXC9RtH9yPCByOQ7CU5-9fLmdpCskScs6skeK9M0A9"/>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-container-max mx-auto px-lg pt-xl flex gap-lg">
+<!-- SideNavBar -->
+<aside class="hidden lg:flex flex-col h-[calc(100vh-80px)] w-64 py-md gap-sm bg-surface-container-lowest dark:bg-surface-dim border-r border-outline-variant dark:border-outline sticky top-20">
+<div class="px-4 mb-lg">
+<h2 class="font-headline-md text-headline-md text-on-surface">Post Insights</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Engagement Dashboard</p>
+</div>
+<div class="space-y-1">
+<a class="flex items-center gap-md text-on-surface-variant dark:text-on-surface-variant px-4 py-3 hover:bg-surface-container-low hover:translate-x-1 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-md text-label-md">Home</span>
+</a>
+<a class="flex items-center gap-md bg-secondary-container dark:bg-secondary text-on-secondary-container dark:text-on-secondary rounded-lg px-4 py-3 hover:translate-x-1 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">trending_up</span>
+<span class="font-label-md text-label-md">Trending</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant dark:text-on-surface-variant px-4 py-3 hover:bg-surface-container-low hover:translate-x-1 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="font-label-md text-label-md">Recent</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant dark:text-on-surface-variant px-4 py-3 hover:bg-surface-container-low hover:translate-x-1 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">edit_note</span>
+<span class="font-label-md text-label-md">Drafts</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant dark:text-on-surface-variant px-4 py-3 hover:bg-surface-container-low hover:translate-x-1 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">delete</span>
+<span class="font-label-md text-label-md">Trash</span>
+</a>
+</div>
+<div class="mt-auto px-4 pt-md border-t border-outline-variant">
+<button class="w-full bg-primary text-on-primary font-label-md text-label-md py-3 rounded-lg shadow-sm hover:shadow-md transition-shadow active:scale-95 mb-md">View All Reactions</button>
+<div class="flex flex-col gap-1">
+<a class="flex items-center gap-md text-on-surface-variant px-4 py-2 hover:bg-surface-container-low text-label-sm transition-all" href="#">
+<span class="material-symbols-outlined text-[18px]">help</span>
+            Help
+          </a>
+<a class="flex items-center gap-md text-on-surface-variant px-4 py-2 hover:bg-surface-container-low text-label-sm transition-all" href="#">
+<span class="material-symbols-outlined text-[18px]">feedback</span>
+            Feedback
+          </a>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<div class="flex-1 space-y-xl pb-xl">
+<section class="bg-surface-container-lowest rounded-xl p-lg border border-outline-variant shadow-sm overflow-hidden relative">
+<div class="mb-lg">
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Reaction Set: Minimalist</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-sm">Showcase of tactically responsive post reaction variations designed for high engagement.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+<!-- Variation 1: Floating Glass Glassmorphism Bar -->
+<div class="space-y-md col-span-1 md:col-span-2">
+<p class="font-label-md text-label-md text-primary uppercase tracking-wider">01. Floating Glass Bar</p>
+<div class="relative p-xl rounded-xl bg-surface-container border border-dashed border-outline-variant flex items-center justify-center min-h-[160px]">
+<div class="bg-white/90 backdrop-blur-md rounded-full px-lg py-sm flex gap-md shadow-lg border border-white/50 floating-reaction-bar items-center">
+<button class="reaction-spring flex items-center gap-xs px-2 py-1 rounded-full hover:bg-primary-container/10 text-on-surface transition-all">
+<span class="material-symbols-outlined text-primary" data-icon="favorite">favorite</span>
+<span class="font-label-sm text-label-sm">2.4k</span>
+</button>
+<div class="w-[1px] h-6 bg-outline-variant"></div>
+<button class="reaction-spring flex items-center gap-xs px-2 py-1 rounded-full hover:bg-secondary-container/10 text-on-surface transition-all">
+<span class="material-symbols-outlined text-secondary" data-icon="thumb_up">thumb_up</span>
+<span class="font-label-sm text-label-sm">842</span>
+</button>
+<button class="reaction-spring flex items-center gap-xs px-2 py-1 rounded-full hover:bg-tertiary-container/10 text-on-surface transition-all">
+<span class="material-symbols-outlined text-tertiary" data-icon="local_fire_department">local_fire_department</span>
+<span class="font-label-sm text-label-sm">124</span>
+</button>
+<button class="reaction-spring flex items-center gap-xs px-2 py-1 rounded-full hover:bg-surface-container-highest text-on-surface transition-all">
+<span class="material-symbols-outlined" data-icon="mood">mood</span>
+<span class="font-label-sm text-label-sm">45</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Variation 2: Inset Bento Group -->
+<div class="space-y-md">
+<p class="font-label-md text-label-md text-primary uppercase tracking-wider">02. Minimal Chips</p>
+<div class="p-lg rounded-xl bg-surface-bright border border-outline-variant flex flex-wrap gap-sm">
+<button class="reaction-spring flex items-center gap-sm px-4 py-2 border border-outline-variant rounded-full text-on-surface-variant hover:border-primary hover:text-primary transition-all">
+<span class="material-symbols-outlined text-[20px]" data-icon="star">star</span>
+<span class="font-label-md text-label-md">Feature</span>
+</button>
+<button class="reaction-spring flex items-center gap-sm px-4 py-2 border border-outline-variant rounded-full text-on-surface-variant hover:border-error hover:text-error transition-all">
+<span class="material-symbols-outlined text-[20px]" data-icon="bolt">bolt</span>
+<span class="font-label-md text-label-md">Hot</span>
+</button>
+<button class="reaction-spring flex items-center gap-sm px-4 py-2 bg-secondary-container border border-secondary text-on-secondary-container rounded-full transition-all shadow-sm">
+<span class="material-symbols-outlined text-[20px]" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-label-md text-label-md">Agreed</span>
+</button>
+</div>
+</div>
+<!-- Variation 3: Compact Vertical Summary -->
+<div class="space-y-md">
+<p class="font-label-md text-label-md text-primary uppercase tracking-wider">03. Social Summary</p>
+<div class="p-lg rounded-xl bg-surface-bright border border-outline-variant flex items-center justify-between">
+<div class="flex -space-x-2">
+<div class="w-8 h-8 rounded-full border-2 border-surface-bright bg-tertiary-container flex items-center justify-center overflow-hidden">
+<img alt="Avatar" class="w-full h-full object-cover" data-alt="Close-up portrait of a young professional with clean lighting and a soft-focus office background. The color tone is neutral and clean, emphasizing modern minimalism and professional engagement as part of the WordPress Pulse brand aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCrsuqe1GcdBwU461cuGFuv__5xJA1xp4-8TBoqe5ugrpCRv6_rTicwj4ZmJ4vjXmgP9q01yBzo4UInpB78spAe7q7t9gNR3ZbPigtLMWd27Sk63iq13XN2GFhES27X5ORRQqEDf91jbaMgXZFGmSsRimQ8suMLOM2dwCn-dBZKAt70nDAp-GHKT7zDS8y1wwqdXb-GzJYIeqGAyNvqajCD1KVxQsFEMjPtrC-j267JQ7oL0E9bNKaOCny9pkcKTY8ltVuL8onrzx0v"/>
+</div>
+<div class="w-8 h-8 rounded-full border-2 border-surface-bright bg-primary-container flex items-center justify-center overflow-hidden">
+<img alt="Avatar" class="w-full h-full object-cover" data-alt="Portrait of a creative individual in a bright, modern studio environment. The lighting is high-key and natural, creating a vibrant yet professional look that aligns with the tactile and energetic personality of the Kinetic Pulse design system." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAcuBIRrGRNELJJ7OswIiBz7v1D4Kv0HPumFSEDHxR9Uhjh_egCitroTfCuWjVxyBF1GfGEYk4ebSWHYDLSuxZylDdx8cAnU1gKuCitSYpABP90EWCCgX5e65q8A7rc0JnHHo4djZTU22JVBQ2k1UmaPZxnCXAMsjhXJa6SEEH4Cxyw3ebBBQsCX3_GvWp-ZzXrjZdebhan0fQu4e0Dh8OQnn6TgiKUSSMUZJh6mTRWBhYQMBwWZKrsmpTt6jslLqMVyjQnOq8msWlj"/>
+</div>
+<div class="w-8 h-8 rounded-full border-2 border-surface-bright bg-surface-container-highest flex items-center justify-center text-[10px] font-bold text-on-surface">
+                  +12
+                </div>
+</div>
+<div class="flex gap-md">
+<span class="material-symbols-outlined text-primary reaction-spring cursor-pointer" data-icon="add_reaction">add_reaction</span>
+<span class="material-symbols-outlined text-on-surface-variant reaction-spring cursor-pointer" data-icon="share">share</span>
+</div>
+</div>
+</div>
+<!-- Variation 4: Detailed Multi-Action -->
+<div class="space-y-md col-span-1 md:col-span-2">
+<p class="font-label-md text-label-md text-primary uppercase tracking-wider">04. Interactive Canvas Grid</p>
+<div class="grid grid-cols-2 lg:grid-cols-5 gap-md">
+<div class="group bg-surface-container-low p-md rounded-xl border border-outline-variant hover:border-primary transition-all reaction-spring cursor-pointer flex flex-col items-center gap-sm shadow-sm">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="rocket_launch">rocket_launch</span>
+<span class="font-label-md text-label-md text-on-surface">Insightful</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">42 users</span>
+</div>
+<div class="group bg-surface-container-low p-md rounded-xl border border-outline-variant hover:border-tertiary transition-all reaction-spring cursor-pointer flex flex-col items-center gap-sm shadow-sm">
+<span class="material-symbols-outlined text-tertiary text-3xl" data-icon="favorite" style="font-variation-settings: 'FILL' 1;">favorite</span>
+<span class="font-label-md text-label-md text-on-surface">Loved</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">156 users</span>
+</div>
+<div class="group bg-surface-container-low p-md rounded-xl border border-outline-variant hover:border-secondary transition-all reaction-spring cursor-pointer flex flex-col items-center gap-sm shadow-sm">
+<span class="material-symbols-outlined text-secondary text-3xl" data-icon="lightbulb">lightbulb</span>
+<span class="font-label-md text-label-md text-on-surface">Brilliant</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">89 users</span>
+</div>
+<div class="group bg-surface-container-low p-md rounded-xl border border-outline-variant hover:border-on-surface transition-all reaction-spring cursor-pointer flex flex-col items-center gap-sm shadow-sm">
+<span class="material-symbols-outlined text-on-surface text-3xl" data-icon="sentiment_very_satisfied">sentiment_very_satisfied</span>
+<span class="font-label-md text-label-md text-on-surface">Hilarious</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">12 users</span>
+</div>
+<div class="group bg-surface-container-low p-md rounded-xl border border-outline-variant hover:border-primary-fixed-dim transition-all reaction-spring cursor-pointer flex flex-col items-center gap-sm shadow-sm">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="psychology">psychology</span>
+<span class="font-label-md text-label-md text-on-surface">Deep Think</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">67 users</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Success Alert Preview -->
+<div class="mt-xl p-md rounded-lg bg-secondary-container/10 border border-secondary/20 flex items-center gap-md">
+<span class="material-symbols-outlined text-secondary">check_circle</span>
+<p class="font-body-sm text-body-sm text-on-secondary-container">Your reaction has been recorded. This content is trending in your local area.</p>
+</div>
+</section>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-high dark:bg-inverse-surface border-t border-outline-variant mt-xl">
+<div class="flex flex-col md:flex-row justify-between items-center px-lg py-md w-full max-w-container-max mx-auto gap-md">
+<div class="font-label-md text-label-md font-bold text-on-surface">Kinetic Pulse WP</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant text-center md:text-left">© 2024 Kinetic Pulse WP. Tactile Engagement Powered by WordPress.</p>
+<div class="flex gap-lg">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Terms of Service</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">API Documentation</a>
+</div>
+</div>
+</footer>
+</body></html>

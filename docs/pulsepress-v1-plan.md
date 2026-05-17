@@ -34,7 +34,7 @@ Every line of PulsePress is held to the same bar. These principles are checked a
 **Maintainable:**
 
 - Test the contract, not the implementation. Pest specs assert "the migrator writes the version exactly once when current < latest" — not "the migrator calls `dbDelta` exactly three times". The implementation detail is free to change; the behaviour isn't.
-- Type everything that PHP 8.1 lets us type — parameters, returns, properties (with `readonly` where possible). `mixed` is a code smell unless we genuinely don't know.
+- Runtime PHP supports PHP 7.4 through 8.4. Type everything PHP 7.4 lets us type — parameters, returns, and properties — and avoid PHP 8-only syntax in shipped runtime files. Untyped values are acceptable only where PHP 7.4 has no compatible type form, such as APIs that would otherwise need `mixed` or union types.
 - Use `final class` for everything that isn't deliberately designed for extension (e.g., service providers). Inheritance is a contract; declare it only when you mean it.
 - Reuse existing helpers before writing new ones. `Schema::tableName($wpdb, ...)` already exists for every prefixed table name; don't string-concatenate `$wpdb->prefix . 'pulsepress_…'` in a controller.
 - Migrations and option keys are append-only. Renaming or removing either is a breaking change with a deprecation cycle.

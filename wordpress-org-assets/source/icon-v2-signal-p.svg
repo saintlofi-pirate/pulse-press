@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">PulsePress signal P logo</title>
+  <desc id="desc">A clear P monogram with a restrained signal line.</desc>
+  <defs>
+    <linearGradient id="bg" x1="30" y1="28" x2="226" y2="228" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#183A44"/>
+      <stop offset="1" stop-color="#0B1F28"/>
+    </linearGradient>
+    <linearGradient id="line" x1="58" y1="138" x2="198" y2="138" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#78D7C9"/>
+      <stop offset="1" stop-color="#2BA7A0"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="46" fill="url(#bg)"/>
+  <path d="M74 194V60h59c40 0 65 23 65 58 0 36-25 58-65 58h-22v18H74Zm37-51h23c17 0 27-9 27-25 0-15-10-25-27-25h-23v50Z" fill="#F8FAF7"/>
+  <path d="M52 146h42l15-27 23 47 20-34 12 14h40" fill="none" stroke="#09242C" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" opacity="0.45"/>
+  <path d="M52 146h42l15-27 23 47 20-34 12 14h40" fill="none" stroke="url(#line)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
