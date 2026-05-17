@@ -35,21 +35,8 @@ class WpdbStub extends \wpdb
 
     public function prepare(string $sql, mixed ...$args): string
     {
-        $identifierIndexes = [];
-        preg_match_all('/%i/', $sql, $matches, PREG_OFFSET_CAPTURE);
-        foreach ($matches[0] as $match) {
-            $identifierIndexes[] = substr_count(substr($sql, 0, $match[1]), '%');
-        }
-
-        $args = array_map(
-            static fn ($a, $index) => in_array($index, $identifierIndexes, true)
-                ? '`' . str_replace('`', '``', (string) $a) . '`'
-                : (is_int($a) || is_float($a) ? (string) $a : "'" . str_replace("'", "''", (string) $a) . "'"),
-            $args,
-            array_keys($args)
-        );
-
-        return vsprintf(str_replace(['%s', '%d', '%f', '%i'], '%s', $sql), $args);
+        $args = array_map(static fn ($a) => is_int($a) || is_float($a) ? (string) $a : "'" . str_replace("'", "''", (string) $a) . "'", $args);
+        return vsprintf(str_replace(['%s', '%d', '%f'], '%s', $sql), $args);
     }
 
     public function get_var(string $sql): ?string

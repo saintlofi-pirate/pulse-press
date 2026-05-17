@@ -3,6 +3,11 @@ declare(strict_types=1);
 
 namespace PulsePress\Captures;
 
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 final class Captures
 {
     public const SOURCES = ['inline', 'block', 'shortcode'];

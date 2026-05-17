@@ -3,9 +3,14 @@ declare(strict_types=1);
 
 use PulsePress\Core\Application;
 use PulsePress\Providers\WidgetServiceProvider;
+use PulsePress\Settings\Settings;
+use PulsePress\Settings\SettingsRepository;
 use PulsePress\View\Manifest;
+use PulsePress\Visibility\VisibilityResolver;
 use Tests\Stubs\AssetSpy;
 use Tests\Stubs\FilterRegistry;
+use Tests\Stubs\OptionStore;
+use Tests\Stubs\PostRegistry;
 use Tests\Stubs\WpEnv;
 
 if (!defined('PULSEPRESS_DIR')) {
@@ -26,11 +31,15 @@ final class PpTestApplication extends Application
     }
 }
 
-function pp_make_provider(?Manifest $manifestOverride = null): WidgetServiceProvider
+function pp_make_provider(?Manifest $manifestOverride = null, bool $withVisibility = false): WidgetServiceProvider
 {
     $app      = new PpTestApplication();
     $provider = new WidgetServiceProvider($app);
     $provider->register();
+    if ($withVisibility) {
+        $app->singleton(SettingsRepository::class, fn () => new SettingsRepository());
+        $app->singleton(VisibilityResolver::class, fn () => new VisibilityResolver($app->get(SettingsRepository::class)));
+    }
     if ($manifestOverride !== null) {
         $app->instance(Manifest::class, $manifestOverride);
     }
@@ -86,7 +95,7 @@ it('enqueues script + style + data payload on a singular post when manifest reso
     expect($inline)->toHaveCount(1);
     expect($inline[0]['args']['position'])->toBe('before');
 
-    preg_match('/^var PulsePressData = (.*);$/', $inline[0]['args']['data'], $matches);
+    preg_match('/^window\.PulsePressData = (.*);$/', $inline[0]['args']['data'], $matches);
     $data = json_decode($matches[1] ?? '{}', true);
 
     expect($data['postId'])->toBe(209);
@@ -95,6 +104,14 @@ it('enqueues script + style + data payload on a singular post when manifest reso
     expect($data['allowGuestReactions'])->toBeTrue();
     expect($data['countThreshold'])->toBe(5);
     expect($data['animationMode'])->toBe('subtle');
+
+    $scriptData = AssetSpy::only('script_add_data');
+    expect($scriptData)->toHaveCount(1);
+    expect($scriptData[0]['args'])->toMatchArray([
+        'handle' => WidgetServiceProvider::SCRIPT_HANDLE,
+        'key'    => 'type',
+        'value'  => 'module',
+    ]);
 });
 
 it('enqueues on non-singular pages when pulsepress_widget_enqueue is filtered true', function () {
@@ -109,6 +126,50 @@ it('enqueues on non-singular pages when pulsepress_widget_enqueue is filtered tr
 
     expect(AssetSpy::only('enqueue_script'))->toHaveCount(1);
     expect(AssetSpy::only('register_style'))->toBeEmpty();
+});
+
+it('does not enqueue on a singular post hidden by settings', function () {
+    WpEnv::setAdmin(false);
+    WpEnv::setSingular('post', 42);
+    PostRegistry::register(42, 'publish', true, 'post');
+    OptionStore::set(Settings::OPTION_NAME, ['hide_on_post_ids' => [42]]);
+
+    $manifest = pp_make_temp_manifest(['file' => 'js/widget.abc.js']);
+    $provider = pp_make_provider($manifest, true);
+
+    $provider->enqueueAssets();
+
+    expect(AssetSpy::calls())->toBeEmpty();
+});
+
+it('enqueues on a singular page when it contains the shortcode', function () {
+    WpEnv::setAdmin(false);
+    WpEnv::setSingular('page', 88);
+    WpEnv::setPostContent('<p>Intro</p>[pulsepress]');
+    PostRegistry::register(88, 'publish', true, 'page');
+    OptionStore::set(Settings::OPTION_NAME, ['auto_insert_post_types' => []]);
+
+    $manifest = pp_make_temp_manifest(['file' => 'js/widget.abc.js']);
+    $provider = pp_make_provider($manifest, true);
+
+    $provider->enqueueAssets();
+
+    expect(AssetSpy::only('enqueue_script'))->toHaveCount(1);
+});
+
+it('enqueues on a singular page when it contains the reactions block', function () {
+    WpEnv::setAdmin(false);
+    WpEnv::setSingular('page', 89);
+    WpEnv::setPostContent('<!-- wp:pulsepress/reactions /-->');
+    PostRegistry::register(89, 'publish', true, 'page');
+    OptionStore::set(Settings::OPTION_NAME, ['auto_insert_post_types' => []]);
+
+    $manifest = pp_make_temp_manifest(['file' => 'js/widget.abc.js']);
+    $provider = pp_make_provider($manifest, true);
+
+    $provider->enqueueAssets();
+
+    expect(AssetSpy::only('enqueue_script'))->toHaveCount(1);
 });
 
 it('appends the widget container to single-post content', function () {

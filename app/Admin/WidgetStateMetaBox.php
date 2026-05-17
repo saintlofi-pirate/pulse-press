@@ -6,7 +6,11 @@ namespace PulsePress\Admin;
 use PulsePress\Visibility\VisibilityResolver;
 use WP_Post;
 
-defined('ABSPATH') || exit;
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 final class WidgetStateMetaBox
 {
     public const META_BOX_ID    = 'pulsepress-widget-state';
@@ -93,10 +97,7 @@ final class WidgetStateMetaBox
         if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
             return;
         }
-        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized immediately after unslashing.
-        $rawNonce = isset($_POST[self::NONCE_FIELD]) ? wp_unslash($_POST[self::NONCE_FIELD]) : '';
-        $nonce    = is_string($rawNonce) ? sanitize_text_field($rawNonce) : '';
-
+        $nonce = isset($_POST[self::NONCE_FIELD]) ? sanitize_text_field(wp_unslash((string) $_POST[self::NONCE_FIELD])) : '';
         if ($nonce === '' || !wp_verify_nonce($nonce, self::NONCE_ACTION)) {
             return;
         }
@@ -107,9 +108,8 @@ final class WidgetStateMetaBox
             return;
         }
 
-        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized immediately after unslashing.
-        $rawValue = wp_unslash($_POST['pulsepress_widget_state']);
-        $value    = VisibilityResolver::sanitiseMode(is_string($rawValue) ? sanitize_key($rawValue) : '');
+        $rawValue = sanitize_text_field(wp_unslash((string) $_POST['pulsepress_widget_state']));
+        $value    = VisibilityResolver::sanitiseMode($rawValue);
         update_post_meta($postId, VisibilityResolver::META_KEY, $value);
     }
 

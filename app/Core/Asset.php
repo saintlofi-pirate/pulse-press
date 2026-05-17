@@ -3,7 +3,11 @@ declare(strict_types=1);
 
 namespace PulsePress\Core;
 
-defined('ABSPATH') || exit;
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 class Asset
 {
     /** @var array<string, array{handle:string, path:string, deps:array, ver:string, in_footer:bool, context:string, condition:?callable, localize:array}> */
@@ -12,8 +16,11 @@ class Asset
     /** @var array<string, array{handle:string, path:string, deps:array, ver:string, media:string, context:string, condition:?callable}> */
     protected array $styles = [];
 
-    public function __construct(protected string $pluginSlug = 'pulsepress')
+    protected string $pluginSlug;
+
+    public function __construct(string $pluginSlug = 'pulsepress')
     {
+        $this->pluginSlug = $pluginSlug;
     }
 
     public function url(string $path): string

@@ -6,12 +6,20 @@ namespace PulsePress\Analytics;
 use DateTimeImmutable;
 use PulsePress\Settings\SettingsRepository;
 
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 final class MetricsCalculator
 {
-    public function __construct(
-        private AnalyticsRepository $repository,
-        private SettingsRepository $settings,
-    ) {
+    private AnalyticsRepository $repository;
+    private SettingsRepository $settings;
+
+    public function __construct(AnalyticsRepository $repository, SettingsRepository $settings)
+    {
+        $this->repository = $repository;
+        $this->settings   = $settings;
     }
 
     public function calculate(DateTimeImmutable $fromUtc, DateTimeImmutable $toUtc, bool $clamped): MetricsEnvelope
@@ -51,18 +59,18 @@ final class MetricsCalculator
         $postTitles = $this->resolveTitles(array_map(static fn ($row) => (int) $row['post_id'], $topPosts));
 
         return new MetricsEnvelope(
-            fromUtc:           $fromUtc,
-            toUtc:             $toUtc,
-            clamped:           $clamped,
-            totalReactions:    $totalReactions,
-            positiveReactions: $positiveReactions,
-            totalCaptures:     $totalCaptures,
-            sentimentRate:     $sentimentRate,
-            captureRate:       $captureRate,
-            dailySeries:       $series,
-            topPosts:          $topPosts,
-            postTitles:        $postTitles,
-            positiveSet:       $positiveSet,
+            $fromUtc,
+            $toUtc,
+            $clamped,
+            $totalReactions,
+            $positiveReactions,
+            $totalCaptures,
+            $sentimentRate,
+            $captureRate,
+            $series,
+            $topPosts,
+            $postTitles,
+            $positiveSet
         );
     }
 

@@ -5,6 +5,11 @@ namespace PulsePress\Visibility;
 
 use PulsePress\Settings\SettingsRepository;
 
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 final class VisibilityResolver
 {
     public const META_KEY = '_pulsepress_widget_state';

@@ -3,6 +3,11 @@ declare(strict_types=1);
 
 namespace PulsePress\Core;
 
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 class Config
 {
     /** @var array<string, mixed> */
@@ -20,7 +25,7 @@ class Config
         }
     }
 
-    public function get(string $key, mixed $default = null): mixed
+    public function get(string $key, $default = null)
     {
         $parts = explode('.', $key);
         $file  = array_shift($parts);

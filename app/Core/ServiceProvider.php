@@ -3,10 +3,18 @@ declare(strict_types=1);
 
 namespace PulsePress\Core;
 
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 abstract class ServiceProvider
 {
-    public function __construct(protected Application $app)
+    protected Application $app;
+
+    public function __construct(Application $app)
     {
+        $this->app = $app;
     }
 
     public function register(): void

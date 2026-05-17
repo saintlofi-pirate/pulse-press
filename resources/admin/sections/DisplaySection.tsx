@@ -1,4 +1,5 @@
 import { CheckboxListField } from '../components/fields/CheckboxListField';
+import { ColorField } from '../components/fields/ColorField';
 import { NumberField } from '../components/fields/NumberField';
 import { RadioField } from '../components/fields/RadioField';
 import { TextField } from '../components/fields/TextField';
@@ -81,6 +82,15 @@ export function DisplaySection({ state, adminData }: Props) {
           onChange={(next) => update('theme_mode', next)}
           status={<StatusPill status={fieldStatus.theme_mode === 'error' ? undefined : fieldStatus.theme_mode} i18n={i18n} />}
           error={errors.theme_mode}
+        />
+
+        <ColorField
+          label={i18n.fields.primaryColorLabel}
+          helper={i18n.fields.primaryColorHelper}
+          value={settings.primary_color}
+          onChange={(next) => update('primary_color', next)}
+          status={<StatusPill status={fieldStatus.primary_color === 'error' ? undefined : fieldStatus.primary_color} i18n={i18n} />}
+          error={errors.primary_color}
         />
 
         <RadioField

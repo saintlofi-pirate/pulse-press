@@ -9,6 +9,11 @@ use ReflectionException;
 use ReflectionNamedType;
 use RuntimeException;
 
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 class Container
 {
     /** @var array<string, array{concrete: mixed, shared: bool}> */
@@ -17,7 +22,7 @@ class Container
     /** @var array<string, mixed> */
     protected array $instances = [];
 
-    public function bind(string $abstract, mixed $concrete = null, bool $shared = false): void
+    public function bind(string $abstract, $concrete = null, bool $shared = false): void
     {
         $this->bindings[$abstract] = [
             'concrete' => $concrete ?? $abstract,
@@ -25,12 +30,12 @@ class Container
         ];
     }
 
-    public function singleton(string $abstract, mixed $concrete = null): void
+    public function singleton(string $abstract, $concrete = null): void
     {
         $this->bind($abstract, $concrete, true);
     }
 
-    public function instance(string $abstract, mixed $instance): void
+    public function instance(string $abstract, $instance): void
     {
         $this->instances[$abstract] = $instance;
     }
@@ -40,7 +45,7 @@ class Container
         return isset($this->bindings[$id]) || isset($this->instances[$id]);
     }
 
-    public function get(string $id): mixed
+    public function get(string $id)
     {
         if (isset($this->instances[$id])) {
             return $this->instances[$id];
@@ -56,30 +61,30 @@ class Container
         return $object;
     }
 
-    public function make(string $abstract): mixed
+    public function make(string $abstract)
     {
         return $this->get($abstract);
     }
 
-    protected function build(mixed $concrete): mixed
+    protected function build($concrete)
     {
         if ($concrete instanceof Closure) {
             return $concrete($this);
         }
 
-        // phpcs:disable WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception messages are not rendered output.
         if (!is_string($concrete) || !class_exists($concrete)) {
-            throw new RuntimeException(sprintf('Target [%s] is not buildable.', $this->exceptionFragment(is_string($concrete) ? $concrete : gettype($concrete))));
+            throw new RuntimeException('Container target is not buildable.');
         }
 
         try {
             $reflector = new ReflectionClass($concrete);
         } catch (ReflectionException $e) {
-            throw new RuntimeException(sprintf('Cannot reflect [%s]: %s', $this->exceptionFragment($concrete), $this->exceptionFragment($e->getMessage())), 0, $e);
+            unset($e);
+            throw new RuntimeException('Container target cannot be reflected.');
         }
 
         if (!$reflector->isInstantiable()) {
-            throw new RuntimeException(sprintf('Class [%s] is not instantiable.', $this->exceptionFragment($concrete)));
+            throw new RuntimeException('Container target is not instantiable.');
         }
 
         $constructor = $reflector->getConstructor();
@@ -102,19 +107,9 @@ class Container
                 continue;
             }
 
-            throw new RuntimeException(sprintf(
-                'Cannot resolve parameter [$%s] of [%s::__construct()].',
-                $this->exceptionFragment($parameter->getName()),
-                $this->exceptionFragment($concrete)
-            ));
+            throw new RuntimeException('Container target dependency cannot be resolved.');
         }
-        // phpcs:enable WordPress.Security.EscapeOutput.ExceptionNotEscaped
 
         return $reflector->newInstanceArgs($dependencies);
-    }
-
-    private function exceptionFragment(string $value): string
-    {
-        return function_exists('esc_html') ? esc_html($value) : htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
     }
 }

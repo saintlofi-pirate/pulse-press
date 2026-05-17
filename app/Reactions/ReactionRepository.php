@@ -7,6 +7,11 @@ use DateTimeInterface;
 use PulsePress\Database\Schema;
 use wpdb;
 
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 final class ReactionRepository
 {
     public const COUNT_CACHE_TTL = 300;
@@ -25,6 +30,7 @@ final class ReactionRepository
         $table = Schema::tableName($this->wpdb, Schema::TABLE_REACTIONS);
         $timestamp = $now->format('Y-m-d H:i:s');
 
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is selected from Schema allowlist.
         $sql = $this->wpdb->prepare(
             "INSERT INTO {$table} (post_id, reaction_type, user_hash, created_at, updated_at)
              VALUES (%d, %s, %s, %s, %s)
@@ -37,7 +43,9 @@ final class ReactionRepository
             $timestamp,
             $timestamp
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Prepared above with an allowlisted table name.
         $this->wpdb->query($sql);
 
         // MySQL's ON DUPLICATE KEY UPDATE returns 1 for a fresh insert and 2 for an update.
@@ -57,11 +65,14 @@ final class ReactionRepository
 
         $this->lastReadWasCached = false;
         $table = Schema::tableName($this->wpdb, Schema::TABLE_REACTIONS);
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is selected from Schema allowlist.
         $sql   = $this->wpdb->prepare(
             "SELECT reaction_type, COUNT(*) AS c FROM {$table} WHERE post_id = %d GROUP BY reaction_type",
             $postId
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Prepared above with an allowlisted table name.
         $rows = $this->wpdb->get_results($sql, ARRAY_A) ?: [];
 
         $counts = [];
@@ -87,11 +98,14 @@ final class ReactionRepository
     public function purgeOlderThan(DateTimeInterface $cutoff): int
     {
         $table = Schema::tableName($this->wpdb, Schema::TABLE_REACTIONS);
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is selected from Schema allowlist.
         $sql = $this->wpdb->prepare(
             "DELETE FROM {$table} WHERE updated_at < %s",
             $cutoff->format('Y-m-d H:i:s')
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Prepared above with an allowlisted table name.
         $affected = $this->wpdb->query($sql);
         return is_int($affected) ? $affected : 0;
     }

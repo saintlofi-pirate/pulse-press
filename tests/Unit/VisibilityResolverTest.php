@@ -41,6 +41,12 @@ it('explicit on beats hide list', function () {
     expect(pp_resolver()->shouldRender(42, 'auto'))->toBeTrue();
 });
 
+it('excluded post id beats explicit on', function () {
+    PostMetaStore::set(42, VisibilityResolver::META_KEY, 'on');
+    OptionStore::set(Settings::OPTION_NAME, ['hide_on_post_ids' => [42]]);
+    expect(pp_resolver()->shouldRender(42, 'auto'))->toBeFalse();
+});
+
 it('explicit off beats auto-insert list', function () {
     PostMetaStore::set(42, VisibilityResolver::META_KEY, 'off');
     OptionStore::set(Settings::OPTION_NAME, ['auto_insert_post_types' => ['post']]);
@@ -63,6 +69,16 @@ it('hide list catches the auto context', function () {
 
 it('hide list catches block + shortcode', function () {
     OptionStore::set(Settings::OPTION_NAME, ['hide_on_post_types' => ['post']]);
+    expect(pp_resolver()->shouldRender(42, 'block'))->toBeFalse();
+    expect(pp_resolver()->shouldRender(42, 'shortcode'))->toBeFalse();
+});
+
+it('excluded post id catches auto block and shortcode contexts', function () {
+    OptionStore::set(Settings::OPTION_NAME, [
+        'hide_on_post_ids'       => [42],
+        'auto_insert_post_types' => ['post'],
+    ]);
+    expect(pp_resolver()->shouldRender(42, 'auto'))->toBeFalse();
     expect(pp_resolver()->shouldRender(42, 'block'))->toBeFalse();
     expect(pp_resolver()->shouldRender(42, 'shortcode'))->toBeFalse();
 });

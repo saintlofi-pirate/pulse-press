@@ -3,6 +3,11 @@ declare(strict_types=1);
 
 namespace PulsePress\Reactions;
 
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 final class Reactions
 {
     public const TYPES = [

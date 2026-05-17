@@ -6,8 +6,8 @@ use PulsePress\Settings\Settings;
 it('exposes a complete defaults map', function () {
     foreach ([
         'count_visibility', 'count_threshold', 'widget_design', 'icon_style',
-        'theme_mode', 'animation_mode', 'auto_insert_post_types', 'auto_insert_position',
-        'positive_reactions', 'allow_guest_reactions', 'consent_text',
+        'theme_mode', 'primary_color', 'animation_mode', 'auto_insert_post_types', 'auto_insert_position',
+        'enabled_reactions', 'positive_reactions', 'allow_guest_reactions', 'consent_text',
         'consent_text_version', 'delete_on_uninstall', 'retention_days',
         'hide_on_post_types', 'hide_on_post_ids',
     ] as $key) {
@@ -39,11 +39,11 @@ it('falls back to default for unknown enum value', function () {
 it('accepts free widget design and animation choices', function () {
     $clean = Settings::sanitise([
         'widget_design'  => 'progress_split',
-        'animation_mode' => 'spring',
+        'animation_mode' => 'burst',
     ]);
 
     expect($clean['widget_design'])->toBe('progress_split');
-    expect($clean['animation_mode'])->toBe('spring');
+    expect($clean['animation_mode'])->toBe('burst');
 });
 
 it('falls back for unknown widget design and animation choices', function () {
@@ -56,9 +56,29 @@ it('falls back for unknown widget design and animation choices', function () {
     expect($clean['animation_mode'])->toBe(Settings::DEFAULTS['animation_mode']);
 });
 
+it('accepts lowercase and uppercase hex primary colors', function () {
+    expect(Settings::sanitise(['primary_color' => '#0EA5E9'])['primary_color'])->toBe('#0ea5e9');
+    expect(Settings::sanitise(['primary_color' => '#111827'])['primary_color'])->toBe('#111827');
+});
+
+it('falls back for invalid primary colors', function () {
+    expect(Settings::sanitise(['primary_color' => 'blue'])['primary_color'])->toBe(Settings::DEFAULTS['primary_color']);
+    expect(Settings::sanitise(['primary_color' => '#fff'])['primary_color'])->toBe(Settings::DEFAULTS['primary_color']);
+});
+
 it('filters positive_reactions to the Reactions allowlist', function () {
     $clean = Settings::sanitise(['positive_reactions' => ['love', 'celebrate', 'angry', 'foo']]);
     expect($clean['positive_reactions'])->toBe(['love', 'angry']);
+});
+
+it('filters enabled_reactions to the Reactions allowlist', function () {
+    $clean = Settings::sanitise(['enabled_reactions' => ['love', 'celebrate', 'sad', 'foo']]);
+    expect($clean['enabled_reactions'])->toBe(['love', 'sad']);
+});
+
+it('falls back when enabled_reactions ends up empty', function () {
+    $clean = Settings::sanitise(['enabled_reactions' => ['celebrate']]);
+    expect($clean['enabled_reactions'])->toBe(Settings::DEFAULTS['enabled_reactions']);
 });
 
 it('falls back when positive_reactions ends up empty', function () {

@@ -8,12 +8,20 @@ use PulsePress\Http\RestException;
 use wpdb;
 use WP_REST_Request;
 
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 final class CaptureExporter
 {
     public const DEFAULT_CHUNK_SIZE = 500;
 
-    public function __construct(private wpdb $wpdb)
+    private wpdb $wpdb;
+
+    public function __construct(wpdb $wpdb)
     {
+        $this->wpdb = $wpdb;
     }
 
     /** @return array<string, array{label: string, render: callable}> */
@@ -82,13 +90,14 @@ final class CaptureExporter
         $table      = Schema::tableName($this->wpdb, Schema::TABLE_CAPTURES);
 
         while (true) {
+            // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is selected from Schema allowlist.
             $sql = $this->wpdb->prepare(
-                'SELECT * FROM %i ORDER BY id ASC LIMIT %d OFFSET %d',
-                $table,
+                "SELECT * FROM {$table} ORDER BY id ASC LIMIT %d OFFSET %d",
                 $chunk,
                 $offset
             );
-            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Prepared above with a table identifier placeholder.
+            // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Prepared above with an allowlisted table name.
             $rows = $this->wpdb->get_results($sql, ARRAY_A);
             if (!is_array($rows) || $rows === []) {
                 break;
@@ -127,7 +136,6 @@ final class CaptureExporter
             $label  = $entry['label']  ?? null;
             $render = $entry['render'] ?? null;
             if (!is_string($label) || !is_callable($render)) {
-                do_action('pulsepress_export_column_skipped', $key, $entry);
                 continue;
             }
             $clean[$key] = ['label' => $label, 'render' => $render];

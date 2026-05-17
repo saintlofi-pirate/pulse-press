@@ -16,13 +16,21 @@ use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
 
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 final class CaptureController
 {
-    public function __construct(private CaptureRepository $repository)
+    private CaptureRepository $repository;
+
+    public function __construct(CaptureRepository $repository)
     {
+        $this->repository = $repository;
     }
 
-    public function capture(WP_REST_Request $request): WP_REST_Response|WP_Error
+    public function capture(WP_REST_Request $request)
     {
         $postId       = (int) $request->get_param('post_id');
         $rawEmail     = (string) $request->get_param('email');
@@ -86,15 +94,15 @@ final class CaptureController
         $version  = Captures::consentTextVersion();
 
         $input = new CaptureInput(
-            postId: $postId,
-            email: $email,
-            reactionType: $reactionType,
-            source: $source,
-            consentTextVersion: $version,
-            consentAt: $now,
-            ipHash: $fingerprint['ipHash'],
-            userAgentHash: $fingerprint['userAgentHash'],
-            purgeAt: $purgeAt,
+            $postId,
+            $email,
+            $reactionType,
+            $source,
+            $version,
+            $now,
+            $fingerprint['ipHash'],
+            $fingerprint['userAgentHash'],
+            $purgeAt
         );
 
         $record = $this->repository->store($input);

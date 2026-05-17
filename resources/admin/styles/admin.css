@@ -222,6 +222,40 @@
   box-shadow: 0 0 0 3px var(--pp-accent-tint);
 }
 
+.pulsepress-color-control {
+  display: grid;
+  grid-template-columns: 44px minmax(8rem, 12rem) 32px;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.pulsepress-color-control__picker {
+  width: 44px;
+  height: 38px;
+  padding: 0;
+  border: 1px solid var(--pp-border);
+  border-radius: 10px;
+  background: var(--pp-card);
+  cursor: pointer;
+}
+
+.pulsepress-color-control__picker:focus-visible {
+  outline: 2px solid var(--pp-accent);
+  outline-offset: 2px;
+}
+
+.pulsepress-color-control__text {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+
+.pulsepress-color-control__swatch {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--pp-border);
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 3px var(--pp-card);
+}
+
 .pulsepress-textarea {
   resize: vertical;
   min-height: 4.5rem;

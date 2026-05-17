@@ -10,6 +10,11 @@ use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
 
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 final class AnalyticsController
 {
     /**
@@ -26,11 +31,14 @@ final class AnalyticsController
     /** Default window when the admin opens the dashboard with no args. */
     public const DEFAULT_WINDOW_DAYS = 30;
 
-    public function __construct(private MetricsCalculator $calculator)
+    private MetricsCalculator $calculator;
+
+    public function __construct(MetricsCalculator $calculator)
     {
+        $this->calculator = $calculator;
     }
 
-    public function summary(WP_REST_Request $request): WP_REST_Response|WP_Error
+    public function summary(WP_REST_Request $request)
     {
         $timezone = wp_timezone();
         $today    = new DateTimeImmutable('today', $timezone);
@@ -101,7 +109,7 @@ final class AnalyticsController
         }
         try {
             return (new DateTimeImmutable($raw, $timezone));
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
             return $fallback;
         }
     }

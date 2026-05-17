@@ -9,10 +9,18 @@ use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
 
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 final class SettingsController
 {
-    public function __construct(private SettingsRepository $repository)
+    private SettingsRepository $repository;
+
+    public function __construct(SettingsRepository $repository)
     {
+        $this->repository = $repository;
     }
 
     public function read(WP_REST_Request $request): WP_REST_Response
@@ -25,7 +33,7 @@ final class SettingsController
         ], 200);
     }
 
-    public function update(WP_REST_Request $request): WP_REST_Response|WP_Error
+    public function update(WP_REST_Request $request)
     {
         $body = $request->get_json_params();
         if (!is_array($body)) {

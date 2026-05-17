@@ -6,9 +6,14 @@ namespace PulsePress\Blocks;
 use PulsePress\Core\Application;
 use PulsePress\Visibility\VisibilityResolver;
 
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 final class ReactionsBlock
 {
-    public static function render(array $attributes, string $content = '', mixed $block = null): string
+    public static function render(array $attributes, string $content = '', $block = null): string
     {
         $postId = isset($attributes['postId']) ? (int) $attributes['postId'] : 0;
         if ($postId <= 0) {

@@ -10,13 +10,21 @@ use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
 
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 final class ExportController
 {
-    public function __construct(private CaptureExporter $exporter)
+    private CaptureExporter $exporter;
+
+    public function __construct(CaptureExporter $exporter)
     {
+        $this->exporter = $exporter;
     }
 
-    public function download(WP_REST_Request $request): WP_REST_Response|WP_Error
+    public function download(WP_REST_Request $request)
     {
         if (!current_user_can('manage_options')) {
             return new WP_Error('rest_forbidden', __('You do not have permission to export captures.', 'pulse-press'), ['status' => 403]);
@@ -36,7 +44,7 @@ final class ExportController
 
         try {
             $this->exporter->stream(static function (string $line): void {
-                // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CaptureExporter emits RFC 4180 CSV rows, not HTML.
+                // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSV rows are escaped by CaptureExporter::packLine().
                 echo $line;
             }, ['request' => $request]);
         } catch (RestException $e) {

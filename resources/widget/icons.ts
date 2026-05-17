@@ -11,7 +11,19 @@ const ICONS: Record<string, string> = {
 
 const FALLBACK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="10"/></svg>';
 
-export function iconFor(type: ReactionType): string {
+const EMOJI_ICONS: Record<string, string> = {
+  love: '❤️',
+  insightful: '💡',
+  funny: '😄',
+  sad: '😢',
+  surprised: '😮',
+  angry: '😠',
+};
+
+export function iconFor(type: ReactionType, style: 'classic' | 'emoji' = 'classic'): string {
+  if (style === 'emoji') {
+    return `<span aria-hidden="true">${EMOJI_ICONS[type] ?? '•'}</span>`;
+  }
   return ICONS[type] ?? FALLBACK;
 }
 

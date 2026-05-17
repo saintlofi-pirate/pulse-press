@@ -1,7 +1,12 @@
 <?php
 declare(strict_types=1);
 
-defined('ABSPATH') || exit;
+
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 if (!function_exists('pulsepress')) {
     function pulsepress(): \PulsePress\Core\Application
     {

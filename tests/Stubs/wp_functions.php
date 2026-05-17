@@ -173,6 +173,20 @@ namespace PulsePress\Providers {
         }
     }
 
+    if (!function_exists(__NAMESPACE__ . '\do_action')) {
+        function do_action(string $hook, mixed ...$args): void
+        {
+            \Tests\Stubs\FilterRegistry::doAction($hook, $args);
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\wp_timezone')) {
+        function wp_timezone(): \DateTimeZone
+        {
+            return new \DateTimeZone('UTC');
+        }
+    }
+
     if (!function_exists(__NAMESPACE__ . '\register_rest_route')) {
         function register_rest_route(string $namespace, string $route, array $args): void
         {
@@ -215,6 +229,28 @@ namespace PulsePress\Providers {
         }
     }
 
+    if (!function_exists(__NAMESPACE__ . '\get_post')) {
+        function get_post(int|\WP_Post|null $post = null): ?object
+        {
+            return (object) ['ID' => \Tests\Stubs\WpEnv::currentPostId() ?: 0, 'post_content' => \Tests\Stubs\WpEnv::currentPostContent()];
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\has_block')) {
+        function has_block(string $blockName, mixed $post = null): bool
+        {
+            $content = is_object($post) && isset($post->post_content) ? (string) $post->post_content : \Tests\Stubs\WpEnv::currentPostContent();
+            return str_contains($content, '<!-- wp:' . $blockName);
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\has_shortcode')) {
+        function has_shortcode(string $content, string $tag): bool
+        {
+            return str_contains($content, '[' . $tag) || str_contains($content, '[/' . $tag . ']');
+        }
+    }
+
     if (!function_exists(__NAMESPACE__ . '\rest_url')) {
         function rest_url(string $path = ''): string
         {
@@ -251,6 +287,14 @@ namespace PulsePress\Providers {
         }
     }
 
+    if (!function_exists(__NAMESPACE__ . '\wp_script_add_data')) {
+        function wp_script_add_data(string $handle, string $key, mixed $value): bool
+        {
+            \Tests\Stubs\AssetSpy::record('script_add_data', compact('handle', 'key', 'value'));
+            return true;
+        }
+    }
+
     if (!function_exists(__NAMESPACE__ . '\wp_register_style')) {
         function wp_register_style(string $handle, string $src, array $deps = [], string|bool $ver = false): bool
         {
@@ -271,6 +315,21 @@ namespace PulsePress\Providers {
         {
             \Tests\Stubs\AssetSpy::record('localize', compact('handle', 'objectName', 'data'));
             return true;
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\wp_add_inline_script')) {
+        function wp_add_inline_script(string $handle, string $data, string $position = 'after'): bool
+        {
+            \Tests\Stubs\AssetSpy::record('inline_script', compact('handle', 'data', 'position'));
+            return true;
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__ . '\wp_json_encode')) {
+        function wp_json_encode(mixed $value, int $flags = 0, int $depth = 512): string|false
+        {
+            return json_encode($value, $flags, $depth);
         }
     }
 
@@ -810,6 +869,7 @@ namespace Tests\Stubs {
         private static ?string $singularType = null;
         private static int $postId = 0;
         private static string $postType = 'post';
+        private static string $postContent = '';
 
         public static function reset(): void
         {
@@ -817,6 +877,7 @@ namespace Tests\Stubs {
             self::$singularType = null;
             self::$postId       = 0;
             self::$postType     = 'post';
+            self::$postContent  = '';
         }
 
         public static function setAdmin(bool $value): void
@@ -831,6 +892,11 @@ namespace Tests\Stubs {
             if ($postType !== null) {
                 self::$postType = $postType;
             }
+        }
+
+        public static function setPostContent(string $content): void
+        {
+            self::$postContent = $content;
         }
 
         public static function isAdmin(): bool
@@ -854,6 +920,11 @@ namespace Tests\Stubs {
         public static function currentPostType(): string|false
         {
             return self::$singularType === null ? false : self::$postType;
+        }
+
+        public static function currentPostContent(): string
+        {
+            return self::$postContent;
         }
     }
 

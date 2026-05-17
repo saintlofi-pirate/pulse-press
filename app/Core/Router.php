@@ -3,7 +3,11 @@ declare(strict_types=1);
 
 namespace PulsePress\Core;
 
-defined('ABSPATH') || exit;
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 class Router
 {
     /** @var list<array{method:string, uri:string, action:mixed, permissions:mixed}> */
@@ -11,22 +15,22 @@ class Router
 
     protected static string $namespace = 'pulsepress/v1';
 
-    public static function get(string $uri, mixed $action, mixed $permissions = 'manage_options'): void
+    public static function get(string $uri, $action, $permissions = 'manage_options'): void
     {
         self::add('GET', $uri, $action, $permissions);
     }
 
-    public static function post(string $uri, mixed $action, mixed $permissions = 'manage_options'): void
+    public static function post(string $uri, $action, $permissions = 'manage_options'): void
     {
         self::add('POST', $uri, $action, $permissions);
     }
 
-    public static function put(string $uri, mixed $action, mixed $permissions = 'manage_options'): void
+    public static function put(string $uri, $action, $permissions = 'manage_options'): void
     {
         self::add('PUT', $uri, $action, $permissions);
     }
 
-    public static function delete(string $uri, mixed $action, mixed $permissions = 'manage_options'): void
+    public static function delete(string $uri, $action, $permissions = 'manage_options'): void
     {
         self::add('DELETE', $uri, $action, $permissions);
     }
@@ -36,7 +40,7 @@ class Router
         self::$namespace = $namespace;
     }
 
-    protected static function add(string $method, string $uri, mixed $action, mixed $permissions): void
+    protected static function add(string $method, string $uri, $action, $permissions): void
     {
         self::$routes[] = compact('method', 'uri', 'action', 'permissions');
     }
@@ -54,14 +58,14 @@ class Router
         });
     }
 
-    protected static function resolveCallback(mixed $action): callable
+    protected static function resolveCallback($action): callable
     {
         if (is_array($action) && count($action) === 2) {
             [$class, $method] = $action;
             return static fn ($request) => (new $class())->{$method}($request);
         }
 
-        if (is_string($action) && str_contains($action, '@')) {
+        if (is_string($action) && strpos($action, '@') !== false) {
             [$class, $method] = explode('@', $action, 2);
             return static fn ($request) => (new $class())->{$method}($request);
         }
@@ -69,7 +73,7 @@ class Router
         return $action;
     }
 
-    protected static function resolvePermission(mixed $permissions): callable
+    protected static function resolvePermission($permissions): callable
     {
         if (is_callable($permissions)) {
             return $permissions;

@@ -3,11 +3,18 @@ declare(strict_types=1);
 
 namespace PulsePress\Providers;
 
+use PulsePress\Blocks\Shortcode;
 use PulsePress\Core\ServiceProvider;
 use PulsePress\Reactions\Reactions;
 use PulsePress\Settings\Settings;
 use PulsePress\Settings\SettingsRepository;
 use PulsePress\View\Manifest;
+use PulsePress\Visibility\VisibilityResolver;
+
+
+if (!defined('ABSPATH')) {
+    exit;
+}
 
 final class WidgetServiceProvider extends ServiceProvider
 {
@@ -36,7 +43,7 @@ final class WidgetServiceProvider extends ServiceProvider
         if (is_admin()) {
             return;
         }
-        if (!is_singular('post') && !apply_filters('pulsepress_widget_enqueue', false)) {
+        if (!$this->shouldEnqueueAssets()) {
             return;
         }
 
@@ -83,30 +90,31 @@ final class WidgetServiceProvider extends ServiceProvider
             'isLoggedIn'          => function_exists('is_user_logged_in') ? \is_user_logged_in() : false,
             'iconStyle'           => (string) ($settings['icon_style'] ?? Settings::DEFAULTS['icon_style']),
             'themeMode'           => (string) ($settings['theme_mode'] ?? Settings::DEFAULTS['theme_mode']),
+            'primaryColor'        => (string) ($settings['primary_color'] ?? Settings::DEFAULTS['primary_color']),
             'widgetDesign'        => (string) ($settings['widget_design'] ?? Settings::DEFAULTS['widget_design']),
             'animationMode'       => (string) ($settings['animation_mode'] ?? Settings::DEFAULTS['animation_mode']),
             'countVisibility'     => (string) ($settings['count_visibility'] ?? Settings::DEFAULTS['count_visibility']),
             'countThreshold'      => (int) ($settings['count_threshold'] ?? Settings::DEFAULTS['count_threshold']),
             'i18n'                => [
-                'loading'         => __('Loading reactions…', 'pulsepress'),
-                'error'           => __('Sorry, your reaction could not be saved. Please try again.', 'pulsepress'),
-                'activeSuffix'    => __(', selected', 'pulsepress'),
-                'groupLabel'      => __('Reactions', 'pulsepress'),
-                'announceReacted' => __('Reacted with {type}.', 'pulsepress'),
-                'announceUpdated' => __('Updated reaction to {type}.', 'pulsepress'),
+                'loading'         => __('Loading reactions…', 'pulse-press'),
+                'error'           => __('Sorry, your reaction could not be saved. Please try again.', 'pulse-press'),
+                'activeSuffix'    => __(', selected', 'pulse-press'),
+                'groupLabel'      => __('Reactions', 'pulse-press'),
+                'announceReacted' => __('Reacted with {type}.', 'pulse-press'),
+                'announceUpdated' => __('Updated reaction to {type}.', 'pulse-press'),
                 'capture'         => [
-                    'prompt'          => __('Get future post updates', 'pulsepress'),
-                    'label'           => __('Email address', 'pulsepress'),
-                    'placeholder'     => __('you@example.com', 'pulsepress'),
+                    'prompt'          => __('Get future post updates', 'pulse-press'),
+                    'label'           => __('Email address', 'pulse-press'),
+                    'placeholder'     => __('you@example.com', 'pulse-press'),
                     'consent'         => (string) ($settings['consent_text'] ?? Settings::DEFAULTS['consent_text']),
-                    'consentHelper'   => __('We will only use your email to send new-post notifications. Unsubscribe any time.', 'pulsepress'),
-                    'submit'          => __('Subscribe', 'pulsepress'),
-                    'submitting'      => __('Submitting…', 'pulsepress'),
-                    'thanks'          => __('You are subscribed. Thanks - we will send future post updates.', 'pulsepress'),
-                    'alreadyCaptured' => __('We already have your email saved for this post.', 'pulsepress'),
-                    'networkError'    => __('Sorry, that did not go through. Please try again.', 'pulsepress'),
-                    'expiredNonce'    => __('Your session has expired. Please refresh the page and try again.', 'pulsepress'),
-                    'dismiss'         => __('Dismiss', 'pulsepress'),
+                    'consentHelper'   => __('We will only use your email to send new-post notifications. Unsubscribe any time.', 'pulse-press'),
+                    'submit'          => __('Subscribe', 'pulse-press'),
+                    'submitting'      => __('Submitting…', 'pulse-press'),
+                    'thanks'          => __('You are subscribed. Thanks - we will send future post updates.', 'pulse-press'),
+                    'alreadyCaptured' => __('We already have your email saved for this post.', 'pulse-press'),
+                    'networkError'    => __('Sorry, that did not go through. Please try again.', 'pulse-press'),
+                    'expiredNonce'    => __('Your session has expired. Please refresh the page and try again.', 'pulse-press'),
+                    'dismiss'         => __('Dismiss', 'pulse-press'),
                 ],
             ],
         ];
@@ -121,21 +129,77 @@ final class WidgetServiceProvider extends ServiceProvider
         wp_enqueue_script(self::SCRIPT_HANDLE);
     }
 
+    private function shouldEnqueueAssets(): bool
+    {
+        if ((bool) apply_filters('pulsepress_widget_enqueue', false)) {
+            return true;
+        }
+
+        if (!is_singular()) {
+            return false;
+        }
+
+        $postId = (int) get_the_ID();
+        if ($postId <= 0) {
+            return false;
+        }
+
+        if ($this->contentHasWidgetPlacement()) {
+            return $this->canRenderWidget($postId, 'block') || $this->canRenderWidget($postId, 'shortcode');
+        }
+
+        return $this->canRenderWidget($postId, 'auto');
+    }
+
+    private function contentHasWidgetPlacement(): bool
+    {
+        $post = function_exists('get_post') ? get_post() : null;
+        $content = is_object($post) && isset($post->post_content) && is_string($post->post_content)
+            ? $post->post_content
+            : '';
+
+        if ($content === '') {
+            return false;
+        }
+
+        if (function_exists('has_block') && has_block('pulsepress/reactions', $post)) {
+            return true;
+        }
+
+        return function_exists('has_shortcode') && has_shortcode($content, Shortcode::TAG);
+    }
+
+    private function canRenderWidget(int $postId, string $context): bool
+    {
+        if ($this->app->has(VisibilityResolver::class)) {
+            /** @var VisibilityResolver $resolver */
+            $resolver = $this->app->get(VisibilityResolver::class);
+            return $resolver->shouldRender($postId, $context);
+        }
+
+        if ($context === 'block' || $context === 'shortcode') {
+            return true;
+        }
+
+        $postType   = get_post_type();
+        $defaultOn  = $postType === 'post';
+        return (bool) apply_filters('pulsepress_widget_auto_insert', $defaultOn, $postType);
+    }
+
     /** @param list<string> $handles */
     private function ensureModuleScripts(array $handles): void
     {
-        $key = 'pulsepress_module_handles_widget';
         $handlesWithRenderedIds = array_merge($handles, array_map(static function (string $handle): string {
             return $handle . '-js';
         }, $handles));
 
-        if (!empty($GLOBALS[$key])) {
-            $GLOBALS[$key] = array_merge($GLOBALS[$key], $handlesWithRenderedIds);
+        if (!empty($GLOBALS['pulsepress_module_handles_widget'])) {
+            $GLOBALS['pulsepress_module_handles_widget'] = array_merge($GLOBALS['pulsepress_module_handles_widget'], $handlesWithRenderedIds);
             return;
         }
-        $GLOBALS[$key] = $handlesWithRenderedIds;
-        add_filter('wp_script_attributes', static function (array $attributes) use ($key): array {
-            $registered = $GLOBALS[$key] ?? [];
+        $GLOBALS['pulsepress_module_handles_widget'] = $handlesWithRenderedIds;
+        add_filter('wp_script_attributes', static function (array $attributes): array {
+            $registered = $GLOBALS['pulsepress_module_handles_widget'] ?? [];
             $id         = isset($attributes['id']) ? (string) $attributes['id'] : '';
             if ($id !== '' && in_array($id, $registered, true)) {
                 $attributes['type'] = 'module';
@@ -143,8 +207,8 @@ final class WidgetServiceProvider extends ServiceProvider
 
             return $attributes;
         });
-        add_filter('script_loader_tag', static function (string $tag, string $handle) use ($key) {
-            $registered = $GLOBALS[$key] ?? [];
+        add_filter('script_loader_tag', static function (string $tag, string $handle) {
+            $registered = $GLOBALS['pulsepress_module_handles_widget'] ?? [];
             $isRegisteredHandle = in_array($handle, $registered, true);
             $isRegisteredTag    = false;
             foreach ($registered as $registeredHandle) {
@@ -176,9 +240,9 @@ final class WidgetServiceProvider extends ServiceProvider
             return $content;
         }
 
-        if ($this->app->has(\PulsePress\Visibility\VisibilityResolver::class)) {
-            /** @var \PulsePress\Visibility\VisibilityResolver $resolver */
-            $resolver = $this->app->get(\PulsePress\Visibility\VisibilityResolver::class);
+        if ($this->app->has(VisibilityResolver::class)) {
+            /** @var VisibilityResolver $resolver */
+            $resolver = $this->app->get(VisibilityResolver::class);
             if (!$resolver->shouldRender($postId, 'auto')) {
                 return $content;
             }

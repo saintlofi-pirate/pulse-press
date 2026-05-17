@@ -80,3 +80,16 @@ it('invalidates the counts transient on invalidateCounts()', function () {
 
     expect(TransientStore::exists('pulsepress_counts_42'))->toBeFalse();
 });
+
+it('purges reaction rows older than the cutoff', function () {
+    $wpdb = new WpdbStub();
+    $wpdb->rows_affected = 4;
+    $repo = new ReactionRepository($wpdb);
+
+    $deleted = $repo->purgeOlderThan(new DateTimeImmutable('2026-05-01 00:00:00', new DateTimeZone('UTC')));
+
+    expect($deleted)->toBe(4);
+    expect($wpdb->last_query)
+        ->toContain('DELETE FROM wp_pulsepress_reactions')
+        ->toContain("updated_at < '2026-05-01 00:00:00'");
+});

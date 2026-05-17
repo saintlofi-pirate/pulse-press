@@ -3,6 +3,11 @@ declare(strict_types=1);
 
 namespace PulsePress\Core;
 
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 class Application extends Container
 {
     protected static ?Application $instance = null;

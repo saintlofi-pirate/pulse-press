@@ -6,6 +6,7 @@ export type SettingsState = {
   widget_design: WidgetDesign;
   icon_style: 'classic' | 'emoji';
   theme_mode: 'light' | 'dark' | 'auto';
+  primary_color: string;
   animation_mode: AnimationMode;
   auto_insert_post_types: string[];
   auto_insert_position: 'above' | 'below' | 'both';
@@ -129,6 +130,8 @@ export interface PulsePressAdminData {
       themeModeLabel: string;
       themeModeHelper: string;
       themeModeChoices: Record<string, string>;
+      primaryColorLabel: string;
+      primaryColorHelper: string;
       animationModeLabel: string;
       animationModeHelper: string;
       animationModeChoices: Record<string, string>;

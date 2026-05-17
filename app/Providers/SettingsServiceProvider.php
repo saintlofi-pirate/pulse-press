@@ -8,11 +8,15 @@ use PulsePress\Http\Controllers\SettingsController;
 use PulsePress\Settings\Settings;
 use PulsePress\Settings\SettingsRepository;
 
-defined('ABSPATH') || exit;
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 final class SettingsServiceProvider extends ServiceProvider
 {
     public const REST_NAMESPACE = 'pulsepress/v1';
-    public const ADMIN_SLUG     = 'pulse-press';
+    public const ADMIN_SLUG     = 'pulsepress';
 
     public function register(): void
     {
@@ -73,7 +77,7 @@ final class SettingsServiceProvider extends ServiceProvider
         echo '<div class="wrap"><div id="pulsepress-admin">' . esc_html__('Loading…', 'pulse-press') . '</div></div>';
     }
 
-    public function filterPositiveReactions(mixed $value): array
+    public function filterPositiveReactions($value): array
     {
         if (is_array($value) && $value !== []) {
             return $value;
@@ -82,14 +86,14 @@ final class SettingsServiceProvider extends ServiceProvider
         return $settings['positive_reactions'] ?? Settings::DEFAULTS['positive_reactions'];
     }
 
-    public function filterWidgetAutoInsert(mixed $value, string $postType = ''): bool
+    public function filterWidgetAutoInsert($value, string $postType = ''): bool
     {
         $settings = $this->app->get(SettingsRepository::class)->get();
         $types    = $settings['auto_insert_post_types'] ?? Settings::DEFAULTS['auto_insert_post_types'];
         return in_array($postType, (array) $types, true);
     }
 
-    public function filterConsentVersion(mixed $value): string
+    public function filterConsentVersion($value): string
     {
         if (is_string($value) && $value !== Settings::DEFAULTS['consent_text_version']) {
             return $value;

@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'preact/hooks';
+import { useMemo } from 'preact/hooks';
 import { ReactionBar } from '../../widget/components/ReactionBar';
 import type { PulsePressData } from '../../widget/types';
 import type { PulsePressAdminData, SettingsState } from '../types';
@@ -19,8 +19,6 @@ const MOCK_COUNTS: Record<string, number> = {
 };
 
 export function LivePreview({ settings, adminData }: Props) {
-  const previewRoot = useRef<HTMLDivElement | null>(null);
-  const [announce, setAnnounce] = useState<string>('');
   const i18n = adminData.i18n;
 
   const data = useMemo<PulsePressData>(() => {
@@ -33,6 +31,7 @@ export function LivePreview({ settings, adminData }: Props) {
       allowGuestReactions: settings.allow_guest_reactions,
       iconStyle: settings.icon_style,
       themeMode: settings.theme_mode,
+      primaryColor: settings.primary_color,
       widgetDesign: settings.widget_design,
       animationMode: settings.animation_mode,
       countVisibility: settings.count_visibility,
@@ -60,17 +59,7 @@ export function LivePreview({ settings, adminData }: Props) {
         },
       },
     };
-  }, [adminData, settings.allow_guest_reactions, settings.animation_mode, settings.consent_text, settings.count_threshold, settings.count_visibility, settings.enabled_reactions, settings.icon_style, settings.positive_reactions, settings.theme_mode, settings.widget_design]);
-
-  const handleClickCapture = (event: MouseEvent) => {
-    const target = event.target as HTMLElement | null;
-    if (target?.closest('button')) {
-      event.preventDefault();
-      event.stopPropagation();
-      setAnnounce('');
-      window.setTimeout(() => setAnnounce(i18n.livePreviewReadOnly), 50);
-    }
-  };
+  }, [adminData, settings.allow_guest_reactions, settings.animation_mode, settings.consent_text, settings.count_threshold, settings.count_visibility, settings.enabled_reactions, settings.icon_style, settings.positive_reactions, settings.primary_color, settings.theme_mode, settings.widget_design]);
 
   return (
     <aside class="pulsepress-preview" aria-labelledby="pulsepress-preview-title" data-theme={settings.theme_mode} data-design={settings.widget_design} data-icon-style={settings.icon_style} data-animation={settings.animation_mode}>
@@ -78,17 +67,12 @@ export function LivePreview({ settings, adminData }: Props) {
         <h2 id="pulsepress-preview-title" class="pulsepress-preview__title">{i18n.livePreviewLabel}</h2>
         <p class="pulsepress-preview__helper">{i18n.livePreviewHelper}</p>
       </div>
-      <div
-        ref={previewRoot}
-        class="pulsepress-preview__stage"
-        onClickCapture={handleClickCapture}
-      >
+      <div class="pulsepress-preview__stage">
         <div class="pulsepress">
           <ReactionBar postId={0} data={{ ...data, postId: 0 }} initialCounts={MOCK_COUNTS} previewOnly />
         </div>
         <div class="pulsepress-preview__overlay" aria-hidden="true" />
       </div>
-      <p class="pulsepress-sr-only" role="status" aria-live="polite" aria-atomic="true">{announce}</p>
     </aside>
   );
 }

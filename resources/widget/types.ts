@@ -35,6 +35,7 @@ export interface PulsePressData {
   isLoggedIn?: boolean;
   iconStyle?: 'classic' | 'emoji';
   themeMode?: 'light' | 'dark' | 'auto';
+  primaryColor?: string;
   widgetDesign?: WidgetDesign;
   animationMode?: AnimationMode;
   countVisibility?: 'always' | 'never' | 'threshold';

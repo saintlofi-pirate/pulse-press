@@ -3,13 +3,23 @@ declare(strict_types=1);
 
 namespace PulsePress\View;
 
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 final class Manifest
 {
     public const CACHE_KEY = 'pulsepress_vite_manifest_v1';
     public const CACHE_TTL = 86400;
 
-    public function __construct(private string $manifestPath, private string $distUrl)
+    private string $manifestPath;
+    private string $distUrl;
+
+    public function __construct(string $manifestPath, string $distUrl)
     {
+        $this->manifestPath = $manifestPath;
+        $this->distUrl      = $distUrl;
     }
 
     /**

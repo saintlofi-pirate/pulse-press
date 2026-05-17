@@ -5,6 +5,11 @@ namespace PulsePress\Providers;
 
 use PulsePress\Core\ServiceProvider;
 
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 class AppServiceProvider extends ServiceProvider
 {
     public function register(): void

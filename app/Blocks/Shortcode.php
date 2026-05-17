@@ -6,11 +6,16 @@ namespace PulsePress\Blocks;
 use PulsePress\Core\Application;
 use PulsePress\Visibility\VisibilityResolver;
 
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 final class Shortcode
 {
     public const TAG = 'pulsepress';
 
-    public static function render(array|string $attrs, ?string $content = null, string $tag = self::TAG): string
+    public static function render($attrs, ?string $content = null, string $tag = self::TAG): string
     {
         $atts = is_array($attrs) ? $attrs : [];
         $atts = shortcode_atts(['post_id' => 0], $atts, $tag);

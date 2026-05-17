@@ -3,6 +3,11 @@ declare(strict_types=1);
 
 namespace PulsePress\Settings;
 
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 final class SettingsRepository
 {
     private ?array $cached = null;

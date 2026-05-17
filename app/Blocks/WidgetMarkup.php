@@ -3,6 +3,11 @@ declare(strict_types=1);
 
 namespace PulsePress\Blocks;
 
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 final class WidgetMarkup
 {
     public static function container(int $postId): string

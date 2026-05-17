@@ -33,6 +33,18 @@ export function CaptureForm({ postId, reactionType, data, triggerRef, onDone, on
     emailRef.current?.focus();
   }, []);
 
+  useEffect(() => {
+    if (successMessage === null) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      onDismiss();
+    }, 3200);
+
+    return () => window.clearTimeout(timer);
+  }, [onDismiss, successMessage]);
+
   const restoreTriggerFocus = useCallback(() => {
     window.setTimeout(() => {
       const node = (triggerRef as { current: HTMLButtonElement | null }).current;

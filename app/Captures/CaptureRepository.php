@@ -6,10 +6,18 @@ namespace PulsePress\Captures;
 use PulsePress\Database\Schema;
 use wpdb;
 
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 final class CaptureRepository
 {
-    public function __construct(private wpdb $wpdb)
+    private wpdb $wpdb;
+
+    public function __construct(wpdb $wpdb)
     {
+        $this->wpdb = $wpdb;
     }
 
     public function store(CaptureInput $input): CaptureRecord
@@ -56,13 +64,14 @@ final class CaptureRepository
     private function findByEmailAndPost(string $email, int $postId): ?array
     {
         $table = Schema::tableName($this->wpdb, Schema::TABLE_CAPTURES);
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is selected from Schema allowlist.
         $sql   = $this->wpdb->prepare(
-            'SELECT id FROM %i WHERE email = %s AND post_id = %d LIMIT 1',
-            $table,
+            "SELECT id FROM {$table} WHERE email = %s AND post_id = %d LIMIT 1",
             $email,
             $postId
         );
-        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Prepared above with a table identifier placeholder.
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Prepared above with an allowlisted table name.
         $rows = $this->wpdb->get_results($sql, ARRAY_A);
         return is_array($rows) && isset($rows[0]) ? $rows[0] : null;
     }

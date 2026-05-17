@@ -8,10 +8,18 @@ use DateTimeZone;
 use PulsePress\Database\Schema;
 use wpdb;
 
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 final class Aggregator
 {
-    public function __construct(private wpdb $wpdb)
+    private wpdb $wpdb;
+
+    public function __construct(wpdb $wpdb)
     {
+        $this->wpdb = $wpdb;
     }
 
     public function aggregate(DateTimeImmutable $localDate): AggregationResult
@@ -27,20 +35,20 @@ final class Aggregator
         $reactionsTable = Schema::tableName($this->wpdb, Schema::TABLE_REACTIONS);
         $aggTable       = Schema::tableName($this->wpdb, Schema::TABLE_DAILY_AGG);
 
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is selected from Schema allowlist.
         $selectSql = $this->wpdb->prepare(
             "SELECT post_id, reaction_type, COUNT(*) AS c
-             FROM %i
+             FROM {$reactionsTable}
              WHERE updated_at >= %s AND updated_at < %s
              GROUP BY post_id, reaction_type",
-            $reactionsTable,
             $utcStart,
             $utcEnd
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
-        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Prepared above with a table identifier placeholder.
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Prepared above with an allowlisted table name.
         $rows = $this->wpdb->get_results($selectSql, ARRAY_A);
         if (!is_array($rows)) {
-            do_action('pulsepress_aggregation_failed', (string) ($this->wpdb->last_error ?? 'unknown error'));
             return new AggregationResult($localStart, 0, 0, (int) ((microtime(true) - $start) * 1_000_000));
         }
 
@@ -50,21 +58,22 @@ final class Aggregator
         $groups   = count($rows);
 
         foreach ($rows as $row) {
+            // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is selected from Schema allowlist.
             $sql = $this->wpdb->prepare(
-                "INSERT INTO %i
+                "INSERT INTO {$aggTable}
                   (agg_date, post_id, reaction_type, count, updated_at)
                  VALUES (%s, %d, %s, %d, %s)
                  ON DUPLICATE KEY UPDATE
                    count      = VALUES(count),
                    updated_at = VALUES(updated_at)",
-                $aggTable,
                 $aggDate,
                 (int) $row['post_id'],
                 (string) $row['reaction_type'],
                 (int) $row['c'],
                 $now
             );
-            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Prepared above with a table identifier placeholder.
+            // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Prepared above with an allowlisted table name.
             $this->wpdb->query($sql);
             $written++;
         }

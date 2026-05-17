@@ -5,6 +5,11 @@ namespace PulsePress\Settings;
 
 use PulsePress\Reactions\Reactions;
 
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 final class Settings
 {
     public const SCHEMA_VERSION = 1;
@@ -23,6 +28,7 @@ final class Settings
         'widget_design'          => 'minimal',
         'icon_style'             => 'classic',
         'theme_mode'             => 'auto',
+        'primary_color'          => '#2563eb',
         'animation_mode'         => 'subtle',
         'auto_insert_post_types' => ['post'],
         'auto_insert_position'   => 'below',
@@ -65,6 +71,9 @@ final class Settings
         }
         if (array_key_exists('theme_mode', $input)) {
             $clean['theme_mode'] = self::oneOf($input['theme_mode'], self::THEME_CHOICES, self::DEFAULTS['theme_mode']);
+        }
+        if (array_key_exists('primary_color', $input)) {
+            $clean['primary_color'] = self::hexColor($input['primary_color'], self::DEFAULTS['primary_color']);
         }
         if (array_key_exists('animation_mode', $input)) {
             $clean['animation_mode'] = self::oneOf($input['animation_mode'], self::ANIMATION_CHOICES, self::DEFAULTS['animation_mode']);
@@ -144,6 +153,15 @@ final class Settings
             return $value !== 0;
         }
         return $default;
+    }
+
+    public static function hexColor($value, string $default): string
+    {
+        if (!is_string($value)) {
+            return $default;
+        }
+        $value = trim($value);
+        return preg_match('/^#[0-9a-fA-F]{6}$/', $value) === 1 ? strtolower($value) : $default;
     }
 
     /** @param string[]|null $allowed */

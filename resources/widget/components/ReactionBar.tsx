@@ -24,13 +24,13 @@ interface Props {
 const ERROR_VISIBLE_MS = 4000;
 
 export function ReactionBar({ postId, data, initialCounts, previewOnly = false }: Props) {
-  const hasValidPost = postId > 0;
   const [counts, setCounts] = useState<Record<string, number>>(() => initialCounts ?? {});
   const [activeType, setActiveType] = useState<ReactionType | null>(() => previewOnly ? null : getStoredReaction(postId));
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [announcement, setAnnouncement] = useState<string>('');
   const [captured, setCaptured] = useState<boolean>(() => previewOnly ? false : getCapturedFlag(postId));
+  const [captureCompleted, setCaptureCompleted] = useState<boolean>(false);
   const [dismissed, setDismissed] = useState<boolean>(false);
   const [LazyCaptureForm, setLazyCaptureForm] = useState<ComponentType<CaptureFormProps> | null>(null);
   const errorTimerRef = useRef<number | null>(null);
@@ -42,7 +42,7 @@ export function ReactionBar({ postId, data, initialCounts, previewOnly = false }
   }, []);
 
   useEffect(() => {
-    if (previewOnly || !hasValidPost) return;
+    if (previewOnly) return;
     let cancelled = false;
     fetchCounts({ root: data.root, postId })
       .then((response) => {
@@ -56,7 +56,7 @@ export function ReactionBar({ postId, data, initialCounts, previewOnly = false }
     return () => {
       cancelled = true;
     };
-  }, [data.root, hasValidPost, postId, previewOnly]);
+  }, [data.root, postId, previewOnly]);
 
   useEffect(() => {
     return () => {
@@ -81,7 +81,7 @@ export function ReactionBar({ postId, data, initialCounts, previewOnly = false }
 
   const handleClick = useCallback(
     async (type: ReactionType) => {
-      if (pending || reactionsDisabled || type === activeType || previewOnly || !hasValidPost) {
+      if (pending || reactionsDisabled || type === activeType) {
         return;
       }
 
@@ -96,8 +96,14 @@ export function ReactionBar({ postId, data, initialCounts, previewOnly = false }
 
       setActiveType(type);
       setCounts(optimistic);
-      setStoredReaction(postId, type);
       setError(null);
+
+      if (previewOnly) {
+        announce(data.i18n.announceReacted.replace('{type}', labelFor(type)));
+        return;
+      }
+
+      setStoredReaction(postId, type);
       setPending(true);
 
       try {
@@ -115,12 +121,12 @@ export function ReactionBar({ postId, data, initialCounts, previewOnly = false }
         setPending(false);
       }
     },
-    [activeType, announce, counts, data, hasValidPost, pending, postId, previewOnly, reactionsDisabled, showError]
+    [activeType, announce, counts, data, pending, postId, reactionsDisabled, showError]
   );
 
   const handleCaptureDone = useCallback(
     (result: { status: 'inserted' | 'already_exists' }) => {
-      setCaptured(true);
+      setCaptureCompleted(true);
       setCapturedFlag(postId);
       if (result.status === 'inserted') {
         announce(data.i18n.capture.thanks);
@@ -130,8 +136,11 @@ export function ReactionBar({ postId, data, initialCounts, previewOnly = false }
   );
 
   const handleCaptureDismiss = useCallback(() => {
+    if (captureCompleted) {
+      setCaptured(true);
+    }
     setDismissed(true);
-  }, []);
+  }, [captureCompleted]);
 
   const ensureRef = (type: ReactionType): { current: HTMLButtonElement | null } => {
     if (!buttonRefs.has(type)) {
@@ -155,12 +164,12 @@ export function ReactionBar({ postId, data, initialCounts, previewOnly = false }
   );
 
   const showCapture =
-    !captured &&
+    (!captured || captureCompleted) &&
     !dismissed &&
+    !previewOnly &&
     activeType !== null &&
     isPositive(activeType, data) &&
-    !pending &&
-    hasValidPost;
+    !pending;
 
   useEffect(() => {
     if (!showCapture || LazyCaptureForm !== null || previewOnly) return;
@@ -188,6 +197,7 @@ export function ReactionBar({ postId, data, initialCounts, previewOnly = false }
       data-preview={previewOnly ? 'true' : 'false'}
       data-guest-reactions={data.allowGuestReactions === false ? 'false' : 'true'}
       data-reacted={activeType !== null ? 'true' : 'false'}
+      style={data.primaryColor ? `--pulsepress-accent:${data.primaryColor}` : undefined}
     >
       {design === 'clap_counter' ? (
         <div class="pulsepress-clap" role="group" aria-label={data.i18n.groupLabel}>

@@ -1,6 +1,12 @@
 <?php
 declare(strict_types=1);
 
+
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 use PulsePress\Providers\AdminServiceProvider;
 use PulsePress\Providers\AnalyticsServiceProvider;
 use PulsePress\Providers\AppServiceProvider;
@@ -11,7 +17,6 @@ use PulsePress\Providers\RestServiceProvider;
 use PulsePress\Providers\SettingsServiceProvider;
 use PulsePress\Providers\WidgetServiceProvider;
 
-defined('ABSPATH') || exit;
 return [
     'providers' => [
         AppServiceProvider::class,

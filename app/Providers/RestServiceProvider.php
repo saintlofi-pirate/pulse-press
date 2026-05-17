@@ -9,7 +9,11 @@ use PulsePress\Reactions\ReactionRepository;
 use PulsePress\Reactions\Reactions;
 use PulsePress\Settings\SettingsRepository;
 
-defined('ABSPATH') || exit;
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 final class RestServiceProvider extends ServiceProvider
 {
     public const REST_NAMESPACE = 'pulsepress/v1';

@@ -6,10 +6,18 @@ namespace PulsePress\Http;
 use RuntimeException;
 use WP_Error;
 
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 final class RestException extends RuntimeException
 {
-    public function __construct(private WP_Error $error)
+    private WP_Error $error;
+
+    public function __construct(WP_Error $error)
     {
+        $this->error = $error;
         parent::__construct((string) $error->get_error_message());
     }
 

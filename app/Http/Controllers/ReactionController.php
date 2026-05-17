@@ -13,13 +13,21 @@ use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
 
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 final class ReactionController
 {
-    public function __construct(private ReactionRepository $repository)
+    private ReactionRepository $repository;
+
+    public function __construct(ReactionRepository $repository)
     {
+        $this->repository = $repository;
     }
 
-    public function react(WP_REST_Request $request): WP_REST_Response|WP_Error
+    public function react(WP_REST_Request $request)
     {
         $postId       = (int) $request->get_param('post_id');
         $reactionType = (string) $request->get_param('reaction_type');
@@ -62,7 +70,7 @@ final class ReactionController
         ], 200);
     }
 
-    public function counts(WP_REST_Request $request): WP_REST_Response|WP_Error
+    public function counts(WP_REST_Request $request)
     {
         $postId = (int) $request->get_param('post_id');
 

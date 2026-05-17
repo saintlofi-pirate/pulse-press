@@ -5,12 +5,22 @@ namespace PulsePress\Database;
 
 use wpdb;
 
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 final class Migrator
 {
     public const VERSION_OPTION = 'pulsepress_db_version';
 
-    public function __construct(private wpdb $wpdb, private Schema $schema)
+    private wpdb $wpdb;
+    private Schema $schema;
+
+    public function __construct(wpdb $wpdb, Schema $schema)
     {
+        $this->wpdb   = $wpdb;
+        $this->schema = $schema;
     }
 
     public function migrate(): bool
@@ -33,11 +43,10 @@ final class Migrator
         foreach (array_keys($this->schema::tables($this->wpdb)) as $unprefixed) {
             $tableName = Schema::tableName($this->wpdb, $unprefixed);
             $sql       = $this->wpdb->prepare('SHOW TABLES LIKE %s', $tableName);
-            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Prepared on the previous line.
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Prepared immediately above.
             $exists    = $this->wpdb->get_var($sql);
 
             if ($exists !== $tableName) {
-                do_action('pulsepress_migration_table_missing', $tableName);
                 return false;
             }
         }

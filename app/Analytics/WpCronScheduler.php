@@ -3,6 +3,11 @@ declare(strict_types=1);
 
 namespace PulsePress\Analytics;
 
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 final class WpCronScheduler implements QueueScheduler
 {
     public function schedule(string $hook, string $recurrence, ?int $firstRunTime = null): void

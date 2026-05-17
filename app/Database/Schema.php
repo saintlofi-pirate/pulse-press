@@ -5,6 +5,11 @@ namespace PulsePress\Database;
 
 use wpdb;
 
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 final class Schema
 {
     public const VERSION = 1;
@@ -80,6 +85,11 @@ final class Schema
 
     public static function tableName(wpdb $wpdb, string $unprefixed): string
     {
-        return $wpdb->prefix . $unprefixed;
+        if (!in_array($unprefixed, [self::TABLE_REACTIONS, self::TABLE_CAPTURES, self::TABLE_DAILY_AGG], true)) {
+            throw new \InvalidArgumentException('Unknown PulsePress table.');
+        }
+
+        $table = $wpdb->prefix . $unprefixed;
+        return function_exists('esc_sql') ? esc_sql($table) : str_replace('`', '', $table);
     }
 }

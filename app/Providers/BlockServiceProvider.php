@@ -6,7 +6,11 @@ namespace PulsePress\Providers;
 use PulsePress\Blocks\Shortcode;
 use PulsePress\Core\ServiceProvider;
 
-defined('ABSPATH') || exit;
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 final class BlockServiceProvider extends ServiceProvider
 {
     public function boot(): void

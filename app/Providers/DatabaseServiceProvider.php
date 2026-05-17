@@ -7,6 +7,11 @@ use PulsePress\Core\ServiceProvider;
 use PulsePress\Database\Migrator;
 use PulsePress\Database\Schema;
 
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 final class DatabaseServiceProvider extends ServiceProvider
 {
     public function register(): void
