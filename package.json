@@ -1,7 +1,7 @@
 {
-  "name": "pulsepress",
+  "name": "moonfarmer-reactions-lead-capture",
   "version": "0.1.0",
-  "description": "PulsePress — reactions, inline email capture, and analytics for WordPress.",
+  "description": "Moonfarmer Reactions Lead Capture — reactions, inline email capture, and analytics for WordPress.",
   "private": true,
   "license": "GPL-2.0-or-later",
   "scripts": {

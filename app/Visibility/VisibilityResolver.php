@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace PulsePress\Visibility;
+namespace Moonfarmer\ReactionsLeadCapture\Visibility;
 
-use PulsePress\Settings\SettingsRepository;
+use Moonfarmer\ReactionsLeadCapture\Settings\SettingsRepository;
 
 
 if (!defined('ABSPATH')) {
@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
 
 final class VisibilityResolver
 {
-    public const META_KEY = '_pulsepress_widget_state';
+    public const META_KEY = '_moonfarmer_reactions_lead_capture_widget_state';
 
     public const MODE_AUTO = 'auto';
     public const MODE_ON   = 'on';
@@ -35,7 +35,7 @@ final class VisibilityResolver
 
         $stored = (string) get_post_meta($postId, self::META_KEY, true);
         $mode   = self::sanitiseMode($stored);
-        $mode   = apply_filters('pulsepress_visibility_mode', $mode, $postId, '');
+        $mode   = apply_filters('moonfarmer_reactions_lead_capture_visibility_mode', $mode, $postId, '');
 
         return self::sanitiseMode($mode);
     }

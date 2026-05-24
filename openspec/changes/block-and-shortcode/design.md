@@ -1,6 +1,6 @@
 ## Context
 
-The widget is mounted by `resources/widget/index.ts::mountAll()` which scans for every `[data-pulsepress-widget]` element on `DOMContentLoaded`. That selector-based approach means we can put the container anywhere in the DOM — the front-end JS doesn't care whether it came from `the_content` auto-insert, the Gutenberg block, the shortcode, or hand-written markup. Session 7's whole job is to give authors more ways to insert that container.
+The widget is mounted by `resources/widget/index.ts::mountAll()` which scans for every `[data-moonfarmer-reactions-lead-capture-widget]` element on `DOMContentLoaded`. That selector-based approach means we can put the container anywhere in the DOM — the front-end JS doesn't care whether it came from `the_content` auto-insert, the Gutenberg block, the shortcode, or hand-written markup. Session 7's whole job is to give authors more ways to insert that container.
 
 Two product principles drive every choice here:
 
@@ -25,7 +25,7 @@ Gap decision 8 D3 spelled out the precedence rule: shortcode > block > post-meta
 - No `block-styles` registration for design presets. Settings (Session 6) already drive presets globally; per-block design overrides are a Pro feature.
 - No inspector controls in the editor. The block has zero settings in this slice; future iterations may add controls for the design preset / icon style override.
 - No shortcode-attributes parser for design overrides. Same as above.
-- No support for the `[pulsepress]` shortcode inside admin-side WordPress emails — `do_shortcode` runs in admin, but that's outside our scope.
+- No support for the `[moonfarmer-reactions-lead-capture]` shortcode inside admin-side WordPress emails — `do_shortcode` runs in admin, but that's outside our scope.
 
 ## Decisions
 
@@ -35,11 +35,11 @@ Gap decision 8 D3 spelled out the precedence rule: shortcode > block > post-meta
 {
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
-  "name": "pulsepress/reactions",
-  "title": "PulsePress reactions",
+  "name": "moonfarmer-reactions-lead-capture/reactions",
+  "title": "Moonfarmer Reactions Lead Capture reactions",
   "category": "widgets",
   "icon": "thumbs-up",
-  "description": "Insert the PulsePress reaction widget at this location.",
+  "description": "Insert the Moonfarmer Reactions Lead Capture reaction widget at this location.",
   "supports": { "html": false, "align": ["wide", "full"] },
   "attributes": {
     "postId": { "type": "integer" }
@@ -55,26 +55,26 @@ Setting `render` to a `file:` reference lets WordPress 6.1+ load the PHP render 
 Returns:
 
 ```html
-<div class="pulsepress" data-pulsepress-widget data-pulsepress-post-id="42"></div>
+<div class="moonfarmer-reactions-lead-capture" data-moonfarmer-reactions-lead-capture-widget data-moonfarmer-reactions-lead-capture-post-id="42"></div>
 ```
 
 The HTML is built via:
 
 ```php
-$attrs = apply_filters('pulsepress_widget_container_attrs', [
-    'class' => 'pulsepress',
-    'data-pulsepress-widget' => '',
-    'data-pulsepress-post-id' => (string) $postId,
+$attrs = apply_filters('moonfarmer_reactions_lead_capture_widget_container_attrs', [
+    'class' => 'moonfarmer-reactions-lead-capture',
+    'data-moonfarmer-reactions-lead-capture-widget' => '',
+    'data-moonfarmer-reactions-lead-capture-post-id' => (string) $postId,
 ], $postId);
 return sprintf('<div%s></div>', self::attrString($attrs));
 ```
 
-Pro hooks the filter to add `data-pulsepress-variant="a"`, etc. The filter receives the post id for context.
+Pro hooks the filter to add `data-moonfarmer-reactions-lead-capture-variant="a"`, etc. The filter receives the post id for context.
 
 ### D3. Duplicate-detect is a simple substring match
 
 ```php
-if (str_contains($content, 'data-pulsepress-widget')) {
+if (str_contains($content, 'data-moonfarmer-reactions-lead-capture-widget')) {
     return $content; // already present
 }
 ```
@@ -83,14 +83,14 @@ Cheap, correct, no parsing. Catches both block-rendered output and shortcode-ren
 
 ### D4. Shortcode normalisation
 
-`[pulsepress]` with no attributes — current post id.
-`[pulsepress post_id="123"]` — explicit post id; validates the post exists and is publicly viewable (same gate as the REST endpoints).
+`[moonfarmer-reactions-lead-capture]` with no attributes — current post id.
+`[moonfarmer-reactions-lead-capture post_id="123"]` — explicit post id; validates the post exists and is publicly viewable (same gate as the REST endpoints).
 
 Invalid post id → empty string (silent fail). The reasoning: shortcode rendering is content-time; throwing or printing an error would break the page. Failing silently is more author-friendly.
 
 ### D5. Front-end JS keeps the multi-mount logic
 
-`resources/widget/index.ts::mountAll()` already does `document.querySelectorAll('[data-pulsepress-widget]')`. We don't change anything. Each container with a different `data-pulsepress-post-id` mounts its own `<ReactionBar>` with that id.
+`resources/widget/index.ts::mountAll()` already does `document.querySelectorAll('[data-moonfarmer-reactions-lead-capture-widget]')`. We don't change anything. Each container with a different `data-moonfarmer-reactions-lead-capture-post-id` mounts its own `<ReactionBar>` with that id.
 
 ### D6. Block registers on `init`, not `plugins_loaded`
 
@@ -108,9 +108,9 @@ Disables the "Edit as HTML" affordance in the editor. The dynamic render is the 
 
 - **Risk**: a theme renders content twice (e.g., header + footer excerpt), causing the auto-insert to double-append. → Mitigation: duplicate-detect catches it on second pass. The first pass adds; the second pass sees the marker and skips. Acceptable.
 - **Risk**: a custom page builder strips data attributes from rendered blocks. → Mitigation: the front-end JS just won't mount on a stripped container. Documented gotcha; no easy fix without coupling to specific builders.
-- **Risk**: a user inserts the block in a reusable template part rendered N times → N widgets stacked. → Mitigation: duplicate-detect inside one `the_content` call catches them. Across template parts a developer can hook `pulsepress_widget_container_attrs` to namespace by parent context.
+- **Risk**: a user inserts the block in a reusable template part rendered N times → N widgets stacked. → Mitigation: duplicate-detect inside one `the_content` call catches them. Across template parts a developer can hook `moonfarmer_reactions_lead_capture_widget_container_attrs` to namespace by parent context.
 - **Trade-off**: no inspector controls in the editor. Acceptable — the global settings page (Session 6) drives everything; per-block override is a Pro/future feature.
-- **Trade-off**: no block-edit JS means the editor preview lags real WP user expectations (no "Block: PulsePress reactions" sidebar with options). Acceptable for v1; the rendered preview is informative enough.
+- **Trade-off**: no block-edit JS means the editor preview lags real WP user expectations (no "Block: Moonfarmer Reactions Lead Capture reactions" sidebar with options). Acceptable for v1; the rendered preview is informative enough.
 
 ## Migration Plan
 
@@ -119,4 +119,4 @@ No data migration. The block becomes available in the editor immediately after a
 ## Open Questions
 
 - **Q1**: should the block also register a "preview placeholder" via `editorScript` so authors see a stable visual even when the dynamic render fails? → **Decided no for v1.** The render only fails if the post id is invalid, which can't happen in the editor (the block resolves to the current post).
-- **Q2**: should the shortcode support `[pulsepress design="expressive"]` to override the global design preset? → **Deferred to Pro.** Global settings drive design in Free.
+- **Q2**: should the shortcode support `[moonfarmer-reactions-lead-capture design="expressive"]` to override the global design preset? → **Deferred to Pro.** Global settings drive design in Free.

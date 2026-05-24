@@ -17,16 +17,16 @@ export function RadioField<T extends string>({ label, helper, value, options, on
   const errId  = `${id}-error`;
   return (
     <fieldset
-      class="pulsepress-field pulsepress-field--radio"
+      class="moonfarmer-reactions-lead-capture-field moonfarmer-reactions-lead-capture-field--radio"
       aria-describedby={`${helpId}${error ? ' ' + errId : ''}`}
     >
-      <div class="pulsepress-field__head">
-        <legend class="pulsepress-field__label">{label}</legend>
+      <div class="moonfarmer-reactions-lead-capture-field__head">
+        <legend class="moonfarmer-reactions-lead-capture-field__label">{label}</legend>
         {status}
       </div>
-      <div class="pulsepress-radio-group" role="radiogroup">
+      <div class="moonfarmer-reactions-lead-capture-radio-group" role="radiogroup">
         {options.map((opt) => (
-          <label key={opt.value} class="pulsepress-radio">
+          <label key={opt.value} class="moonfarmer-reactions-lead-capture-radio">
             <input
               type="radio"
               name={id}
@@ -38,8 +38,8 @@ export function RadioField<T extends string>({ label, helper, value, options, on
           </label>
         ))}
       </div>
-      {helper !== undefined && <p class="pulsepress-field__helper" id={helpId}>{helper}</p>}
-      {error && <p class="pulsepress-field__error" id={errId} role="alert">{error}</p>}
+      {helper !== undefined && <p class="moonfarmer-reactions-lead-capture-field__helper" id={helpId}>{helper}</p>}
+      {error && <p class="moonfarmer-reactions-lead-capture-field__error" id={errId} role="alert">{error}</p>}
     </fieldset>
   );
 }

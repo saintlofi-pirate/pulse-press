@@ -29,7 +29,7 @@ export function TextField({ label, helper, value, onChange, status, error, place
     >
       <input
         id={id}
-        class="pulsepress-input"
+        class="moonfarmer-reactions-lead-capture-input"
         type="text"
         value={value}
         placeholder={placeholder}

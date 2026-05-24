@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace PulsePress\Analytics;
+namespace Moonfarmer\ReactionsLeadCapture\Analytics;
 
 use DateTimeImmutable;
 use DateTimeZone;
-use PulsePress\Database\Schema;
+use Moonfarmer\ReactionsLeadCapture\Database\Schema;
 use wpdb;
 
 
@@ -85,7 +85,7 @@ final class Aggregator
             (int) ((microtime(true) - $start) * 1_000_000)
         );
 
-        do_action('pulsepress_after_aggregate', $result);
+        do_action('moonfarmer_reactions_lead_capture_after_aggregate', $result);
 
         return $result;
     }

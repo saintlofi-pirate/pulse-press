@@ -5,7 +5,7 @@ Session 4 has the storage path; Session 5 puts a face on it. Two product princip
 1. **No modal interruption.** Gap 4 already rejected modal capture. The form is inline, appears under the reaction row, and can be dismissed by ignoring it.
 2. **Consent must be explicit.** A checkbox the visitor actively ticks. No pre-checked checkbox; no implicit consent via submission of the form.
 
-The accessibility direction (newly codified in `docs/pulsepress-v1-plan.md` §Accessibility — WCAG 2.1 AA First) adds: real `<form>` semantics, real `<label>`s, full keyboard parity, visible focus rings, full-sentence errors via `role="alert"`, focus management on open/close, screen-reader-announced success.
+The accessibility direction (newly codified in `docs/moonfarmer-reactions-lead-capture-v1-plan.md` §Accessibility — WCAG 2.1 AA First) adds: real `<form>` semantics, real `<label>`s, full keyboard parity, visible focus rings, full-sentence errors via `role="alert"`, focus management on open/close, screen-reader-announced success.
 
 The implementation reuses the widget's existing `useState`/`useEffect` patterns and the API client built in Session 3, so the bundle delta is small.
 
@@ -27,7 +27,7 @@ The implementation reuses the widget's existing `useState`/`useEffect` patterns 
 - No double opt-in mail in Free.
 - No CAPTCHA / Turnstile / hCaptcha. Spam protection is the dedup + before_capture hook story.
 - No "remember me on this site forever" mechanic beyond the localStorage flag.
-- No analytics on form display/dismiss. Session 9's dashboard reads from `pulsepress_captures` only.
+- No analytics on form display/dismiss. Session 9's dashboard reads from `moonfarmer_reactions_lead_capture_captures` only.
 - No "send me a copy" follow-up email.
 - No multi-field signup (name, etc.). Only email.
 - No marketing copy variations. One sensible default; admins customise via `i18n.capture.*` overrides in Session 6 settings.
@@ -42,7 +42,7 @@ Trade-off: the form may push content below it. Acceptable — the widget is posi
 
 ### D2. Positive-reaction trigger is a small, filterable allowlist
 
-`positiveReactions` defaults to `['love', 'insightful', 'funny']` (gap 0 confirmed default). The filter `pulsepress_positive_reactions` lets sites:
+`positiveReactions` defaults to `['love', 'insightful', 'funny']` (gap 0 confirmed default). The filter `moonfarmer_reactions_lead_capture_positive_reactions` lets sites:
 - Disable inline capture entirely by returning `[]`.
 - Include "surprised" if a site's audience treats it as positive.
 - Per-post tuning via the standard WP filter context.
@@ -51,13 +51,13 @@ Session 6 will surface this as a checkbox list in settings.
 
 ### D3. Per-post localStorage flag, not per-visitor cookie
 
-Key: `pulsepress:captured:{postId}` set to `'1'` on a successful 200 OR a 409 from the capture endpoint. Both states mean "we have this email or have explicitly heard from this device on this post" — re-asking would be rude.
+Key: `moonfarmer-reactions-lead-capture:captured:{postId}` set to `'1'` on a successful 200 OR a 409 from the capture endpoint. Both states mean "we have this email or have explicitly heard from this device on this post" — re-asking would be rude.
 
 The flag is local-only; the server is still the source of truth (the unique key catches duplicates regardless of what the browser thinks). A visitor clearing localStorage will see the form again; the server will return 409 if they re-submit with the same email.
 
 ### D4. Don't reopen the form after dismissal in the same session
 
-If the visitor reacts positively (form shows), then dismisses by reacting again with a different positive type, the form does NOT re-show. We set `pulsepress:capture_dismissed:{postId}` on first dismissal to prevent surprise re-opens.
+If the visitor reacts positively (form shows), then dismisses by reacting again with a different positive type, the form does NOT re-show. We set `moonfarmer-reactions-lead-capture:capture_dismissed:{postId}` on first dismissal to prevent surprise re-opens.
 
 The session-local dismissal cleared on next page load — that's intentional. A second visit to the same post is a fresh opportunity to ask.
 
@@ -83,7 +83,7 @@ On `Esc` while focus is in the form:
 1. Visitor checks consent + types email + clicks submit.
 2. Local validation: email must match `^[^\s@]+@[^\s@]+\.[^\s@]+$` (loose; the server is authoritative).
 3. Set `submitting: true` to disable the submit button + show "Submitting…" label.
-4. `postCapture(...)` POSTs to `/pulsepress/v1/capture` with `{post_id, email, reaction_type: activeType, consent: true, source: 'inline'}`.
+4. `postCapture(...)` POSTs to `/moonfarmer-reactions-lead-capture/v1/capture` with `{post_id, email, reaction_type: activeType, consent: true, source: 'inline'}`.
 5. On 200: set captured flag, render success state, focus returns to trigger.
 6. On 409: set captured flag, render "We already have your email for this post" success-styled state.
 7. On 422 (any sub-code): show the server's message in the error region; clear `submitting`; keep focus on input.
@@ -103,9 +103,9 @@ After success, the form is replaced with a static `<p role="status">Thanks — w
 
 `<form onSubmit>` with controlled inputs via `useState`. No third-party form library (Formik, react-hook-form, etc.) in the budget.
 
-### D10. CSS scoped to `.pulsepress` namespace
+### D10. CSS scoped to `.moonfarmer-reactions-lead-capture` namespace
 
-Form styles live alongside the existing `.pulsepress-*` styles in `widget.css`. Same CSS variables, same focus-ring strategy, same reduced-motion handling. No new external CSS files.
+Form styles live alongside the existing `.moonfarmer-reactions-lead-capture-*` styles in `widget.css`. Same CSS variables, same focus-ring strategy, same reduced-motion handling. No new external CSS files.
 
 ## Risks / Trade-offs
 

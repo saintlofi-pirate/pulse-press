@@ -1,21 +1,21 @@
 <?php
 declare(strict_types=1);
 
-use PulsePress\Core\Application;
-use PulsePress\Providers\AdminServiceProvider;
-use PulsePress\Settings\SettingsRepository;
-use PulsePress\View\Manifest;
+use Moonfarmer\ReactionsLeadCapture\Core\Application;
+use Moonfarmer\ReactionsLeadCapture\Providers\AdminServiceProvider;
+use Moonfarmer\ReactionsLeadCapture\Settings\SettingsRepository;
+use Moonfarmer\ReactionsLeadCapture\View\Manifest;
 use Tests\Stubs\AssetSpy;
 use Tests\Stubs\FilterRegistry;
 
-if (!defined('PULSEPRESS_DIR')) {
-    define('PULSEPRESS_DIR', __DIR__ . '/../../');
+if (!defined('MOONFARMER_REACTIONS_LEAD_CAPTURE_DIR')) {
+    define('MOONFARMER_REACTIONS_LEAD_CAPTURE_DIR', __DIR__ . '/../../');
 }
-if (!defined('PULSEPRESS_URL')) {
-    define('PULSEPRESS_URL', 'https://example.test/wp-content/plugins/pulse-press/');
+if (!defined('MOONFARMER_REACTIONS_LEAD_CAPTURE_URL')) {
+    define('MOONFARMER_REACTIONS_LEAD_CAPTURE_URL', 'https://example.test/wp-content/plugins/moonfarmer-reactions-lead-capture/');
 }
-if (!defined('PULSEPRESS_VERSION')) {
-    define('PULSEPRESS_VERSION', '0.1.0-test');
+if (!defined('MOONFARMER_REACTIONS_LEAD_CAPTURE_VERSION')) {
+    define('MOONFARMER_REACTIONS_LEAD_CAPTURE_VERSION', '0.1.0-test');
 }
 
 if (!class_exists('PpAdminTestApplication')) {
@@ -30,7 +30,7 @@ if (!class_exists('PpAdminTestApplication')) {
 
 function pp_admin_manifest(): Manifest
 {
-    $dir = sys_get_temp_dir() . '/pulsepress-admin-' . uniqid('', true);
+    $dir = sys_get_temp_dir() . '/moonfarmer-reactions-lead-capture-admin-' . uniqid('', true);
     mkdir($dir, 0o777, true);
     $path = $dir . '/manifest.json';
     file_put_contents($path, json_encode([
@@ -73,7 +73,7 @@ it('emits five Free tabs in order when no Pro filter attaches', function () {
 });
 
 it('inserts a Pro tab at the requested order position', function () {
-    FilterRegistry::addFilter('pulsepress_admin_tabs', fn () => [[
+    FilterRegistry::addFilter('moonfarmer_reactions_lead_capture_admin_tabs', fn () => [[
         'id'    => 'esp',
         'label' => 'ESP sync',
         'order' => 25,
@@ -86,7 +86,7 @@ it('inserts a Pro tab at the requested order position', function () {
 });
 
 it('refuses to let an extension hijack a built-in tab id', function () {
-    FilterRegistry::addFilter('pulsepress_admin_tabs', fn () => [[
+    FilterRegistry::addFilter('moonfarmer_reactions_lead_capture_admin_tabs', fn () => [[
         'id'    => 'analytics',
         'label' => 'Hijacked',
         'order' => 1,
@@ -100,14 +100,14 @@ it('refuses to let an extension hijack a built-in tab id', function () {
 });
 
 it('passes metric-card and analytics-panel entries through verbatim', function () {
-    FilterRegistry::addFilter('pulsepress_admin_metric_cards', fn () => [[
+    FilterRegistry::addFilter('moonfarmer_reactions_lead_capture_admin_metric_cards', fn () => [[
         'id'       => 'compare',
         'title'    => 'vs prior',
         'value'    => '+12%',
         'renderJs' => 'compare_card',
         'data'     => ['delta' => 0.12],
     ]]);
-    FilterRegistry::addFilter('pulsepress_admin_analytics_panels', fn () => [[
+    FilterRegistry::addFilter('moonfarmer_reactions_lead_capture_admin_analytics_panels', fn () => [[
         'id'       => 'compare_windows',
         'title'    => 'Window comparison',
         'data'     => ['previous' => 1234, 'current' => 1567],

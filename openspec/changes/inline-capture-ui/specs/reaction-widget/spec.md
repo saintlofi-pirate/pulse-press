@@ -2,26 +2,26 @@
 
 ### Requirement: Inline capture form renders after a positive reaction
 
-When a visitor's `activeType` is in the positive-reactions allowlist (default `['love', 'insightful', 'funny']` from `PulsePressData.positiveReactions`) AND the per-post captured flag is `false` AND the per-post dismissed flag is `false`, the widget SHALL render a `<form class="pulsepress-capture">` element immediately below the reaction button row. When any of those conditions fails, no form SHALL be rendered.
+When a visitor's `activeType` is in the positive-reactions allowlist (default `['love', 'insightful', 'funny']` from `MoonfarmerReactionsLeadCaptureData.positiveReactions`) AND the per-post captured flag is `false` AND the per-post dismissed flag is `false`, the widget SHALL render a `<form class="moonfarmer-reactions-lead-capture-capture">` element immediately below the reaction button row. When any of those conditions fails, no form SHALL be rendered.
 
 #### Scenario: Positive reaction shows the form
 
 - **WHEN** the visitor clicks the Love button on a fresh post
-- **THEN** after the optimistic update, a `<form class="pulsepress-capture">` element appears below the reaction row containing a labelled email input, a labelled consent checkbox, and a primary submit button
+- **THEN** after the optimistic update, a `<form class="moonfarmer-reactions-lead-capture-capture">` element appears below the reaction row containing a labelled email input, a labelled consent checkbox, and a primary submit button
 
 #### Scenario: Negative reaction hides the form
 
 - **WHEN** the visitor clicks Sad (not in the default positive set)
-- **THEN** no `<form class="pulsepress-capture">` is rendered
+- **THEN** no `<form class="moonfarmer-reactions-lead-capture-capture">` is rendered
 
 #### Scenario: Filter narrows the positive set
 
-- **WHEN** PHP registers `add_filter('pulsepress_positive_reactions', fn() => ['love'])` so `PulsePressData.positiveReactions === ['love']`, and the visitor clicks Insightful
+- **WHEN** PHP registers `add_filter('moonfarmer_reactions_lead_capture_positive_reactions', fn() => ['love'])` so `MoonfarmerReactionsLeadCaptureData.positiveReactions === ['love']`, and the visitor clicks Insightful
 - **THEN** no form is rendered
 
 #### Scenario: Already-captured suppresses the form
 
-- **WHEN** `localStorage['pulsepress:captured:42'] === '1'` and the visitor clicks Love on post 42
+- **WHEN** `localStorage['moonfarmer-reactions-lead-capture:captured:42'] === '1'` and the visitor clicks Love on post 42
 - **THEN** no form is rendered
 
 #### Scenario: Dismissed-in-session suppresses the form
@@ -36,7 +36,7 @@ The capture form SHALL be a real `<form>` element. The email input SHALL be `<in
 #### Scenario: Inspecting the rendered form
 
 - **WHEN** the form is open
-- **THEN** the document contains exactly one `<form>` element with the `pulsepress-capture` class, one `<input type="email">` with a `<label for="…">` associated to it, one `<input type="checkbox">` with a `<label>` plus an associated helper paragraph linked via `aria-describedby`, and one `<button type="submit">`
+- **THEN** the document contains exactly one `<form>` element with the `moonfarmer-reactions-lead-capture-capture` class, one `<input type="email">` with a `<label for="…">` associated to it, one `<input type="checkbox">` with a `<label>` plus an associated helper paragraph linked via `aria-describedby`, and one `<button type="submit">`
 
 ### Requirement: Focus management on open and on success
 
@@ -63,7 +63,7 @@ When the server returns a validation error (any 4xx other than 409), the form SH
 
 #### Scenario: Invalid email error
 
-- **WHEN** the server returns `422` with `code: 'pulsepress_invalid_email'` and `message: "Please enter a valid email address."`
+- **WHEN** the server returns `422` with `code: 'moonfarmer_reactions_lead_capture_invalid_email'` and `message: "Please enter a valid email address."`
 - **THEN** the form renders `<p role="alert">Please enter a valid email address.</p>` near the email input, the submit button is enabled, and the email input retains its typed value
 
 #### Scenario: Missing consent error from the client side
@@ -78,16 +78,16 @@ When the server returns a validation error (any 4xx other than 409), the form SH
 
 ### Requirement: Success state announces and locks the form for this post
 
-On a 200 response (`status: 'inserted'`) OR a 409 response (`status: 'already_exists'`), the widget SHALL set `localStorage['pulsepress:captured:{postId}'] = '1'` and replace the form with a `<p role="status" aria-live="polite">` announcing the thank-you message. Subsequent positive reactions on the same post SHALL NOT re-render the form.
+On a 200 response (`status: 'inserted'`) OR a 409 response (`status: 'already_exists'`), the widget SHALL set `localStorage['moonfarmer-reactions-lead-capture:captured:{postId}'] = '1'` and replace the form with a `<p role="status" aria-live="polite">` announcing the thank-you message. Subsequent positive reactions on the same post SHALL NOT re-render the form.
 
 #### Scenario: Successful new capture
 
 - **WHEN** the server returns 200 with `status: 'inserted'`
-- **THEN** `localStorage['pulsepress:captured:42']` becomes `'1'`, the form is replaced with `<p role="status">Thanks — we'll keep you in the loop.</p>`, and a second click on Insightful (also positive) does not re-render the form
+- **THEN** `localStorage['moonfarmer-reactions-lead-capture:captured:42']` becomes `'1'`, the form is replaced with `<p role="status">Thanks — we'll keep you in the loop.</p>`, and a second click on Insightful (also positive) does not re-render the form
 
 #### Scenario: Already-existing capture
 
-- **WHEN** the server returns 409 with code `pulsepress_capture_already_exists`
+- **WHEN** the server returns 409 with code `moonfarmer_reactions_lead_capture_capture_already_exists`
 - **THEN** the form is replaced with a friendly already-captured message; the captured flag is set; the success state is announced via `role="status"`
 
 ### Requirement: Submission posts to /capture with consent: true
@@ -121,7 +121,7 @@ Every visible string in the form SHALL come from `data.i18n.capture.*` (prompt, 
 
 ### Requirement: Widget renders six reactions with counts and active state
 
-The Preact widget SHALL render exactly six `<button>` elements (one per reaction in `PulsePressData.reactions`), each containing an inline SVG icon, a visible count, an `aria-label` naming the reaction with its current count and selected state, and `aria-pressed` reflecting whether that reaction is the visitor's current choice. Counts SHALL come from a `GET /counts/{postId}` request on mount. The active reaction SHALL come from `localStorage` under `pulsepress:reaction:{postId}` if present. After a positive-reaction click that does not match an existing captured flag for the post, the widget SHALL render the inline capture form below the buttons (see `Requirement: Inline capture form renders after a positive reaction`).
+The Preact widget SHALL render exactly six `<button>` elements (one per reaction in `MoonfarmerReactionsLeadCaptureData.reactions`), each containing an inline SVG icon, a visible count, an `aria-label` naming the reaction with its current count and selected state, and `aria-pressed` reflecting whether that reaction is the visitor's current choice. Counts SHALL come from a `GET /counts/{postId}` request on mount. The active reaction SHALL come from `localStorage` under `moonfarmer-reactions-lead-capture:reaction:{postId}` if present. After a positive-reaction click that does not match an existing captured flag for the post, the widget SHALL render the inline capture form below the buttons (see `Requirement: Inline capture form renders after a positive reaction`).
 
 #### Scenario: First paint on a post with no prior reactions
 
@@ -130,8 +130,8 @@ The Preact widget SHALL render exactly six `<button>` elements (one per reaction
 
 #### Scenario: Returning visitor sees their stored active state
 
-- **WHEN** `localStorage.getItem('pulsepress:reaction:42')` returns `'love'` and the page is for post 42
-- **THEN** the `love` button renders with `aria-pressed="true"` and is visually tinted with `var(--pulsepress-accent)`
+- **WHEN** `localStorage.getItem('moonfarmer-reactions-lead-capture:reaction:42')` returns `'love'` and the page is for post 42
+- **THEN** the `love` button renders with `aria-pressed="true"` and is visually tinted with `var(--moonfarmer-reactions-lead-capture-accent)`
 
 #### Scenario: Counts from server replace localStorage on reconciliation
 

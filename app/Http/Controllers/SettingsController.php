@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace PulsePress\Http\Controllers;
+namespace Moonfarmer\ReactionsLeadCapture\Http\Controllers;
 
-use PulsePress\Settings\Settings;
-use PulsePress\Settings\SettingsRepository;
+use Moonfarmer\ReactionsLeadCapture\Settings\Settings;
+use Moonfarmer\ReactionsLeadCapture\Settings\SettingsRepository;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -38,8 +38,8 @@ final class SettingsController
         $body = $request->get_json_params();
         if (!is_array($body)) {
             return new WP_Error(
-                'pulsepress_settings_invalid',
-                __('Settings payload must be a JSON object.', 'pulse-press'),
+                'moonfarmer_reactions_lead_capture_settings_invalid',
+                __('Settings payload must be a JSON object.', 'moonfarmer-reactions-lead-capture'),
                 ['status' => 422]
             );
         }

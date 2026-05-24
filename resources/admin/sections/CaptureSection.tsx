@@ -4,11 +4,11 @@ import { TextField } from '../components/fields/TextField';
 import { TextareaField } from '../components/fields/TextareaField';
 import { StatusPill } from '../components/StatusPill';
 import type { UseSettingsState } from '../hooks/useSettingsState';
-import type { PulsePressAdminData } from '../types';
+import type { MoonfarmerReactionsLeadCaptureAdminData } from '../types';
 
 interface Props {
   state: UseSettingsState;
-  adminData: PulsePressAdminData;
+  adminData: MoonfarmerReactionsLeadCaptureAdminData;
 }
 
 export function CaptureSection({ state, adminData }: Props) {
@@ -16,13 +16,13 @@ export function CaptureSection({ state, adminData }: Props) {
   const { settings, fieldStatus, errors, update } = state;
 
   return (
-    <section class="pulsepress-section" aria-labelledby="pulsepress-section-capture-title">
-      <header class="pulsepress-section__header">
-        <h2 id="pulsepress-section-capture-title">{i18n.sections.captureTitle}</h2>
-        <p class="pulsepress-section__helper">{i18n.sections.captureHelper}</p>
+    <section class="moonfarmer-reactions-lead-capture-section" aria-labelledby="moonfarmer-reactions-lead-capture-section-capture-title">
+      <header class="moonfarmer-reactions-lead-capture-section__header">
+        <h2 id="moonfarmer-reactions-lead-capture-section-capture-title">{i18n.sections.captureTitle}</h2>
+        <p class="moonfarmer-reactions-lead-capture-section__helper">{i18n.sections.captureHelper}</p>
       </header>
 
-      <div class="pulsepress-section__body">
+      <div class="moonfarmer-reactions-lead-capture-section__body">
         <TextareaField
           label={i18n.fields.consentTextLabel}
           helper={i18n.fields.consentTextHelper}

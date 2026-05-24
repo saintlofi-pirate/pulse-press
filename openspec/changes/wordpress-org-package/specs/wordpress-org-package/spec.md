@@ -11,11 +11,11 @@ The WordPress.org `readme.txt` SHALL describe the current Free plugin surface: r
 
 ### Requirement: Distribution zip excludes repo-only files
 
-The release zip SHALL include runtime files needed by WordPress and SHALL exclude development files. It SHALL include `pulsepress.php`, `app/`, `blocks/`, `dist/`, `vendor/`, `readme.txt`, `license.txt`, `index.php`, and `uninstall.php`. It SHALL exclude `docs/`, `openspec/`, `tests/`, `node_modules/`, `resources/`, `.git*`, `.distignore`, `AGENTS.md`, `package*.json`, `composer.json`, `composer.lock`, `phpunit.xml`, `vite.config.js`, and local build scripts.
+The release zip SHALL include runtime files needed by WordPress and SHALL exclude development files. It SHALL include `moonfarmer-reactions-lead-capture.php`, `app/`, `blocks/`, `dist/`, `vendor/`, `readme.txt`, `license.txt`, `index.php`, and `uninstall.php`. It SHALL exclude `docs/`, `openspec/`, `tests/`, `node_modules/`, `resources/`, `.git*`, `.distignore`, `AGENTS.md`, `package*.json`, `composer.json`, `composer.lock`, `phpunit.xml`, `vite.config.js`, and local build scripts.
 
 #### Scenario: Zip inspection
 
-- **WHEN** the release builder creates `build/pulsepress-0.1.0.zip`
+- **WHEN** the release builder creates `build/moonfarmer-reactions-lead-capture-0.1.0.zip`
 - **THEN** `unzip -l` shows runtime files and does not show excluded repo-only files
 
 ### Requirement: Release builder is deterministic from a clean checkout
@@ -25,7 +25,7 @@ The repository SHALL provide a local release builder that installs Node dependen
 #### Scenario: Build artifact exists
 
 - **WHEN** running `scripts/build-release.sh`
-- **THEN** `build/pulsepress-0.1.0.zip` exists and contains a top-level `pulsepress/` directory
+- **THEN** `build/moonfarmer-reactions-lead-capture-0.1.0.zip` exists and contains a top-level `moonfarmer-reactions-lead-capture/` directory
 
 ### Requirement: Runtime supports PHP 7.4 through 8.4
 
@@ -33,7 +33,7 @@ The plugin header, Composer runtime requirement, and WordPress.org readme SHALL 
 
 #### Scenario: PHP version matrix lint
 
-- **WHEN** running PHP lint on `app/`, `pulsepress.php`, and `uninstall.php` with PHP 7.4, 8.0, 8.1, 8.2, 8.3, and 8.4
+- **WHEN** running PHP lint on `app/`, `moonfarmer-reactions-lead-capture.php`, and `uninstall.php` with PHP 7.4, 8.0, 8.1, 8.2, 8.3, and 8.4
 - **THEN** every runtime PHP file reports no syntax errors
 
 ### Requirement: License and attribution are reviewable

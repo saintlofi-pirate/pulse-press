@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace PulsePress\Captures;
+namespace Moonfarmer\ReactionsLeadCapture\Captures;
 
-use PulsePress\Database\Schema;
-use PulsePress\Http\RestException;
+use Moonfarmer\ReactionsLeadCapture\Database\Schema;
+use Moonfarmer\ReactionsLeadCapture\Http\RestException;
 use wpdb;
 use WP_REST_Request;
 
@@ -29,35 +29,35 @@ final class CaptureExporter
     {
         return [
             'consent_at' => [
-                'label'  => __('Consent timestamp', 'pulse-press'),
+                'label'  => __('Consent timestamp', 'moonfarmer-reactions-lead-capture'),
                 'render' => static fn (array $row): string => (string) ($row['consent_at'] ?? ''),
             ],
             'email' => [
-                'label'  => __('Email', 'pulse-press'),
+                'label'  => __('Email', 'moonfarmer-reactions-lead-capture'),
                 'render' => static fn (array $row): string => (string) ($row['email'] ?? ''),
             ],
             'post_id' => [
-                'label'  => __('Post ID', 'pulse-press'),
+                'label'  => __('Post ID', 'moonfarmer-reactions-lead-capture'),
                 'render' => static fn (array $row): string => (string) ($row['post_id'] ?? ''),
             ],
             'post_title' => [
-                'label'  => __('Post title', 'pulse-press'),
+                'label'  => __('Post title', 'moonfarmer-reactions-lead-capture'),
                 'render' => static fn (array $row): string => (string) ($row['_post_title'] ?? ''),
             ],
             'reaction_type' => [
-                'label'  => __('Reaction', 'pulse-press'),
+                'label'  => __('Reaction', 'moonfarmer-reactions-lead-capture'),
                 'render' => static fn (array $row): string => (string) ($row['reaction_type'] ?? ''),
             ],
             'consent_text_version' => [
-                'label'  => __('Consent version', 'pulse-press'),
+                'label'  => __('Consent version', 'moonfarmer-reactions-lead-capture'),
                 'render' => static fn (array $row): string => (string) ($row['consent_text_version'] ?? ''),
             ],
             'source' => [
-                'label'  => __('Source', 'pulse-press'),
+                'label'  => __('Source', 'moonfarmer-reactions-lead-capture'),
                 'render' => static fn (array $row): string => (string) ($row['source'] ?? ''),
             ],
             'created_at' => [
-                'label'  => __('Captured at', 'pulse-press'),
+                'label'  => __('Captured at', 'moonfarmer-reactions-lead-capture'),
                 'render' => static fn (array $row): string => (string) ($row['created_at'] ?? ''),
             ],
         ];
@@ -76,9 +76,9 @@ final class CaptureExporter
 
         $request = $options['request'] ?? null;
         if ($request instanceof WP_REST_Request) {
-            do_action('pulsepress_before_export', $request);
+            do_action('moonfarmer_reactions_lead_capture_before_export', $request);
         } else {
-            do_action('pulsepress_before_export');
+            do_action('moonfarmer_reactions_lead_capture_before_export');
         }
 
         $emit($this->headerLine($columns));
@@ -122,7 +122,7 @@ final class CaptureExporter
     private function resolveColumns(): array
     {
         $defaults = self::defaultColumns();
-        $filtered = apply_filters('pulsepress_export_columns', $defaults);
+        $filtered = apply_filters('moonfarmer_reactions_lead_capture_export_columns', $defaults);
 
         if (!is_array($filtered)) {
             return $defaults;
@@ -184,7 +184,7 @@ final class CaptureExporter
             return $cache[$postId];
         }
         $title = get_the_title($postId);
-        $resolved = is_string($title) && $title !== '' ? $title : __('(deleted post)', 'pulse-press');
+        $resolved = is_string($title) && $title !== '' ? $title : __('(deleted post)', 'moonfarmer-reactions-lead-capture');
         $cache[$postId] = $resolved;
         return $resolved;
     }

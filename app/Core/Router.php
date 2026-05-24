@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace PulsePress\Core;
+namespace Moonfarmer\ReactionsLeadCapture\Core;
 
 
 if (!defined('ABSPATH')) {
@@ -13,7 +13,7 @@ class Router
     /** @var list<array{method:string, uri:string, action:mixed, permissions:mixed}> */
     protected static array $routes = [];
 
-    protected static string $namespace = 'pulsepress/v1';
+    protected static string $namespace = 'moonfarmer-reactions-lead-capture/v1';
 
     public static function get(string $uri, $action, $permissions = 'manage_options'): void
     {

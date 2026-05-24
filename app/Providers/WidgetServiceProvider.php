@@ -1,15 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace PulsePress\Providers;
+namespace Moonfarmer\ReactionsLeadCapture\Providers;
 
-use PulsePress\Blocks\Shortcode;
-use PulsePress\Core\ServiceProvider;
-use PulsePress\Reactions\Reactions;
-use PulsePress\Settings\Settings;
-use PulsePress\Settings\SettingsRepository;
-use PulsePress\View\Manifest;
-use PulsePress\Visibility\VisibilityResolver;
+use Moonfarmer\ReactionsLeadCapture\Blocks\Shortcode;
+use Moonfarmer\ReactionsLeadCapture\Core\ServiceProvider;
+use Moonfarmer\ReactionsLeadCapture\Reactions\Reactions;
+use Moonfarmer\ReactionsLeadCapture\Settings\Settings;
+use Moonfarmer\ReactionsLeadCapture\Settings\SettingsRepository;
+use Moonfarmer\ReactionsLeadCapture\View\Manifest;
+use Moonfarmer\ReactionsLeadCapture\Visibility\VisibilityResolver;
 
 
 if (!defined('ABSPATH')) {
@@ -18,16 +18,16 @@ if (!defined('ABSPATH')) {
 
 final class WidgetServiceProvider extends ServiceProvider
 {
-    public const SCRIPT_HANDLE = 'pulsepress-widget';
-    public const STYLE_HANDLE  = 'pulsepress-widget';
+    public const SCRIPT_HANDLE = 'moonfarmer-reactions-lead-capture-widget';
+    public const STYLE_HANDLE  = 'moonfarmer-reactions-lead-capture-widget';
     public const ENTRY         = 'resources/widget/index.ts';
 
     public function register(): void
     {
         $this->app->singleton(Manifest::class, function () {
             return new Manifest(
-                PULSEPRESS_DIR . 'dist/.vite/manifest.json',
-                PULSEPRESS_URL . 'dist/'
+                MOONFARMER_REACTIONS_LEAD_CAPTURE_DIR . 'dist/.vite/manifest.json',
+                MOONFARMER_REACTIONS_LEAD_CAPTURE_URL . 'dist/'
             );
         });
     }
@@ -57,7 +57,7 @@ final class WidgetServiceProvider extends ServiceProvider
 
         foreach ($urls['css'] as $i => $cssUrl) {
             $handle = self::STYLE_HANDLE . '-' . $i;
-            wp_register_style($handle, $cssUrl, [], PULSEPRESS_VERSION);
+            wp_register_style($handle, $cssUrl, [], MOONFARMER_REACTIONS_LEAD_CAPTURE_VERSION);
             wp_enqueue_style($handle);
         }
 
@@ -66,12 +66,12 @@ final class WidgetServiceProvider extends ServiceProvider
         $depHandles = [];
         foreach ($depUrls as $i => $depUrl) {
             $handle = self::SCRIPT_HANDLE . '-dep-' . $i;
-            wp_register_script($handle, $depUrl, [], PULSEPRESS_VERSION, true);
+            wp_register_script($handle, $depUrl, [], MOONFARMER_REACTIONS_LEAD_CAPTURE_VERSION, true);
             wp_script_add_data($handle, 'type', 'module');
             wp_enqueue_script($handle);
             $depHandles[] = $handle;
         }
-        wp_register_script(self::SCRIPT_HANDLE, $entryUrl, $depHandles, PULSEPRESS_VERSION, true);
+        wp_register_script(self::SCRIPT_HANDLE, $entryUrl, $depHandles, MOONFARMER_REACTIONS_LEAD_CAPTURE_VERSION, true);
         wp_script_add_data(self::SCRIPT_HANDLE, 'type', 'module');
         $this->ensureModuleScripts(array_merge($depHandles, [self::SCRIPT_HANDLE]));
 
@@ -81,11 +81,11 @@ final class WidgetServiceProvider extends ServiceProvider
             : Settings::DEFAULTS;
         $enabledReactions = (array) ($settings['enabled_reactions'] ?? Reactions::TYPES);
         $payload = [
-            'root'                => esc_url_raw(rest_url('pulsepress/v1/')),
+            'root'                => esc_url_raw(rest_url('moonfarmer-reactions-lead-capture/v1/')),
             'nonce'               => wp_create_nonce('wp_rest'),
             'postId'              => $postId,
-            'reactions'           => array_values((array) apply_filters('pulsepress_reaction_types', $enabledReactions)),
-            'positiveReactions'   => array_values((array) apply_filters('pulsepress_positive_reactions', $settings['positive_reactions'] ?? Reactions::DEFAULT_POSITIVE)),
+            'reactions'           => array_values((array) apply_filters('moonfarmer_reactions_lead_capture_reaction_types', $enabledReactions)),
+            'positiveReactions'   => array_values((array) apply_filters('moonfarmer_reactions_lead_capture_positive_reactions', $settings['positive_reactions'] ?? Reactions::DEFAULT_POSITIVE)),
             'allowGuestReactions' => (bool) ($settings['allow_guest_reactions'] ?? Settings::DEFAULTS['allow_guest_reactions']),
             'isLoggedIn'          => function_exists('is_user_logged_in') ? \is_user_logged_in() : false,
             'iconStyle'           => (string) ($settings['icon_style'] ?? Settings::DEFAULTS['icon_style']),
@@ -96,34 +96,34 @@ final class WidgetServiceProvider extends ServiceProvider
             'countVisibility'     => (string) ($settings['count_visibility'] ?? Settings::DEFAULTS['count_visibility']),
             'countThreshold'      => (int) ($settings['count_threshold'] ?? Settings::DEFAULTS['count_threshold']),
             'i18n'                => [
-                'loading'         => __('Loading reactions…', 'pulse-press'),
-                'error'           => __('Sorry, your reaction could not be saved. Please try again.', 'pulse-press'),
-                'activeSuffix'    => __(', selected', 'pulse-press'),
-                'groupLabel'      => __('Reactions', 'pulse-press'),
-                'announceReacted' => __('Reacted with {type}.', 'pulse-press'),
-                'announceUpdated' => __('Updated reaction to {type}.', 'pulse-press'),
+                'loading'         => __('Loading reactions…', 'moonfarmer-reactions-lead-capture'),
+                'error'           => __('Sorry, your reaction could not be saved. Please try again.', 'moonfarmer-reactions-lead-capture'),
+                'activeSuffix'    => __(', selected', 'moonfarmer-reactions-lead-capture'),
+                'groupLabel'      => __('Reactions', 'moonfarmer-reactions-lead-capture'),
+                'announceReacted' => __('Reacted with {type}.', 'moonfarmer-reactions-lead-capture'),
+                'announceUpdated' => __('Updated reaction to {type}.', 'moonfarmer-reactions-lead-capture'),
                 'capture'         => [
-                    'prompt'          => __('Get future post updates', 'pulse-press'),
-                    'label'           => __('Email address', 'pulse-press'),
-                    'placeholder'     => __('you@example.com', 'pulse-press'),
+                    'prompt'          => __('Get future post updates', 'moonfarmer-reactions-lead-capture'),
+                    'label'           => __('Email address', 'moonfarmer-reactions-lead-capture'),
+                    'placeholder'     => __('you@example.com', 'moonfarmer-reactions-lead-capture'),
                     'consent'         => (string) ($settings['consent_text'] ?? Settings::DEFAULTS['consent_text']),
-                    'consentHelper'   => __('We will only use your email to send new-post notifications. Unsubscribe any time.', 'pulse-press'),
-                    'submit'          => __('Subscribe', 'pulse-press'),
-                    'submitting'      => __('Submitting…', 'pulse-press'),
-                    'thanks'          => __('You are subscribed. Thanks - we will send future post updates.', 'pulse-press'),
-                    'alreadyCaptured' => __('We already have your email saved for this post.', 'pulse-press'),
-                    'networkError'    => __('Sorry, that did not go through. Please try again.', 'pulse-press'),
-                    'expiredNonce'    => __('Your session has expired. Please refresh the page and try again.', 'pulse-press'),
-                    'dismiss'         => __('Dismiss', 'pulse-press'),
+                    'consentHelper'   => __('We will only use your email to send new-post notifications. Unsubscribe any time.', 'moonfarmer-reactions-lead-capture'),
+                    'submit'          => __('Subscribe', 'moonfarmer-reactions-lead-capture'),
+                    'submitting'      => __('Submitting…', 'moonfarmer-reactions-lead-capture'),
+                    'thanks'          => __('You are subscribed. Thanks - we will send future post updates.', 'moonfarmer-reactions-lead-capture'),
+                    'alreadyCaptured' => __('We already have your email saved for this post.', 'moonfarmer-reactions-lead-capture'),
+                    'networkError'    => __('Sorry, that did not go through. Please try again.', 'moonfarmer-reactions-lead-capture'),
+                    'expiredNonce'    => __('Your session has expired. Please refresh the page and try again.', 'moonfarmer-reactions-lead-capture'),
+                    'dismiss'         => __('Dismiss', 'moonfarmer-reactions-lead-capture'),
                 ],
             ],
         ];
 
-        $payload = (array) apply_filters('pulsepress_widget_data', $payload);
+        $payload = (array) apply_filters('moonfarmer_reactions_lead_capture_widget_data', $payload);
 
         wp_add_inline_script(
             self::SCRIPT_HANDLE,
-            'window.PulsePressData = ' . wp_json_encode($payload) . ';',
+            'window.MoonfarmerReactionsLeadCaptureData = ' . wp_json_encode($payload) . ';',
             'before'
         );
         wp_enqueue_script(self::SCRIPT_HANDLE);
@@ -131,7 +131,7 @@ final class WidgetServiceProvider extends ServiceProvider
 
     private function shouldEnqueueAssets(): bool
     {
-        if ((bool) apply_filters('pulsepress_widget_enqueue', false)) {
+        if ((bool) apply_filters('moonfarmer_reactions_lead_capture_widget_enqueue', false)) {
             return true;
         }
 
@@ -162,7 +162,7 @@ final class WidgetServiceProvider extends ServiceProvider
             return false;
         }
 
-        if (function_exists('has_block') && has_block('pulsepress/reactions', $post)) {
+        if (function_exists('has_block') && has_block('moonfarmer-reactions-lead-capture/reactions', $post)) {
             return true;
         }
 
@@ -183,7 +183,7 @@ final class WidgetServiceProvider extends ServiceProvider
 
         $postType   = get_post_type();
         $defaultOn  = $postType === 'post';
-        return (bool) apply_filters('pulsepress_widget_auto_insert', $defaultOn, $postType);
+        return (bool) apply_filters('moonfarmer_reactions_lead_capture_widget_auto_insert', $defaultOn, $postType);
     }
 
     /** @param list<string> $handles */
@@ -193,13 +193,13 @@ final class WidgetServiceProvider extends ServiceProvider
             return $handle . '-js';
         }, $handles));
 
-        if (!empty($GLOBALS['pulsepress_module_handles_widget'])) {
-            $GLOBALS['pulsepress_module_handles_widget'] = array_merge($GLOBALS['pulsepress_module_handles_widget'], $handlesWithRenderedIds);
+        if (!empty($GLOBALS['moonfarmer_reactions_lead_capture_module_handles_widget'])) {
+            $GLOBALS['moonfarmer_reactions_lead_capture_module_handles_widget'] = array_merge($GLOBALS['moonfarmer_reactions_lead_capture_module_handles_widget'], $handlesWithRenderedIds);
             return;
         }
-        $GLOBALS['pulsepress_module_handles_widget'] = $handlesWithRenderedIds;
+        $GLOBALS['moonfarmer_reactions_lead_capture_module_handles_widget'] = $handlesWithRenderedIds;
         add_filter('wp_script_attributes', static function (array $attributes): array {
-            $registered = $GLOBALS['pulsepress_module_handles_widget'] ?? [];
+            $registered = $GLOBALS['moonfarmer_reactions_lead_capture_module_handles_widget'] ?? [];
             $id         = isset($attributes['id']) ? (string) $attributes['id'] : '';
             if ($id !== '' && in_array($id, $registered, true)) {
                 $attributes['type'] = 'module';
@@ -208,7 +208,7 @@ final class WidgetServiceProvider extends ServiceProvider
             return $attributes;
         });
         add_filter('script_loader_tag', static function (string $tag, string $handle) {
-            $registered = $GLOBALS['pulsepress_module_handles_widget'] ?? [];
+            $registered = $GLOBALS['moonfarmer_reactions_lead_capture_module_handles_widget'] ?? [];
             $isRegisteredHandle = in_array($handle, $registered, true);
             $isRegisteredTag    = false;
             foreach ($registered as $registeredHandle) {
@@ -231,7 +231,7 @@ final class WidgetServiceProvider extends ServiceProvider
             return $content;
         }
 
-        if (strpos($content, 'data-pulsepress-widget') !== false) {
+        if (strpos($content, 'data-moonfarmer-reactions-lead-capture-widget') !== false) {
             return $content;
         }
 
@@ -249,7 +249,7 @@ final class WidgetServiceProvider extends ServiceProvider
         } else {
             $postType   = get_post_type();
             $defaultOn  = $postType === 'post';
-            $autoInsert = (bool) apply_filters('pulsepress_widget_auto_insert', $defaultOn, $postType);
+            $autoInsert = (bool) apply_filters('moonfarmer_reactions_lead_capture_widget_auto_insert', $defaultOn, $postType);
             if (!$autoInsert) {
                 return $content;
             }
@@ -260,7 +260,7 @@ final class WidgetServiceProvider extends ServiceProvider
             : Settings::DEFAULTS;
         $position = (string) ($settings['auto_insert_position'] ?? Settings::DEFAULTS['auto_insert_position']);
         $design   = (string) ($settings['widget_design'] ?? Settings::DEFAULTS['widget_design']);
-        $widget   = \PulsePress\Blocks\WidgetMarkup::container($postId);
+        $widget   = \Moonfarmer\ReactionsLeadCapture\Blocks\WidgetMarkup::container($postId);
 
         if ($position === 'above' || ($position === 'below' && $design === 'vertical_rail')) {
             return $widget . $content;

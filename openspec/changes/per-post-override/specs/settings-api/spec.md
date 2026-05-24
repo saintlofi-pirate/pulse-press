@@ -21,7 +21,7 @@
 
 ### Requirement: Settings response surfaces dynamic post types
 
-`GET /pulsepress/v1/settings` response's `choices` SHALL include a `post_types` map (slug → label) produced by `get_post_types(['public' => true], 'objects')`. The admin SPA renders both "Auto-insert on" and "Never show on" against this map.
+`GET /moonfarmer-reactions-lead-capture/v1/settings` response's `choices` SHALL include a `post_types` map (slug → label) produced by `get_post_types(['public' => true], 'objects')`. The admin SPA renders both "Auto-insert on" and "Never show on" against this map.
 
 #### Scenario: Choices map present in response
 
@@ -37,9 +37,9 @@
 
 ### Requirement: Settings schema and defaults
 
-`PulsePress\Settings\Settings` SHALL expose `public const DEFAULTS` mapping every settings key to its default value, and `public const SCHEMA_VERSION` as an integer that increments whenever a schema-breaking change ships. The default schema SHALL include at minimum: `count_visibility`, `count_threshold`, `widget_design`, `icon_style`, `theme_mode`, `auto_insert_post_types`, `auto_insert_position`, `positive_reactions`, `allow_guest_reactions`, `consent_text`, `consent_text_version`, `delete_on_uninstall`, `retention_days`, **`hide_on_post_types`**.
+`Moonfarmer\ReactionsLeadCapture\Settings\Settings` SHALL expose `public const DEFAULTS` mapping every settings key to its default value, and `public const SCHEMA_VERSION` as an integer that increments whenever a schema-breaking change ships. The default schema SHALL include at minimum: `count_visibility`, `count_threshold`, `widget_design`, `icon_style`, `theme_mode`, `auto_insert_post_types`, `auto_insert_position`, `positive_reactions`, `allow_guest_reactions`, `consent_text`, `consent_text_version`, `delete_on_uninstall`, `retention_days`, **`hide_on_post_types`**.
 
 #### Scenario: All keys exposed in defaults
 
-- **WHEN** a developer reads `\PulsePress\Settings\Settings::DEFAULTS`
+- **WHEN** a developer reads `\Moonfarmer\ReactionsLeadCapture\Settings\Settings::DEFAULTS`
 - **THEN** every documented key (including `hide_on_post_types`) is present

@@ -28,7 +28,7 @@ namespace {
     }
 }
 
-namespace PulsePress\Database {
+namespace Moonfarmer\ReactionsLeadCapture\Database {
 
     if (!function_exists(__NAMESPACE__ . '\get_option')) {
         function get_option(string $key, mixed $default = false): mixed
@@ -62,7 +62,7 @@ namespace PulsePress\Database {
     }
 }
 
-namespace PulsePress\Reactions {
+namespace Moonfarmer\ReactionsLeadCapture\Reactions {
 
     if (!function_exists(__NAMESPACE__ . '\wp_salt')) {
         function wp_salt(string $scheme = 'auth'): string
@@ -119,7 +119,7 @@ namespace PulsePress\Reactions {
     }
 }
 
-namespace PulsePress\Http\Controllers {
+namespace Moonfarmer\ReactionsLeadCapture\Http\Controllers {
 
     if (!function_exists(__NAMESPACE__ . '\do_action')) {
         function do_action(string $hook, mixed ...$args): void
@@ -150,7 +150,7 @@ namespace PulsePress\Http\Controllers {
     }
 }
 
-namespace PulsePress\Providers {
+namespace Moonfarmer\ReactionsLeadCapture\Providers {
 
     if (!function_exists(__NAMESPACE__ . '\add_action')) {
         function add_action(string $hook, callable $callback, int $priority = 10, int $acceptedArgs = 1): void
@@ -355,7 +355,7 @@ namespace PulsePress\Providers {
     }
 }
 
-namespace PulsePress\View {
+namespace Moonfarmer\ReactionsLeadCapture\View {
 
     if (!function_exists(__NAMESPACE__ . '\get_transient')) {
         function get_transient(string $key): mixed
@@ -373,7 +373,7 @@ namespace PulsePress\View {
     }
 }
 
-namespace PulsePress\Captures {
+namespace Moonfarmer\ReactionsLeadCapture\Captures {
 
     if (!function_exists(__NAMESPACE__ . '\apply_filters')) {
         function apply_filters(string $hook, mixed $value, mixed ...$args): mixed
@@ -412,7 +412,7 @@ namespace PulsePress\Captures {
     }
 }
 
-namespace PulsePress\Visibility {
+namespace Moonfarmer\ReactionsLeadCapture\Visibility {
 
     if (!function_exists(__NAMESPACE__ . '\apply_filters')) {
         function apply_filters(string $hook, mixed $value, mixed ...$args): mixed
@@ -437,7 +437,7 @@ namespace PulsePress\Visibility {
     }
 }
 
-namespace PulsePress\Analytics {
+namespace Moonfarmer\ReactionsLeadCapture\Analytics {
 
     if (!defined(__NAMESPACE__ . '\HOUR_IN_SECONDS')) {
         define(__NAMESPACE__ . '\HOUR_IN_SECONDS', 3600);
@@ -503,7 +503,7 @@ namespace PulsePress\Analytics {
     }
 }
 
-namespace PulsePress\Blocks {
+namespace Moonfarmer\ReactionsLeadCapture\Blocks {
 
     if (!function_exists(__NAMESPACE__ . '\apply_filters')) {
         function apply_filters(string $hook, mixed $value, mixed ...$args): mixed
@@ -554,7 +554,7 @@ namespace PulsePress\Blocks {
     }
 }
 
-namespace PulsePress\Settings {
+namespace Moonfarmer\ReactionsLeadCapture\Settings {
 
     if (!function_exists(__NAMESPACE__ . '\get_option')) {
         function get_option(string $key, mixed $default = false): mixed
@@ -586,7 +586,7 @@ namespace PulsePress\Settings {
     }
 }
 
-namespace PulsePress\Reactions {
+namespace Moonfarmer\ReactionsLeadCapture\Reactions {
 
     if (!function_exists(__NAMESPACE__ . '\sanitize_email')) {
         function sanitize_email(string $value): string

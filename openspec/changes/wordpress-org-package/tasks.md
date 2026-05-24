@@ -13,7 +13,7 @@
 ## 3. Package Boundary
 
 - [x] 3.1 Tighten `.distignore` around runtime vs repo-only files.
-- [x] 3.2 Add a local release build script that emits `build/pulsepress-0.1.0.zip`.
+- [x] 3.2 Add a local release build script that emits `build/moonfarmer-reactions-lead-capture-0.1.0.zip`.
 - [x] 3.3 Add package attribution and WordPress.org asset checklist docs.
 - [x] 3.4 Add `license.txt` to the runtime package.
 - [x] 3.5 Lower runtime PHP floor to 7.4 and remove PHP 8-only syntax from runtime files.

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace PulsePress\Http;
+namespace Moonfarmer\ReactionsLeadCapture\Http;
 
 use RuntimeException;
 use WP_Error;

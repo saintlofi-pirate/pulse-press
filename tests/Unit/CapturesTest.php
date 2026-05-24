@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-use PulsePress\Captures\Captures;
+use Moonfarmer\ReactionsLeadCapture\Captures\Captures;
 use Tests\Stubs\FilterRegistry;
 
 it('exposes the three default capture sources', function () {
@@ -20,7 +20,7 @@ it('rejects unknown sources', function () {
 });
 
 it('lets a filter extend the allowed sources', function () {
-    FilterRegistry::addFilter('pulsepress_capture_sources', fn () => ['inline', 'sms']);
+    FilterRegistry::addFilter('moonfarmer_reactions_lead_capture_capture_sources', fn () => ['inline', 'sms']);
     expect(Captures::isValidSource('sms'))->toBeTrue();
     expect(Captures::isValidSource('block'))->toBeFalse();
 });
@@ -30,11 +30,11 @@ it('returns v1 as the default consent text version', function () {
 });
 
 it('lets a filter set a custom consent text version', function () {
-    FilterRegistry::addFilter('pulsepress_consent_text_version', fn () => '2026-06-policy');
+    FilterRegistry::addFilter('moonfarmer_reactions_lead_capture_consent_text_version', fn () => '2026-06-policy');
     expect(Captures::consentTextVersion())->toBe('2026-06-policy');
 });
 
 it('falls back to default version when filter returns an empty value', function () {
-    FilterRegistry::addFilter('pulsepress_consent_text_version', fn () => '');
+    FilterRegistry::addFilter('moonfarmer_reactions_lead_capture_consent_text_version', fn () => '');
     expect(Captures::consentTextVersion())->toBe('v1');
 });

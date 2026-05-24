@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace PulsePress\Analytics;
+namespace Moonfarmer\ReactionsLeadCapture\Analytics;
 
 use DateTimeImmutable;
-use PulsePress\Database\Schema;
+use Moonfarmer\ReactionsLeadCapture\Database\Schema;
 use wpdb;
 
 

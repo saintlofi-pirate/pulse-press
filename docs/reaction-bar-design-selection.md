@@ -20,7 +20,7 @@ Implementation status: `minimalist`, `subtle_text`, `progress_split`, `vertical_
 | `vertical_sidebar` | Ship now as `vertical_rail` | Uses the vertical engagement rail pattern while keeping the same reaction data model. |
 | `clap_counter` | Ship now | Adds a focused single-action celebration pattern powered by the first positive reaction. |
 
-The shipped plugin should not include large card/grid/dashboard-inspired variants. PulsePress should feel production-safe for most blogs and publisher sites.
+The shipped plugin should not include large card/grid/dashboard-inspired variants. Moonfarmer Reactions Lead Capture should feel production-safe for most blogs and publisher sites.
 
 ### Upcoming
 
@@ -57,7 +57,7 @@ Refinement:
 - For upcoming `vertical_sidebar`, capture should open as a small anchored panel near the sidebar, not below the article body.
 - For upcoming A/B tests, capture timing can become a variant: `after_positive_reaction`, `after_second_positive_reaction`, `manual_only`.
 
-Do not show the capture form before a reaction in Free. That would make PulsePress feel like another popup tool instead of a sentiment-first plugin.
+Do not show the capture form before a reaction in Free. That would make Moonfarmer Reactions Lead Capture feel like another popup tool instead of a sentiment-first plugin.
 
 ## Animation Options
 
@@ -133,8 +133,8 @@ Reserve upcoming design keys but do not expose them in the current settings UI:
 
 Future extensions can add choices through a filter in a later contract change if needed:
 
-   - add `pulsepress_widget_design_choices`
-   - add `pulsepress_animation_mode_choices`
+   - add `moonfarmer_reactions_lead_capture_widget_design_choices`
+   - add `moonfarmer_reactions_lead_capture_animation_mode_choices`
 
 ## QA Requirements
 

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-use PulsePress\Database\Schema;
+use Moonfarmer\ReactionsLeadCapture\Database\Schema;
 use Tests\Stubs\WpdbStub;
 
 it('exposes a single integer schema version constant', function () {
@@ -69,5 +69,5 @@ it('uses dbDelta conventions (two spaces after PRIMARY KEY, no backticks)', func
 
 it('computes the prefixed table name via tableName()', function () {
     $wpdb = new WpdbStub();
-    expect(Schema::tableName($wpdb, Schema::TABLE_REACTIONS))->toBe('wp_pulsepress_reactions');
+    expect(Schema::tableName($wpdb, Schema::TABLE_REACTIONS))->toBe('wp_moonfarmer_reactions_lead_capture_reactions');
 });

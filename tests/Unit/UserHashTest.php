@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-use PulsePress\Reactions\UserHash;
+use Moonfarmer\ReactionsLeadCapture\Reactions\UserHash;
 use Tests\Stubs\WpSaltStub;
 
 it('produces a 64-char lowercase hex digest', function () {

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
 import { ExtensionMount } from './components/ExtensionMount';
 import { LivePreview } from './components/LivePreview';
-import { PulsePressLayout } from './components/PulsePressLayout';
+import { MoonfarmerReactionsLeadCaptureLayout } from './components/MoonfarmerReactionsLeadCaptureLayout';
 import { SectionNav } from './components/SectionNav';
 import { useSettingsState } from './hooks/useSettingsState';
 import { AnalyticsSection } from './sections/AnalyticsSection';
@@ -9,7 +9,7 @@ import { CaptureSection } from './sections/CaptureSection';
 import { DisplaySection } from './sections/DisplaySection';
 import { PrivacySection } from './sections/PrivacySection';
 import { ReactionsSection } from './sections/ReactionsSection';
-import type { ExtensionTab, PulsePressAdminData } from './types';
+import type { ExtensionTab, MoonfarmerReactionsLeadCaptureAdminData } from './types';
 
 const FREE_TAB_IDS = new Set(['display', 'analytics', 'reactions', 'capture', 'privacy']);
 
@@ -20,7 +20,7 @@ function pickDefaultTab(tabs: ExtensionTab[]): string {
 }
 
 interface Props {
-  adminData: PulsePressAdminData;
+  adminData: MoonfarmerReactionsLeadCaptureAdminData;
 }
 
 export function App({ adminData }: Props) {
@@ -76,16 +76,16 @@ export function App({ adminData }: Props) {
   };
 
   return (
-    <PulsePressLayout
+    <MoonfarmerReactionsLeadCaptureLayout
       adminData={adminData}
       nav={<SectionNav tabs={tabs} active={activeTab} onChange={changeTab} />}
       panel={
         <div
-          id={`pulsepress-panel-${activeTab}`}
+          id={`moonfarmer-reactions-lead-capture-panel-${activeTab}`}
           role="tabpanel"
-          aria-labelledby={`pulsepress-tab-${activeTab}`}
+          aria-labelledby={`moonfarmer-reactions-lead-capture-tab-${activeTab}`}
           tabIndex={0}
-          class="pulsepress-panel"
+          class="moonfarmer-reactions-lead-capture-panel"
         >
           {renderPanel()}
         </div>

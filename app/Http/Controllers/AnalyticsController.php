@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace PulsePress\Http\Controllers;
+namespace Moonfarmer\ReactionsLeadCapture\Http\Controllers;
 
 use DateTimeImmutable;
 use DateTimeZone;
-use PulsePress\Analytics\MetricsCalculator;
+use Moonfarmer\ReactionsLeadCapture\Analytics\MetricsCalculator;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -23,7 +23,7 @@ final class AnalyticsController
      * This is NOT a Free/Pro gate. Same value for every install. A 2-year
      * window keeps a single REST request snappy on tables up to ~1M rows.
      * Sites that need longer windows in one shot can raise it via the
-     * pulsepress_analytics_max_days filter. Pro adds pre-aggregated
+     * moonfarmer_reactions_lead_capture_analytics_max_days filter. Pro adds pre-aggregated
      * weekly/monthly rollups for snappy multi-year queries by default.
      */
     public const MAX_WINDOW_DAYS = 730;
@@ -46,7 +46,7 @@ final class AnalyticsController
         $fromParam = (string) ($request->get_param('from') ?? '');
         $toParam   = (string) ($request->get_param('to') ?? '');
 
-        $maxDays = (int) apply_filters('pulsepress_analytics_max_days', self::MAX_WINDOW_DAYS);
+        $maxDays = (int) apply_filters('moonfarmer_reactions_lead_capture_analytics_max_days', self::MAX_WINDOW_DAYS);
         if ($maxDays < 1) {
             $maxDays = self::MAX_WINDOW_DAYS;
         }
@@ -69,7 +69,7 @@ final class AnalyticsController
         $fromUtc  = $from->setTimezone($utc);
         $toUtc    = $to->setTimezone($utc);
 
-        $window = apply_filters('pulsepress_analytics_window', [
+        $window = apply_filters('moonfarmer_reactions_lead_capture_analytics_window', [
             'from'    => $fromUtc,
             'to'      => $toUtc,
             'clamped' => $clamped,

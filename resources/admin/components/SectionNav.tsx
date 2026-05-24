@@ -56,7 +56,7 @@ export function SectionNav({ tabs, active, onChange }: Props) {
   );
 
   return (
-    <div class="pulsepress-tabs" role="tablist" aria-label="Settings sections" onKeyDown={handleKey}>
+    <div class="moonfarmer-reactions-lead-capture-tabs" role="tablist" aria-label="Settings sections" onKeyDown={handleKey}>
       {tabs.map((tab) => {
         const isActive = tab.id === active;
         return (
@@ -65,11 +65,11 @@ export function SectionNav({ tabs, active, onChange }: Props) {
             ref={(node) => { refs.current.set(tab.id, node); }}
             type="button"
             role="tab"
-            id={`pulsepress-tab-${tab.id}`}
+            id={`moonfarmer-reactions-lead-capture-tab-${tab.id}`}
             aria-selected={isActive ? 'true' : 'false'}
-            aria-controls={`pulsepress-panel-${tab.id}`}
+            aria-controls={`moonfarmer-reactions-lead-capture-panel-${tab.id}`}
             tabIndex={isActive ? 0 : -1}
-            class="pulsepress-tab"
+            class="moonfarmer-reactions-lead-capture-tab"
             data-active={isActive ? 'true' : 'false'}
             onClick={() => onChange(tab.id)}
           >

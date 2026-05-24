@@ -1,14 +1,14 @@
 ## Context
 
-By Session 8 we have `pulsepress_daily_agg` filling daily and `pulsepress_captures` filling on demand. Session 9 turns those into the only screen admins actually open: the analytics dashboard. The visible bar from `docs/pulsepress-v1-plan.md` §Admin UI Design Direction is intentionally high — match FluentCRM / RankMath / Spectra / WP Migrate DB in feel — and the data bar from gap 7 is intentionally precise: every metric must define its numerator, denominator, and time window.
+By Session 8 we have `moonfarmer_reactions_lead_capture_daily_agg` filling daily and `moonfarmer_reactions_lead_capture_captures` filling on demand. Session 9 turns those into the only screen admins actually open: the analytics dashboard. The visible bar from `docs/moonfarmer-reactions-lead-capture-v1-plan.md` §Admin UI Design Direction is intentionally high — match FluentCRM / RankMath / Spectra / WP Migrate DB in feel — and the data bar from gap 7 is intentionally precise: every metric must define its numerator, denominator, and time window.
 
-The constraint that drives the design: **no raw-event queries**. Aggregator owns reading `pulsepress_reactions`. Analytics owns reading `pulsepress_daily_agg` + `pulsepress_captures`. A grep over the codebase enforces this — Session 8 already verified.
+The constraint that drives the design: **no raw-event queries**. Aggregator owns reading `moonfarmer_reactions_lead_capture_reactions`. Analytics owns reading `moonfarmer_reactions_lead_capture_daily_agg` + `moonfarmer_reactions_lead_capture_captures`. A grep over the codebase enforces this — Session 8 already verified.
 
 ## Goals / Non-Goals
 
 **Goals:**
 
-- An admin opens Settings → PulsePress → Analytics and sees four cards, a top-posts table, a sentiment callout, and a daily series chart over the last 30 days.
+- An admin opens Settings → Moonfarmer Reactions Lead Capture → Analytics and sees four cards, a top-posts table, a sentiment callout, and a daily series chart over the last 30 days.
 - All metrics use site-local day boundaries (consistent with Session 8's aggregation).
 - Sentiment rate = positive reactions / total reactions, where the positive set is the admin's saved choice.
 - Capture rate = captures / positive reactions (approximation — every positive reaction shows the capture UI in v1, so denominator ≈ positive reactions; documented).
@@ -58,7 +58,7 @@ If `from` / `to` missing or malformed, default to:
 - `to` = today (site-local) end of day
 - `from` = 30 days ago (site-local) start of day
 
-Filter `pulsepress_analytics_window` runs after this default so site code can extend (Pro will do this).
+Filter `moonfarmer_reactions_lead_capture_analytics_window` runs after this default so site code can extend (Pro will do this).
 
 ### D5. Sentiment rate definition
 
@@ -110,7 +110,7 @@ Endpoint requires `manage_options`. We do not expose this data to lower-cap role
 
 ## Risks / Trade-offs
 
-- **Risk**: a site has so many posts that the top-posts SUM scan is slow. → Mitigation: the `idx_post_date` index on `pulsepress_daily_agg` (Session 1) makes the query range-scan. 30-day window bounds the work. Performance budget: < 50 ms on a 100k-row daily_agg table.
+- **Risk**: a site has so many posts that the top-posts SUM scan is slow. → Mitigation: the `idx_post_date` index on `moonfarmer_reactions_lead_capture_daily_agg` (Session 1) makes the query range-scan. 30-day window bounds the work. Performance budget: < 50 ms on a 100k-row daily_agg table.
 - **Risk**: positive set changes — historical sentiment rates shift. → Mitigation: documented. The rate reflects the current positive set against historical raw counts. Admins changing the set are expected to know this.
 - **Risk**: a post gets deleted but still appears in top posts because the daily_agg row references its id. → Mitigation: the `post_titles` lookup uses `post_status => 'any'`; deleted posts return no title and we render "(deleted post)" instead of an empty cell.
 - **Risk**: chart renders awkwardly at narrow widths. → Mitigation: SVG viewBox + container-driven sizing keeps it responsive. Below 480 px the chart shrinks proportionally.

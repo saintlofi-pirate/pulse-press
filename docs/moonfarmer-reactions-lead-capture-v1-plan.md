@@ -1,8 +1,8 @@
-# PulsePress v1 Product Plan
+# Moonfarmer Reactions Lead Capture v1 Product Plan
 
 ## Concept
 
-PulsePress is a WordPress plugin for reactions that grow an email list, with analytics that show what content is working. The free tier should be a complete, generous product for WordPress.org distribution. Pro should unlock provider sync, A/B testing, deeper insights, and advanced customization without weakening the free experience.
+Moonfarmer Reactions Lead Capture is a WordPress plugin for reactions that grow an email list, with analytics that show what content is working. The free tier should be a complete, generous product for WordPress.org distribution. Pro should unlock provider sync, A/B testing, deeper insights, and advanced customization without weakening the free experience.
 
 ## Positioning
 
@@ -13,7 +13,7 @@ PulsePress is a WordPress plugin for reactions that grow an email list, with ana
 
 ## Code Quality Principles
 
-Every line of PulsePress is held to the same bar. These principles are checked at PR time and during OpenSpec design review; failures are returned for revision rather than merged with a "we'll clean it up later" promise.
+Every line of Moonfarmer Reactions Lead Capture is held to the same bar. These principles are checked at PR time and during OpenSpec design review; failures are returned for revision rather than merged with a "we'll clean it up later" promise.
 
 **Clean:**
 
@@ -36,7 +36,7 @@ Every line of PulsePress is held to the same bar. These principles are checked a
 - Test the contract, not the implementation. Pest specs assert "the migrator writes the version exactly once when current < latest" — not "the migrator calls `dbDelta` exactly three times". The implementation detail is free to change; the behaviour isn't.
 - Runtime PHP supports PHP 7.4 through 8.4. Type everything PHP 7.4 lets us type — parameters, returns, and properties — and avoid PHP 8-only syntax in shipped runtime files. Untyped values are acceptable only where PHP 7.4 has no compatible type form, such as APIs that would otherwise need `mixed` or union types.
 - Use `final class` for everything that isn't deliberately designed for extension (e.g., service providers). Inheritance is a contract; declare it only when you mean it.
-- Reuse existing helpers before writing new ones. `Schema::tableName($wpdb, ...)` already exists for every prefixed table name; don't string-concatenate `$wpdb->prefix . 'pulsepress_…'` in a controller.
+- Reuse existing helpers before writing new ones. `Schema::tableName($wpdb, ...)` already exists for every prefixed table name; don't string-concatenate `$wpdb->prefix . 'moonfarmer_reactions_lead_capture_…'` in a controller.
 - Migrations and option keys are append-only. Renaming or removing either is a breaking change with a deprecation cycle.
 
 **Easy to extend:**
@@ -44,35 +44,35 @@ Every line of PulsePress is held to the same bar. These principles are checked a
 - Every decision point gets a WordPress filter; every side effect gets a WordPress action. See the next section ("Extensibility — Hooks and Filters First") for the full spec.
 - Public methods of repositories/services are the API surface for both internal code and (where reasonable) Pro plugins. Private methods are free to refactor; public ones aren't, once shipped.
 - Feature flags are temporary by design. If a flag survives two releases without flipping, it becomes the default and the flag is removed.
-- Settings keys, post-meta keys, transient keys, and option keys are all namespaced under `pulsepress_` / `_pulsepress_` and are part of the documented contract.
+- Settings keys, post-meta keys, transient keys, and option keys are all namespaced under `moonfarmer_reactions_lead_capture_` / `_moonfarmer_reactions_lead_capture_` and are part of the documented contract.
 
 These principles are not aspirational. A PR that violates them goes back for changes; an OpenSpec design that violates them gets rewritten before code starts.
 
 ## Extensibility — Hooks and Filters First
 
-Every decision point and every side-effect in PulsePress is exposed as a WordPress action or filter. This is non-negotiable and applies to Free, Pro, and every future module.
+Every decision point and every side-effect in Moonfarmer Reactions Lead Capture is exposed as a WordPress action or filter. This is non-negotiable and applies to Free, Pro, and every future module.
 
 **The principle:**
 
-- **Decision points** (which post types, which reactions, which IPs, where to render, what to show, who can act) are wrapped in `apply_filters('pulsepress_<noun>', $value, ...$context)`.
-- **Side effects** (a reaction was cast, a capture was stored, a setting was saved, the schema was migrated) fire `do_action('pulsepress_<noun>_<verb>', ...$context)` immediately after they happen.
+- **Decision points** (which post types, which reactions, which IPs, where to render, what to show, who can act) are wrapped in `apply_filters('moonfarmer_reactions_lead_capture_<noun>', $value, ...$context)`.
+- **Side effects** (a reaction was cast, a capture was stored, a setting was saved, the schema was migrated) fire `do_action('moonfarmer_reactions_lead_capture_<noun>_<verb>', ...$context)` immediately after they happen.
 - **Defaults stay sensible.** A site that installs Free and never writes a snippet must still get a complete, generous product. Filters exist to *adjust*, not to *complete*.
-- **Hooks are the Pro contract.** Pro never modifies Free internals; it attaches through hooks/filters and through the `pulsepress_widget_data` and `pulsepress_widget_icons` extension seams already wired into Sessions 2 and 6.
+- **Hooks are the Pro contract.** Pro never modifies Free internals; it attaches through hooks/filters and through the `moonfarmer_reactions_lead_capture_widget_data` and `moonfarmer_reactions_lead_capture_widget_icons` extension seams already wired into Sessions 2 and 6.
 
 **Naming conventions:**
 
-- Filters: `pulsepress_<thing>` — returns a value (e.g., `pulsepress_reaction_types`, `pulsepress_client_ip`, `pulsepress_widget_data`).
-- Actions: `pulsepress_<noun>_<verb>` or `pulsepress_before_<noun>` / `pulsepress_after_<noun>` — fires a side effect (e.g., `pulsepress_before_react`, `pulsepress_after_react`, `pulsepress_capture_saved`).
+- Filters: `moonfarmer_reactions_lead_capture_<thing>` — returns a value (e.g., `moonfarmer_reactions_lead_capture_reaction_types`, `moonfarmer_reactions_lead_capture_client_ip`, `moonfarmer_reactions_lead_capture_widget_data`).
+- Actions: `moonfarmer_reactions_lead_capture_<noun>_<verb>` or `moonfarmer_reactions_lead_capture_before_<noun>` / `moonfarmer_reactions_lead_capture_after_<noun>` — fires a side effect (e.g., `moonfarmer_reactions_lead_capture_before_react`, `moonfarmer_reactions_lead_capture_after_react`, `moonfarmer_reactions_lead_capture_capture_saved`).
 - Always pass enough context arguments to be useful (post id, reaction type, user hash, full request when applicable) so the hook is meaningful without a follow-up query.
 
 **What this looks like in practice:**
 
-- Reaction set is a constant *plus* `pulsepress_reaction_types` filter (Session 2).
-- Client IP is `$_SERVER['REMOTE_ADDR']` *plus* `pulsepress_client_ip` filter for CDN/proxy overrides (Session 2).
-- Auto-insert is on for `post` *plus* `pulsepress_widget_auto_insert` filter for other post types (Session 3).
-- Asset enqueue gates on `is_singular('post')` *plus* `pulsepress_widget_enqueue` filter (Session 3).
-- Localized JS payload is filtered through `pulsepress_widget_data` before emission (Session 3).
-- Every reaction write fires `pulsepress_before_react` (lets rate-limit / abuse modules short-circuit by throwing `RestException`) and `pulsepress_after_react` (lets aggregators, webhooks, ESP sync hook in) (Session 2).
+- Reaction set is a constant *plus* `moonfarmer_reactions_lead_capture_reaction_types` filter (Session 2).
+- Client IP is `$_SERVER['REMOTE_ADDR']` *plus* `moonfarmer_reactions_lead_capture_client_ip` filter for CDN/proxy overrides (Session 2).
+- Auto-insert is on for `post` *plus* `moonfarmer_reactions_lead_capture_widget_auto_insert` filter for other post types (Session 3).
+- Asset enqueue gates on `is_singular('post')` *plus* `moonfarmer_reactions_lead_capture_widget_enqueue` filter (Session 3).
+- Localized JS payload is filtered through `moonfarmer_reactions_lead_capture_widget_data` before emission (Session 3).
+- Every reaction write fires `moonfarmer_reactions_lead_capture_before_react` (lets rate-limit / abuse modules short-circuit by throwing `RestException`) and `moonfarmer_reactions_lead_capture_after_react` (lets aggregators, webhooks, ESP sync hook in) (Session 2).
 
 **Rules for new code:**
 
@@ -142,10 +142,10 @@ Every admin surface (settings page, post meta box, analytics dashboard, upgrade 
 
 **Architecture:**
 
-- **SPA in `wp-admin`.** The PulsePress settings page mounts a single Preact app (sharing the runtime budget with the widget where practical) inside one server-rendered `<div id="pulsepress-admin">` shell. Tabs/sections route client-side via the URL hash (`#display`, `#reactions`, `#capture`, `#privacy`, `#advanced`). Browser back/forward, deep-linkable, bookmarkable.
+- **SPA in `wp-admin`.** The Moonfarmer Reactions Lead Capture settings page mounts a single Preact app (sharing the runtime budget with the widget where practical) inside one server-rendered `<div id="moonfarmer-reactions-lead-capture-admin">` shell. Tabs/sections route client-side via the URL hash (`#display`, `#reactions`, `#capture`, `#privacy`, `#advanced`). Browser back/forward, deep-linkable, bookmarkable.
 - **No full page reloads.** Saving any field triggers an inline REST write (no `<form action>` post-back). The whole page stays mounted.
 - **Optimistic settings updates.** Toggles + radios update local state immediately, fire the REST write in the background, roll back + show an inline error on failure (same pattern as the widget).
-- **Server-rendered shell is minimal.** PHP outputs a single `<div>` mount node plus the same `wp_localize_script` payload pattern the widget uses (`PulsePressAdminData = {root, nonce, settings, reactions, captures, …}`). All other rendering happens in JS.
+- **Server-rendered shell is minimal.** PHP outputs a single `<div>` mount node plus the same `wp_localize_script` payload pattern the widget uses (`MoonfarmerReactionsLeadCaptureAdminData = {root, nonce, settings, reactions, captures, …}`). All other rendering happens in JS.
 - **Tab + section navigation.** Left rail or top tabs depending on density; only one or two levels of hierarchy; no nested drawer-in-drawer.
 
 **Live widget preview:**
@@ -174,7 +174,7 @@ Every admin surface (settings page, post meta box, analytics dashboard, upgrade 
 
 **Components:**
 
-- **Preact + a thin CSS-variable layer** drives the SPA. `@wordpress/components` (Button, ToggleControl, RadioControl, Notice, FormToggle, SelectControl) provide the bones; we reskin via `:where(.pulsepress-admin .components-*) { … }` so the WP defaults still ship if our CSS fails to load (progressive enhancement).
+- **Preact + a thin CSS-variable layer** drives the SPA. `@wordpress/components` (Button, ToggleControl, RadioControl, Notice, FormToggle, SelectControl) provide the bones; we reskin via `:where(.moonfarmer-reactions-lead-capture-admin .components-*) { … }` so the WP defaults still ship if our CSS fails to load (progressive enhancement).
 - **No second framework.** No Element Plus, no Material UI, no Bootstrap. Adding a second framework runtime to wp-admin is a non-starter.
 - **Icons match the widget.** Same Tabler-style SVG family as the front end; consistency is the point.
 
@@ -208,7 +208,7 @@ If a contributor or model is about to ship admin UI that doesn't meet this bar, 
 
 ## Free vs Pro Scope
 
-**Principle**: PulsePress is self-hosted. The data lives in the user's database. Free is **functionally complete**: no row caps, no time-window gates, every row queryable, every analytics number visible. Pro adds **additive capabilities** — outbound integrations, advanced analysis, automation, scale-engineering, support — not "permission to look at your own data." See `feedback_free_pro_split` memory for the durable rule.
+**Principle**: Moonfarmer Reactions Lead Capture is self-hosted. The data lives in the user's database. Free is **functionally complete**: no row caps, no time-window gates, every row queryable, every analytics number visible. Pro adds **additive capabilities** — outbound integrations, advanced analysis, automation, scale-engineering, support — not "permission to look at your own data." See `feedback_free_pro_split` memory for the durable rule.
 
 > **The Pro product spec, codebase plan, license server architecture, and per-feature designs live in [`docs/pro-roadmap.md`](pro-roadmap.md).** This section keeps only the durable principle + the Free/Pro capability table. Everything Pro-implementation-specific (pricing tiers, license server, ESP sync, A/B engine, segmentation, white-label, async reports, rollups) is in the roadmap doc.
 
@@ -229,7 +229,7 @@ If a contributor or model is about to ship admin UI that doesn't meet this bar, 
 | Light and dark mode | Yes | Yes |
 | GDPR-safe defaults | Yes | Yes |
 | Multi-language labels | Yes | Yes |
-| CSV export of captures | Yes (all rows, all columns, no cap) | + scheduled exports + sync-status column via `pulsepress_export_columns` filter |
+| CSV export of captures | Yes (all rows, all columns, no cap) | + scheduled exports + sync-status column via `moonfarmer_reactions_lead_capture_export_columns` filter |
 | ESP integrations (Mailchimp / ConvertKit / MailerLite / Brevo / Beehiiv) | No | Yes |
 | A/B widget testing | No | Yes |
 | Custom reaction sets by category/tag | No | Yes |
@@ -245,7 +245,7 @@ If a contributor or model is about to ship admin UI that doesn't meet this bar, 
 The analytics REST endpoint clamps a single synchronous request to `MAX_WINDOW_DAYS = 730` (two years) **regardless of license**. This is a performance guard — a 5-year SELECT on a 1M-row daily_agg table would block a REST worker. Sites with smaller tables can raise the ceiling with one filter:
 
 ```php
-add_filter('pulsepress_analytics_max_days', fn () => 365 * 5);
+add_filter('moonfarmer_reactions_lead_capture_analytics_max_days', fn () => 365 * 5);
 ```
 
 Pro's value here isn't "permission to look at more days." Pro's value is making 5-year queries **fast** via pre-aggregated weekly + monthly rollup tables, plus async report generation for the truly huge.
@@ -256,47 +256,47 @@ Pro is a separate addon plugin (Session 13). It MUST attach exclusively through 
 
 **Settings + admin UI extension:**
 
-- `pulsepress_settings` (filter, Session 6) — Pro layers extra settings keys onto the merged settings array; admin SPA reads them generically.
-- `pulsepress_settings_default` (filter, Session 6) — pre-seeds defaults for Pro-specific keys on first install.
-- `pulsepress_admin_data` (filter, Session 6b) — Pro injects extra context into the `PulsePressAdminData` localized payload (license key, A/B variant id, etc.).
-- `pulsepress_admin_analytics_panels` (filter, Session 9) — Pro registers extra analytics panels (compare-windows, A/B winner, per-segment breakdown). The SPA renders any registered panel below the Free four.
-- `pulsepress_admin_metric_cards` (filter, Session 9 future) — Pro registers extra cards (e.g. "vs previous 30 days"); SPA appends to the metric grid.
+- `moonfarmer_reactions_lead_capture_settings` (filter, Session 6) — Pro layers extra settings keys onto the merged settings array; admin SPA reads them generically.
+- `moonfarmer_reactions_lead_capture_settings_default` (filter, Session 6) — pre-seeds defaults for Pro-specific keys on first install.
+- `moonfarmer_reactions_lead_capture_admin_data` (filter, Session 6b) — Pro injects extra context into the `MoonfarmerReactionsLeadCaptureAdminData` localized payload (license key, A/B variant id, etc.).
+- `moonfarmer_reactions_lead_capture_admin_analytics_panels` (filter, Session 9) — Pro registers extra analytics panels (compare-windows, A/B winner, per-segment breakdown). The SPA renders any registered panel below the Free four.
+- `moonfarmer_reactions_lead_capture_admin_metric_cards` (filter, Session 9 future) — Pro registers extra cards (e.g. "vs previous 30 days"); SPA appends to the metric grid.
 
 **REST extension:**
 
-- Pro registers its own routes under `pulsepress/v1/pro/*` via `rest_api_init` — no need to touch Free's controllers. Pro's REST is permission-gated independently.
-- `pulsepress_widget_data` (filter, Session 3) — Pro injects extra config into the front-end widget bootstrap (A/B variant, theme overrides).
+- Pro registers its own routes under `moonfarmer-reactions-lead-capture/v1/pro/*` via `rest_api_init` — no need to touch Free's controllers. Pro's REST is permission-gated independently.
+- `moonfarmer_reactions_lead_capture_widget_data` (filter, Session 3) — Pro injects extra config into the front-end widget bootstrap (A/B variant, theme overrides).
 
 **Storage + analytics extension:**
 
-- `pulsepress_export_columns` (filter, Session 10) — Pro adds CSV columns (ESP sync status, last synced at).
-- `pulsepress_analytics_window` (filter, Session 9) — Pro overrides the window bounds. Pro can also swap `AnalyticsRepository` via container rebinding to read from its weekly/monthly rollup tables instead of daily.
-- `pulsepress_after_aggregate` (action, Session 8) — Pro receives the daily AggregationResult; fans it into weekly + monthly rollups, ESP digests, etc.
+- `moonfarmer_reactions_lead_capture_export_columns` (filter, Session 10) — Pro adds CSV columns (ESP sync status, last synced at).
+- `moonfarmer_reactions_lead_capture_analytics_window` (filter, Session 9) — Pro overrides the window bounds. Pro can also swap `AnalyticsRepository` via container rebinding to read from its weekly/monthly rollup tables instead of daily.
+- `moonfarmer_reactions_lead_capture_after_aggregate` (action, Session 8) — Pro receives the daily AggregationResult; fans it into weekly + monthly rollups, ESP digests, etc.
 
 **Widget surface extension:**
 
-- `pulsepress_reaction_types` (filter, Session 2) — Pro adds reactions via filter.
-- `pulsepress_widget_icons` (filter, Session 6.5 planned) — Pro adds icon-style presets.
-- `pulsepress_widget_container_attrs` (filter, Session 7) — Pro adds `data-*` attributes (A/B variant tags).
-- `pulsepress_positive_reactions` (filter, Session 5) — Pro changes which reactions trigger capture.
-- `pulsepress_visibility_mode` (filter, Session 6.7) — Pro adds last-mile visibility policy (per-category, scheduled visibility).
+- `moonfarmer_reactions_lead_capture_reaction_types` (filter, Session 2) — Pro adds reactions via filter.
+- `moonfarmer_reactions_lead_capture_widget_icons` (filter, Session 6.5 planned) — Pro adds icon-style presets.
+- `moonfarmer_reactions_lead_capture_widget_container_attrs` (filter, Session 7) — Pro adds `data-*` attributes (A/B variant tags).
+- `moonfarmer_reactions_lead_capture_positive_reactions` (filter, Session 5) — Pro changes which reactions trigger capture.
+- `moonfarmer_reactions_lead_capture_visibility_mode` (filter, Session 6.7) — Pro adds last-mile visibility policy (per-category, scheduled visibility).
 
 **Lifecycle extension:**
 
-- `pulsepress_before_react` / `pulsepress_after_react` (actions, Session 2) — Pro attaches webhooks, rate limits, ESP triggers.
-- `pulsepress_before_capture` / `pulsepress_after_capture` (actions, Session 4) — Pro pushes captures to ESPs, fires double opt-in emails.
-- `pulsepress_settings_saved` (action, Session 6) — Pro syncs settings to its own subsystems.
-- `pulsepress_before_export` (action, Session 10) — Pro audits the export, throttles bulk exports.
+- `moonfarmer_reactions_lead_capture_before_react` / `moonfarmer_reactions_lead_capture_after_react` (actions, Session 2) — Pro attaches webhooks, rate limits, ESP triggers.
+- `moonfarmer_reactions_lead_capture_before_capture` / `moonfarmer_reactions_lead_capture_after_capture` (actions, Session 4) — Pro pushes captures to ESPs, fires double opt-in emails.
+- `moonfarmer_reactions_lead_capture_settings_saved` (action, Session 6) — Pro syncs settings to its own subsystems.
+- `moonfarmer_reactions_lead_capture_before_export` (action, Session 10) — Pro audits the export, throttles bulk exports.
 
 **Sample Pro hookshape (illustrative, not shipping):**
 
 ```php
 // In Pro plugin, add an Analytics panel:
-add_filter('pulsepress_admin_analytics_panels', function (array $panels): array {
+add_filter('moonfarmer_reactions_lead_capture_admin_analytics_panels', function (array $panels): array {
     $panels[] = [
         'id'        => 'compare_windows',
-        'title'     => __('Window comparison', 'pulsepress-pro'),
-        'render_js' => 'PulsePressPro.renderCompareWindows',
+        'title'     => __('Window comparison', 'moonfarmer-reactions-lead-capture-pro'),
+        'render_js' => 'Moonfarmer Reactions Lead CapturePro.renderCompareWindows',
         'data'      => [
             'previous_total' => /* ... */,
             'current_total'  => /* ... */,
@@ -306,13 +306,13 @@ add_filter('pulsepress_admin_analytics_panels', function (array $panels): array 
 });
 
 // In Pro plugin, push captures to Mailchimp:
-add_action('pulsepress_after_capture', function (int $captureId, int $postId, string $email, string $reactionType, string $consentVersion): void {
-    if (!function_exists('pulsepresspro_mailchimp_enqueue')) return;
-    pulsepresspro_mailchimp_enqueue($email, ['consent_version' => $consentVersion]);
+add_action('moonfarmer_reactions_lead_capture_after_capture', function (int $captureId, int $postId, string $email, string $reactionType, string $consentVersion): void {
+    if (!function_exists('moonfarmer-reactions-lead-capturepro_mailchimp_enqueue')) return;
+    moonfarmer-reactions-lead-capturepro_mailchimp_enqueue($email, ['consent_version' => $consentVersion]);
 }, 10, 5);
 ```
 
-If Pro tries to do anything not on this list — fork Free, monkey-patch a class, edit a `.php` file in `pulse-press/app/` — that's a bug in *Free's hook surface*, not in Pro. Add the missing hook to Free.
+If Pro tries to do anything not on this list — fork Free, monkey-patch a class, edit a `.php` file in `moonfarmer-reactions-lead-capture/app/` — that's a bug in *Free's hook surface*, not in Pro. Add the missing hook to Free.
 
 ## Frontend Widget
 
@@ -323,7 +323,7 @@ If Pro tries to do anything not on this list — fork Free, monkey-patch a class
 - Email capture appears inline after positive reactions only, never as a modal interruption.
 - Positive reactions are configurable, with Love, Insightful, and Funny as the default set.
 - Deduplication uses `localStorage`, a first-party cookie, and server-side soft deduplication.
-- Icon style is a preset, not freeform. Free ships two presets: **Classic** (current hand-curated outline SVGs) and **Emoji** (Facebook/Twitter-style filled emoji glyphs). Pro adds two more. Switching is one setting and a single `pulsepress_widget_icons` filter; reaction types and storage are untouched.
+- Icon style is a preset, not freeform. Free ships two presets: **Classic** (current hand-curated outline SVGs) and **Emoji** (Facebook/Twitter-style filled emoji glyphs). Pro adds two more. Switching is one setting and a single `moonfarmer_reactions_lead_capture_widget_icons` filter; reaction types and storage are untouched.
 - Guest reactions are allowed by default. Admins can require login via the "Allow guest reactions" toggle; when off, the `/react` permission callback also checks `is_user_logged_in()`.
 
 ## Technical Stack
@@ -341,10 +341,10 @@ This should make the initial build faster because it already provides a WordPres
 Use it selectively:
 
 - Reuse/adapt: plugin bootstrap, constants, Composer/PSR-4 shape, service provider pattern, Vite config shape, activation/migration conventions, asset registration idea, route registration idea, test config, `.distignore`, and WordPress.org `readme.txt` scaffold.
-- Replace/avoid by default: Vue admin SPA, Element Plus, Chart.js, Moment, Quill, large demo components, broad facades, `.env`/Dotenv dependency, and any starter demo UI that does not serve PulsePress.
-- Keep PulsePress direction: Preact for the public widget, WordPress-native admin components where practical, uPlot only when time-series charts are needed, small frontend assets, and privacy-first REST/data contracts.
+- Replace/avoid by default: Vue admin SPA, Element Plus, Chart.js, Moment, Quill, large demo components, broad facades, `.env`/Dotenv dependency, and any starter demo UI that does not serve Moonfarmer Reactions Lead Capture.
+- Keep Moonfarmer Reactions Lead Capture direction: Preact for the public widget, WordPress-native admin components where practical, uPlot only when time-series charts are needed, small frontend assets, and privacy-first REST/data contracts.
 
-Starter rule: do not run `rename-plugin.php` inside the original starter checkout. Copy only the needed scaffold into PulsePress, then rename/adapt in the PulsePress directory.
+Starter rule: do not run `rename-plugin.php` inside the original starter checkout. Copy only the needed scaffold into Moonfarmer Reactions Lead Capture, then rename/adapt in the Moonfarmer Reactions Lead Capture directory.
 
 ### Frontend widget
 
@@ -369,9 +369,9 @@ Starter rule: do not run `rename-plugin.php` inside the original starter checkou
 
 ### Database
 
-- `pulsepress_reactions`: `post_id`, `reaction_type`, `user_hash`, `timestamp`.
-- `pulsepress_captures`: `post_id`, `email`, `reaction_type`, `timestamp`, `consent`, fraud-review metadata with timed purging.
-- `pulsepress_daily_agg`: `date`, `post_id`, `reaction_type`, `count`.
+- `moonfarmer_reactions_lead_capture_reactions`: `post_id`, `reaction_type`, `user_hash`, `timestamp`.
+- `moonfarmer_reactions_lead_capture_captures`: `post_id`, `email`, `reaction_type`, `timestamp`, `consent`, fraud-review metadata with timed purging.
+- `moonfarmer_reactions_lead_capture_daily_agg`: `date`, `post_id`, `reaction_type`, `count`.
 
 ## Privacy And Abuse Controls
 
@@ -387,9 +387,9 @@ Starter rule: do not run `rename-plugin.php` inside the original starter checkou
 - Scaffold plugin entry, Composer autoloader, namespaces, activation hooks, and Vite/build pipeline.
 - Create the three custom tables on activation.
 - Add REST endpoints:
-  - `POST /pulsepress/v1/react`
-  - `POST /pulsepress/v1/capture`
-  - `GET /pulsepress/v1/counts/{post_id}`
+  - `POST /moonfarmer-reactions-lead-capture/v1/react`
+  - `POST /moonfarmer-reactions-lead-capture/v1/capture`
+  - `GET /moonfarmer-reactions-lead-capture/v1/counts/{post_id}`
 - Build the Preact widget with six reactions, hover/active states, Motion One click animation, and local deduplication.
 - Implement `user_hash = SHA256(IP + UA + nonce salt)` soft deduplication.
 
@@ -401,7 +401,7 @@ Starter rule: do not run `rename-plugin.php` inside the original starter checkou
   - Minimal: compact, editorial, calm.
   - Expressive: larger icons with hover labels.
 - Add Gutenberg block controls for design, reaction set, count visibility, and email capture.
-- Add `[pulsepress]` shortcode with parity parameters.
+- Add `[moonfarmer-reactions-lead-capture]` shortcode with parity parameters.
 - Create settings page with native WordPress components.
 - Add auto-insert option for selected post types.
 
@@ -410,7 +410,7 @@ Starter rule: do not run `rename-plugin.php` inside the original starter checkou
 - Build the inline post-reaction email capture component.
 - Store capture consent timestamp, source post, and reaction source.
 - Add CSV export for free users.
-- Add Action Scheduler aggregation from raw reactions into `pulsepress_daily_agg`.
+- Add Action Scheduler aggregation from raw reactions into `moonfarmer_reactions_lead_capture_daily_agg`.
 - Build dashboard metric cards, top posts table, and insights callout.
 - Add heuristic sentiment insights, such as category-level positive-reaction and capture-rate callouts.
 
@@ -421,7 +421,7 @@ Starter rule: do not run `rename-plugin.php` inside the original starter checkou
 - Keep critical widget CSS small and inlineable.
 - Ensure database queries use indexed columns.
 - Add 5-minute transient cache for counts.
-- Add light/dark theme support through CSS custom properties and `data-pulsepress-theme`.
+- Add light/dark theme support through CSS custom properties and `data-moonfarmer-reactions-lead-capture-theme`.
 - Write documentation covering install, hooks, shortcode, block usage, and customization.
 - Prepare WordPress.org assets: screenshots, banner, icon, `readme.txt`, tags, and slug readiness.
 - Add a restrained in-plugin Pro upgrade card.

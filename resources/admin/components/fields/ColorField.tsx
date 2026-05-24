@@ -40,17 +40,17 @@ export function ColorField({ label, helper, value, onChange, status, error }: Pr
       describedById={helpId}
       errorId={errId}
     >
-      <div class="pulsepress-color-control">
+      <div class="moonfarmer-reactions-lead-capture-color-control">
         <input
           id={id}
-          class="pulsepress-color-control__picker"
+          class="moonfarmer-reactions-lead-capture-color-control__picker"
           type="color"
           value={HEX_COLOR.test(value) ? value : '#2563eb'}
           aria-label={typeof label === 'string' ? label : undefined}
           onInput={(e) => commit((e.target as HTMLInputElement).value)}
         />
         <input
-          class="pulsepress-input pulsepress-color-control__text"
+          class="moonfarmer-reactions-lead-capture-input moonfarmer-reactions-lead-capture-color-control__text"
           type="text"
           value={draft}
           maxLength={7}
@@ -67,7 +67,7 @@ export function ColorField({ label, helper, value, onChange, status, error }: Pr
           }}
         />
         <span
-          class="pulsepress-color-control__swatch"
+          class="moonfarmer-reactions-lead-capture-color-control__swatch"
           style={`background:${HEX_COLOR.test(value) ? value : '#2563eb'}`}
           aria-hidden="true"
         />

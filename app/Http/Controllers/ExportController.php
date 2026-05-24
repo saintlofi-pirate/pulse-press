@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace PulsePress\Http\Controllers;
+namespace Moonfarmer\ReactionsLeadCapture\Http\Controllers;
 
 use DateTimeImmutable;
-use PulsePress\Captures\CaptureExporter;
-use PulsePress\Http\RestException;
+use Moonfarmer\ReactionsLeadCapture\Captures\CaptureExporter;
+use Moonfarmer\ReactionsLeadCapture\Http\RestException;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -27,11 +27,11 @@ final class ExportController
     public function download(WP_REST_Request $request)
     {
         if (!current_user_can('manage_options')) {
-            return new WP_Error('rest_forbidden', __('You do not have permission to export captures.', 'pulse-press'), ['status' => 403]);
+            return new WP_Error('rest_forbidden', __('You do not have permission to export captures.', 'moonfarmer-reactions-lead-capture'), ['status' => 403]);
         }
 
         $timestamp = (new DateTimeImmutable('now', wp_timezone()))->format('Ymd\THis\Z');
-        $filename  = sprintf('pulsepress-captures-%s.csv', $timestamp);
+        $filename  = sprintf('moonfarmer-reactions-lead-capture-captures-%s.csv', $timestamp);
 
         nocache_headers();
         header_remove('Content-Type');
@@ -53,7 +53,7 @@ final class ExportController
             return $e->getError();
         }
 
-        if (!defined('PULSEPRESS_EXPORT_NO_DIE') || PULSEPRESS_EXPORT_NO_DIE !== true) {
+        if (!defined('MOONFARMER_REACTIONS_LEAD_CAPTURE_EXPORT_NO_DIE') || MOONFARMER_REACTIONS_LEAD_CAPTURE_EXPORT_NO_DIE !== true) {
             wp_die('', '', ['response' => 200]);
         }
 

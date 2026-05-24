@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-use PulsePress\Settings\Settings;
+use Moonfarmer\ReactionsLeadCapture\Settings\Settings;
 
 it('exposes a complete defaults map', function () {
     foreach ([

@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace PulsePress\Providers;
+namespace Moonfarmer\ReactionsLeadCapture\Providers;
 
-use PulsePress\Core\ServiceProvider;
-use PulsePress\Http\Controllers\SettingsController;
-use PulsePress\Settings\Settings;
-use PulsePress\Settings\SettingsRepository;
+use Moonfarmer\ReactionsLeadCapture\Core\ServiceProvider;
+use Moonfarmer\ReactionsLeadCapture\Http\Controllers\SettingsController;
+use Moonfarmer\ReactionsLeadCapture\Settings\Settings;
+use Moonfarmer\ReactionsLeadCapture\Settings\SettingsRepository;
 
 
 if (!defined('ABSPATH')) {
@@ -15,8 +15,8 @@ if (!defined('ABSPATH')) {
 
 final class SettingsServiceProvider extends ServiceProvider
 {
-    public const REST_NAMESPACE = 'pulsepress/v1';
-    public const ADMIN_SLUG     = 'pulsepress';
+    public const REST_NAMESPACE = 'moonfarmer-reactions-lead-capture/v1';
+    public const ADMIN_SLUG     = 'moonfarmer-reactions-lead-capture';
 
     public function register(): void
     {
@@ -32,9 +32,9 @@ final class SettingsServiceProvider extends ServiceProvider
         add_action('admin_menu', [$this, 'registerAdminMenu']);
 
         // Lower-priority filter handlers so site-registered filters at default priority 10 still win.
-        add_filter('pulsepress_positive_reactions', [$this, 'filterPositiveReactions'], 5);
-        add_filter('pulsepress_widget_auto_insert', [$this, 'filterWidgetAutoInsert'], 5, 2);
-        add_filter('pulsepress_consent_text_version', [$this, 'filterConsentVersion'], 5);
+        add_filter('moonfarmer_reactions_lead_capture_positive_reactions', [$this, 'filterPositiveReactions'], 5);
+        add_filter('moonfarmer_reactions_lead_capture_widget_auto_insert', [$this, 'filterWidgetAutoInsert'], 5, 2);
+        add_filter('moonfarmer_reactions_lead_capture_consent_text_version', [$this, 'filterConsentVersion'], 5);
     }
 
     public function registerRestRoutes(): void
@@ -64,8 +64,8 @@ final class SettingsServiceProvider extends ServiceProvider
         }
 
         add_options_page(
-            __('PulsePress', 'pulse-press'),
-            __('PulsePress', 'pulse-press'),
+            __('Moonfarmer Reactions Lead Capture', 'moonfarmer-reactions-lead-capture'),
+            __('Moonfarmer Reactions Lead Capture', 'moonfarmer-reactions-lead-capture'),
             'manage_options',
             self::ADMIN_SLUG,
             $renderCallback
@@ -74,7 +74,7 @@ final class SettingsServiceProvider extends ServiceProvider
 
     public function renderAdminPage(): void
     {
-        echo '<div class="wrap"><div id="pulsepress-admin">' . esc_html__('Loading…', 'pulse-press') . '</div></div>';
+        echo '<div class="wrap"><div id="moonfarmer-reactions-lead-capture-admin">' . esc_html__('Loading…', 'moonfarmer-reactions-lead-capture') . '</div></div>';
     }
 
     public function filterPositiveReactions($value): array

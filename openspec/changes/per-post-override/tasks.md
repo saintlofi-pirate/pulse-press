@@ -1,14 +1,14 @@
 ## 1. Resolver
 
 - [ ] 1.1 Create `app/Visibility/VisibilityResolver.php` (`final class`). Constructor `(SettingsRepository $settings)`. Methods: `mode(int $postId): string`, `shouldRender(int $postId, string $context): bool`, public static `sanitiseMode(mixed $value): string`.
-- [ ] 1.2 `mode()` reads `_pulsepress_widget_state` post meta, coerces unknown values to `'auto'`, passes through `pulsepress_visibility_mode` filter with `($mode, $postId, '')`.
+- [ ] 1.2 `mode()` reads `_moonfarmer_reactions_lead_capture_widget_state` post meta, coerces unknown values to `'auto'`, passes through `moonfarmer_reactions_lead_capture_visibility_mode` filter with `($mode, $postId, '')`.
 - [ ] 1.3 `shouldRender()` consults `mode()` first: 'on' → true, 'off' → false. Then checks `hide_on_post_types` against the post's type. Then context-specific gate: `'auto'` → `auto_insert_post_types` check, `'block'` and `'shortcode'` → true.
 
 ## 2. Settings + sanitiser
 
 - [ ] 2.1 Update `Settings::DEFAULTS` to add `hide_on_post_types => []`.
 - [ ] 2.2 Update `Settings::sanitise` to handle `hide_on_post_types` as a string array; drop non-strings.
-- [ ] 2.3 Add `pulsepress_meta_box_post_types` and `pulsepress_visibility_mode` filter docs in `docs/hooks-and-filters.md`.
+- [ ] 2.3 Add `moonfarmer_reactions_lead_capture_meta_box_post_types` and `moonfarmer_reactions_lead_capture_visibility_mode` filter docs in `docs/hooks-and-filters.md`.
 
 ## 3. Meta box + register_post_meta
 
@@ -24,7 +24,7 @@
 
 ## 5. Consume the resolver
 
-- [ ] 5.1 `WidgetServiceProvider::maybeAppendWidget` — replace the `pulsepress_widget_auto_insert` check with `$resolver->shouldRender($postId, 'auto')`. Keep the existing `data-pulsepress-widget` duplicate-detect.
+- [ ] 5.1 `WidgetServiceProvider::maybeAppendWidget` — replace the `moonfarmer_reactions_lead_capture_widget_auto_insert` check with `$resolver->shouldRender($postId, 'auto')`. Keep the existing `data-moonfarmer-reactions-lead-capture-widget` duplicate-detect.
 - [ ] 5.2 `ReactionsBlock::render` — after the existing post-validity checks, call `$resolver->shouldRender($postId, 'block')`. Return empty string when false.
 - [ ] 5.3 `Shortcode::render` — same pattern with `'shortcode'` context.
 - [ ] 5.4 `WidgetMarkup::container` is unchanged for now; the resolver is consulted by callers.
@@ -45,16 +45,16 @@
 
 ## 8. Manual verification
 
-- [ ] 8.1 Reactivate plugin. Open any post → confirm "PulsePress reactions" meta box renders with three radios (Auto/Always show/Always hide).
-- [ ] 8.2 Save with "Always hide"; view the post; confirm no widget renders. Inspect `wp post meta get <id> _pulsepress_widget_state` → `off`.
+- [ ] 8.1 Reactivate plugin. Open any post → confirm "Moonfarmer Reactions Lead Capture reactions" meta box renders with three radios (Auto/Always show/Always hide).
+- [ ] 8.2 Save with "Always hide"; view the post; confirm no widget renders. Inspect `wp post meta get <id> _moonfarmer_reactions_lead_capture_widget_state` → `off`.
 - [ ] 8.3 Save with "Always show" on a Page; confirm widget renders on the Page even though Pages aren't in auto-insert.
 - [ ] 8.4 Settings page → confirm "Auto-insert on" lists the current public CPTs (not just Post + Page).
-- [ ] 8.5 Toggle "Never show on" Pages, then `[pulsepress]` shortcode on a Page → confirm shortcode returns empty.
+- [ ] 8.5 Toggle "Never show on" Pages, then `[moonfarmer-reactions-lead-capture]` shortcode on a Page → confirm shortcode returns empty.
 - [ ] 8.6 Override one of those Pages to "Always show" → confirm widget renders despite "Never show on" containing Pages.
 
 ## 9. Docs + final
 
-- [ ] 9.1 Update `docs/hooks-and-filters.md`: add `pulsepress_visibility_mode` filter, `pulsepress_meta_box_post_types` filter.
+- [ ] 9.1 Update `docs/hooks-and-filters.md`: add `moonfarmer_reactions_lead_capture_visibility_mode` filter, `moonfarmer_reactions_lead_capture_meta_box_post_types` filter.
 - [ ] 9.2 Run `openspec validate per-post-override --strict --no-interactive` clean.
 - [ ] 9.3 PHP lint clean.
 - [ ] 9.4 Commit (no co-auth).

@@ -1,6 +1,6 @@
 ## Why
 
-Session 12 is the WordPress.org packaging pass. PulsePress already has the free-product surface promised by the v1 plan: reactions, inline email capture, CSV export, 30-day analytics, block/shortcode placement, settings, per-post overrides, privacy controls, and a Pro extension surface. The repository still presents itself like an early scaffold, though: `readme.txt` is outdated, the package boundary has not been exercised, and there is no submission checklist for screenshots or plugin assets.
+Session 12 is the WordPress.org packaging pass. Moonfarmer Reactions Lead Capture already has the free-product surface promised by the v1 plan: reactions, inline email capture, CSV export, 30-day analytics, block/shortcode placement, settings, per-post overrides, privacy controls, and a Pro extension surface. The repository still presents itself like an early scaffold, though: `readme.txt` is outdated, the package boundary has not been exercised, and there is no submission checklist for screenshots or plugin assets.
 
 WordPress.org review depends on the shipped artifact, not the working tree. This change makes the free package auditable before submission.
 

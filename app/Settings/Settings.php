@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace PulsePress\Settings;
+namespace Moonfarmer\ReactionsLeadCapture\Settings;
 
-use PulsePress\Reactions\Reactions;
+use Moonfarmer\ReactionsLeadCapture\Reactions\Reactions;
 
 
 if (!defined('ABSPATH')) {
@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
 final class Settings
 {
     public const SCHEMA_VERSION = 1;
-    public const OPTION_NAME    = 'pulsepress_settings';
+    public const OPTION_NAME    = 'moonfarmer_reactions_lead_capture_settings';
 
     public const VISIBILITY_CHOICES = ['always', 'never', 'threshold'];
     public const DESIGN_CHOICES     = ['minimal', 'expressive', 'minimalist', 'subtle_text', 'progress_split', 'vertical_rail', 'clap_counter'];

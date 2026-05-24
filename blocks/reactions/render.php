@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Dynamic render callback for the pulsepress/reactions block.
+ * Dynamic render callback for the moonfarmer-reactions-lead-capture/reactions block.
  *
  * WordPress passes $attributes, $content, $block as locals when including this file.
  */
@@ -23,4 +23,4 @@ $block = $block ?? null;
 // phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 
 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ReactionsBlock returns plugin-owned markup with escaped attributes.
-echo \PulsePress\Blocks\ReactionsBlock::render($attributes, $content, $block);
+echo \Moonfarmer\ReactionsLeadCapture\Blocks\ReactionsBlock::render($attributes, $content, $block);

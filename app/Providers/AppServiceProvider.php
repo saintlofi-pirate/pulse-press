@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace PulsePress\Providers;
+namespace Moonfarmer\ReactionsLeadCapture\Providers;
 
-use PulsePress\Core\ServiceProvider;
+use Moonfarmer\ReactionsLeadCapture\Core\ServiceProvider;
 
 
 if (!defined('ABSPATH')) {

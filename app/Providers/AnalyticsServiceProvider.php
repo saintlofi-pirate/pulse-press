@@ -1,18 +1,18 @@
 <?php
 declare(strict_types=1);
 
-namespace PulsePress\Providers;
+namespace Moonfarmer\ReactionsLeadCapture\Providers;
 
 use DateTimeImmutable;
-use PulsePress\Analytics\Aggregator;
-use PulsePress\Analytics\AnalyticsRepository;
-use PulsePress\Analytics\MetricsCalculator;
-use PulsePress\Analytics\QueueScheduler;
-use PulsePress\Analytics\WpCronScheduler;
-use PulsePress\Core\ServiceProvider;
-use PulsePress\Http\Controllers\AnalyticsController;
-use PulsePress\Reactions\ReactionRepository;
-use PulsePress\Settings\SettingsRepository;
+use Moonfarmer\ReactionsLeadCapture\Analytics\Aggregator;
+use Moonfarmer\ReactionsLeadCapture\Analytics\AnalyticsRepository;
+use Moonfarmer\ReactionsLeadCapture\Analytics\MetricsCalculator;
+use Moonfarmer\ReactionsLeadCapture\Analytics\QueueScheduler;
+use Moonfarmer\ReactionsLeadCapture\Analytics\WpCronScheduler;
+use Moonfarmer\ReactionsLeadCapture\Core\ServiceProvider;
+use Moonfarmer\ReactionsLeadCapture\Http\Controllers\AnalyticsController;
+use Moonfarmer\ReactionsLeadCapture\Reactions\ReactionRepository;
+use Moonfarmer\ReactionsLeadCapture\Settings\SettingsRepository;
 
 
 if (!defined('ABSPATH')) {
@@ -21,7 +21,7 @@ if (!defined('ABSPATH')) {
 
 final class AnalyticsServiceProvider extends ServiceProvider
 {
-    public const CRON_HOOK = 'pulsepress_aggregate_reactions';
+    public const CRON_HOOK = 'moonfarmer_reactions_lead_capture_aggregate_reactions';
 
     public function register(): void
     {
@@ -54,7 +54,7 @@ final class AnalyticsServiceProvider extends ServiceProvider
         add_action('rest_api_init', [$this, 'registerRestRoutes']);
 
         // Default site-timezone resolution for the filter (priority 5 → site filters at 10 still win).
-        add_filter('pulsepress_aggregation_timezone', static function ($value) {
+        add_filter('moonfarmer_reactions_lead_capture_aggregation_timezone', static function ($value) {
             if ($value instanceof \DateTimeZone) {
                 return $value;
             }
@@ -65,7 +65,7 @@ final class AnalyticsServiceProvider extends ServiceProvider
     public function registerRestRoutes(): void
     {
         $controller = $this->app->get(AnalyticsController::class);
-        register_rest_route('pulsepress/v1', '/analytics/summary', [
+        register_rest_route('moonfarmer-reactions-lead-capture/v1', '/analytics/summary', [
             'methods'             => 'GET',
             'callback'            => [$controller, 'summary'],
             'permission_callback' => static fn () => current_user_can('manage_options'),
@@ -78,13 +78,13 @@ final class AnalyticsServiceProvider extends ServiceProvider
 
     public function runScheduledAggregation(): void
     {
-        $timezone = apply_filters('pulsepress_aggregation_timezone', wp_timezone());
+        $timezone = apply_filters('moonfarmer_reactions_lead_capture_aggregation_timezone', wp_timezone());
         if (!$timezone instanceof \DateTimeZone) {
             $timezone = wp_timezone();
         }
 
         $yesterday = (new DateTimeImmutable('yesterday', $timezone))->setTime(0, 0, 0);
-        $date      = apply_filters('pulsepress_aggregation_date', $yesterday);
+        $date      = apply_filters('moonfarmer_reactions_lead_capture_aggregation_date', $yesterday);
 
         if (!$date instanceof DateTimeImmutable) {
             $date = $yesterday;
@@ -106,6 +106,6 @@ final class AnalyticsServiceProvider extends ServiceProvider
         $cutoff  = new DateTimeImmutable('-' . $days . ' days', new \DateTimeZone('UTC'));
         $deleted = $this->app->get(ReactionRepository::class)->purgeOlderThan($cutoff);
 
-        do_action('pulsepress_reactions_retention_purged', $deleted, $cutoff, $days);
+        do_action('moonfarmer_reactions_lead_capture_reactions_retention_purged', $deleted, $cutoff, $days);
     }
 }

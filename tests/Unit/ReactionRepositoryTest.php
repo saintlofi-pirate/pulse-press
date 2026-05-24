@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-use PulsePress\Reactions\ReactionRepository;
+use Moonfarmer\ReactionsLeadCapture\Reactions\ReactionRepository;
 use Tests\Stubs\TransientStore;
 use Tests\Stubs\WpdbStub;
 
@@ -15,7 +15,7 @@ it('runs an INSERT ... ON DUPLICATE KEY UPDATE with prepared values on replace()
 
     expect($status)->toBe('inserted');
     expect($wpdb->last_query)
-        ->toContain('INSERT INTO wp_pulsepress_reactions')
+        ->toContain('INSERT INTO wp_moonfarmer_reactions_lead_capture_reactions')
         ->toContain('ON DUPLICATE KEY UPDATE')
         ->toContain('42')
         ->toContain("'love'")
@@ -34,7 +34,7 @@ it('returns "updated" when rows_affected reports the ON DUPLICATE UPDATE path', 
 });
 
 it('serves countsForPost from the transient when present', function () {
-    TransientStore::set('pulsepress_counts_42', ['love' => 3, 'angry' => 1], 300);
+    TransientStore::set('moonfarmer_reactions_lead_capture_counts_42', ['love' => 3, 'angry' => 1], 300);
 
     $wpdb = new WpdbStub();
     $repo = new ReactionRepository($wpdb);
@@ -58,8 +58,8 @@ it('queries on cache miss and primes the transient', function () {
 
     expect($counts)->toBe(['love' => 5, 'angry' => 2]);
     expect($repo->lastReadWasCached())->toBeFalse();
-    expect(TransientStore::get('pulsepress_counts_42'))->toBe(['love' => 5, 'angry' => 2]);
-    expect(TransientStore::ttl('pulsepress_counts_42'))->toBe(ReactionRepository::COUNT_CACHE_TTL);
+    expect(TransientStore::get('moonfarmer_reactions_lead_capture_counts_42'))->toBe(['love' => 5, 'angry' => 2]);
+    expect(TransientStore::ttl('moonfarmer_reactions_lead_capture_counts_42'))->toBe(ReactionRepository::COUNT_CACHE_TTL);
 });
 
 it('returns an empty array (and caches it) when a post has no reactions', function () {
@@ -69,16 +69,16 @@ it('returns an empty array (and caches it) when a post has no reactions', functi
     $counts = $repo->countsForPost(42);
 
     expect($counts)->toBe([]);
-    expect(TransientStore::exists('pulsepress_counts_42'))->toBeTrue();
+    expect(TransientStore::exists('moonfarmer_reactions_lead_capture_counts_42'))->toBeTrue();
 });
 
 it('invalidates the counts transient on invalidateCounts()', function () {
-    TransientStore::set('pulsepress_counts_42', ['love' => 1], 300);
+    TransientStore::set('moonfarmer_reactions_lead_capture_counts_42', ['love' => 1], 300);
     $repo = new ReactionRepository(new WpdbStub());
 
     $repo->invalidateCounts(42);
 
-    expect(TransientStore::exists('pulsepress_counts_42'))->toBeFalse();
+    expect(TransientStore::exists('moonfarmer_reactions_lead_capture_counts_42'))->toBeFalse();
 });
 
 it('purges reaction rows older than the cutoff', function () {
@@ -90,6 +90,6 @@ it('purges reaction rows older than the cutoff', function () {
 
     expect($deleted)->toBe(4);
     expect($wpdb->last_query)
-        ->toContain('DELETE FROM wp_pulsepress_reactions')
+        ->toContain('DELETE FROM wp_moonfarmer_reactions_lead_capture_reactions')
         ->toContain("updated_at < '2026-05-01 00:00:00'");
 });

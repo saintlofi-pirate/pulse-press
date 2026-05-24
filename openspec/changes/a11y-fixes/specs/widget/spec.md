@@ -12,7 +12,7 @@ The inline email capture form SHALL be exposed to assistive technology as a dial
 #### Scenario: Title is not duplicated
 - **GIVEN** the form renders the prompt copy as its dialog title
 - **WHEN** the user views the page visually
-- **THEN** the prompt SHALL render exactly once (the `<h3>` replaces the previous `<p class="pulsepress-capture-prompt">`)
+- **THEN** the prompt SHALL render exactly once (the `<h3>` replaces the previous `<p class="moonfarmer-reactions-lead-capture-capture-prompt">`)
 
 #### Scenario: Escape and focus return unchanged
 - **GIVEN** the dialog is open

@@ -7,11 +7,11 @@
 ## 2. Calculator + controller
 
 - [ ] 2.1 Create `app/Analytics/MetricsCalculator.php` (`final class`). Constructor `(AnalyticsRepository $repo, SettingsRepository $settings)`. Method `calculate(DateTimeImmutable $fromUtc, DateTimeImmutable $toUtc, bool $clamped): MetricsEnvelope`. Reads positive set from settings. Computes sentiment / capture rates (null when denominator is zero). Resolves post titles via `get_the_title` per top-post id.
-- [ ] 2.2 Create `app/Http/Controllers/AnalyticsController.php`. Method `summary(WP_REST_Request $request)`. Parses `from` / `to` `Y-m-d` site-local; defaults to trailing 30 days. Clamps to 30 days max (Free). Converts to UTC. Runs through `pulsepress_analytics_window` filter. Calls calculator. Returns the envelope as a `WP_REST_Response` with the date fields serialised as `Y-m-d` site-local strings, dailySeries object keyed by site-local date.
+- [ ] 2.2 Create `app/Http/Controllers/AnalyticsController.php`. Method `summary(WP_REST_Request $request)`. Parses `from` / `to` `Y-m-d` site-local; defaults to trailing 30 days. Clamps to 30 days max (Free). Converts to UTC. Runs through `moonfarmer_reactions_lead_capture_analytics_window` filter. Calls calculator. Returns the envelope as a `WP_REST_Response` with the date fields serialised as `Y-m-d` site-local strings, dailySeries object keyed by site-local date.
 
 ## 3. REST registration
 
-- [ ] 3.1 Extend `app/Providers/AnalyticsServiceProvider.php` to bind `AnalyticsRepository`, `MetricsCalculator`, and `AnalyticsController`. Register `GET /pulsepress/v1/analytics/summary` on `rest_api_init` with `permission_callback => fn() => current_user_can('manage_options')`. Args validate `from`/`to` as ISO-8601 dates (`type: string`, regex if WP-REST supports it).
+- [ ] 3.1 Extend `app/Providers/AnalyticsServiceProvider.php` to bind `AnalyticsRepository`, `MetricsCalculator`, and `AnalyticsController`. Register `GET /moonfarmer-reactions-lead-capture/v1/analytics/summary` on `rest_api_init` with `permission_callback => fn() => current_user_can('manage_options')`. Args validate `from`/`to` as ISO-8601 dates (`type: string`, regex if WP-REST supports it).
 
 ## 4. Admin SPA — types + tab + section
 
@@ -31,11 +31,11 @@
 ## 6. Admin SPA — styles
 
 - [ ] 6.1 Extend `resources/admin/styles/admin.css` with:
-  - `.pulsepress-metric-grid` (responsive grid 1–4 columns)
-  - `.pulsepress-metric-card` (matching the section-card aesthetic)
-  - `.pulsepress-top-posts` (compact table styling)
-  - `.pulsepress-chart` (SVG container) + bar fill colour + hover ring
-  - `.pulsepress-empty-state` / `.pulsepress-loading-skeleton` variants
+  - `.moonfarmer-reactions-lead-capture-metric-grid` (responsive grid 1–4 columns)
+  - `.moonfarmer-reactions-lead-capture-metric-card` (matching the section-card aesthetic)
+  - `.moonfarmer-reactions-lead-capture-top-posts` (compact table styling)
+  - `.moonfarmer-reactions-lead-capture-chart` (SVG container) + bar fill colour + hover ring
+  - `.moonfarmer-reactions-lead-capture-empty-state` / `.moonfarmer-reactions-lead-capture-loading-skeleton` variants
 
 ## 7. PHP localization payload
 
@@ -51,8 +51,8 @@
 ## 9. Manual verification
 
 - [ ] 9.1 Seed: insert 30 reactions across 3 posts with mixed reaction types and a few captures.
-- [ ] 9.2 Run the aggregation cron once: `wp cron event run pulsepress_aggregate_reactions`.
-- [ ] 9.3 Hit `GET /wp-json/pulsepress/v1/analytics/summary` as admin — confirm the response shape matches the spec.
+- [ ] 9.2 Run the aggregation cron once: `wp cron event run moonfarmer_reactions_lead_capture_aggregate_reactions`.
+- [ ] 9.3 Hit `GET /wp-json/moonfarmer-reactions-lead-capture/v1/analytics/summary` as admin — confirm the response shape matches the spec.
 - [ ] 9.4 Open the settings page → click Analytics tab → confirm the four cards, table, callout, chart render. Click a top post → opens the post.
 - [ ] 9.5 Hover a chart bar → tooltip shows date + count. Keyboard-Tab into a bar → focus ring visible.
 - [ ] 9.6 Toggle `prefers-reduced-motion` in browser dev tools → confirm no animation.
@@ -60,7 +60,7 @@
 
 ## 10. Docs + final
 
-- [ ] 10.1 Update `docs/hooks-and-filters.md`: add `pulsepress_analytics_window` filter, `pulsepress_admin_analytics_panels` filter (Pro extension seam — kept for next session).
+- [ ] 10.1 Update `docs/hooks-and-filters.md`: add `moonfarmer_reactions_lead_capture_analytics_window` filter, `moonfarmer_reactions_lead_capture_admin_analytics_panels` filter (Pro extension seam — kept for next session).
 - [ ] 10.2 Run `openspec validate analytics-dashboard --strict --no-interactive` clean.
 - [ ] 10.3 PHP lint clean.
 - [ ] 10.4 Commit (no co-auth).

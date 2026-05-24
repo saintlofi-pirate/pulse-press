@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace PulsePress\Http\Controllers;
+namespace Moonfarmer\ReactionsLeadCapture\Http\Controllers;
 
 use DateTimeImmutable;
 use DateTimeZone;
-use PulsePress\Http\RestException;
-use PulsePress\Reactions\ReactionRepository;
-use PulsePress\Reactions\Reactions;
-use PulsePress\Reactions\UserHash;
+use Moonfarmer\ReactionsLeadCapture\Http\RestException;
+use Moonfarmer\ReactionsLeadCapture\Reactions\ReactionRepository;
+use Moonfarmer\ReactionsLeadCapture\Reactions\Reactions;
+use Moonfarmer\ReactionsLeadCapture\Reactions\UserHash;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -34,16 +34,16 @@ final class ReactionController
 
         if (!$this->postIsPublic($postId)) {
             return new WP_Error(
-                'pulsepress_post_not_found',
-                __('Post not found or not publicly viewable.', 'pulse-press'),
+                'moonfarmer_reactions_lead_capture_post_not_found',
+                __('Post not found or not publicly viewable.', 'moonfarmer-reactions-lead-capture'),
                 ['status' => 404]
             );
         }
 
         if (!Reactions::isValid($reactionType)) {
             return new WP_Error(
-                'pulsepress_invalid_reaction_type',
-                __('Reaction type is not in the allowlist.', 'pulse-press'),
+                'moonfarmer_reactions_lead_capture_invalid_reaction_type',
+                __('Reaction type is not in the allowlist.', 'moonfarmer-reactions-lead-capture'),
                 ['status' => 422]
             );
         }
@@ -51,7 +51,7 @@ final class ReactionController
         $userHash = UserHash::fromRequest($request);
 
         try {
-            do_action('pulsepress_before_react', $postId, $reactionType, $userHash, $request);
+            do_action('moonfarmer_reactions_lead_capture_before_react', $postId, $reactionType, $userHash, $request);
         } catch (RestException $e) {
             return $e->getError();
         }
@@ -60,7 +60,7 @@ final class ReactionController
         $status = $this->repository->replace($postId, $reactionType, $userHash, $now);
 
         $this->repository->invalidateCounts($postId);
-        do_action('pulsepress_after_react', $postId, $reactionType, $userHash, $status);
+        do_action('moonfarmer_reactions_lead_capture_after_react', $postId, $reactionType, $userHash, $status);
 
         return new WP_REST_Response([
             'post_id'       => $postId,
@@ -76,8 +76,8 @@ final class ReactionController
 
         if (!$this->postIsPublic($postId)) {
             return new WP_Error(
-                'pulsepress_post_not_found',
-                __('Post not found or not publicly viewable.', 'pulse-press'),
+                'moonfarmer_reactions_lead_capture_post_not_found',
+                __('Post not found or not publicly viewable.', 'moonfarmer-reactions-lead-capture'),
                 ['status' => 404]
             );
         }

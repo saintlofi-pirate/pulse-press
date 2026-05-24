@@ -1,7 +1,7 @@
 import type { ReactionType } from './types';
 
-const REACTION_PREFIX = 'pulsepress:reaction:';
-const CAPTURED_PREFIX = 'pulsepress:captured:';
+const REACTION_PREFIX = 'moonfarmer-reactions-lead-capture:reaction:';
+const CAPTURED_PREFIX = 'moonfarmer-reactions-lead-capture:captured:';
 
 function reactionKey(postId: number): string {
   return `${REACTION_PREFIX}${postId}`;

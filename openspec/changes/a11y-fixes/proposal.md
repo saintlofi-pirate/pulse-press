@@ -4,15 +4,15 @@ Session 11a is the regression-prevention slice of the planned a11y + perf pass (
 
 1. **CaptureForm popover lacks dialog semantics.** It auto-focuses the email input, has Escape-to-dismiss, and returns focus to the triggering reaction button — but screen readers don't know it's a dialog because there is no `role="dialog"`, no `aria-modal="true"`, and no `aria-labelledby`. NVDA / VoiceOver announce it as ordinary form fields appearing in the page.
 2. **ToggleField hardcodes English On/Off.** `resources/admin/components/fields/ToggleField.tsx:39` renders `{checked ? 'On' : 'Off'}` instead of pulling from `adminData.i18n`. Every other admin string is localised; this one slipped.
-3. **`.pulsepress-panel` has `outline: none` but is keyboard-focusable.** Tab-key landing on the panel container after a tab change has no visible focus indicator (`resources/admin/styles/admin.css:122`).
+3. **`.moonfarmer-reactions-lead-capture-panel` has `outline: none` but is keyboard-focusable.** Tab-key landing on the panel container after a tab change has no visible focus indicator (`resources/admin/styles/admin.css:122`).
 
 The perf wins from the same audit (lazy CaptureForm and lazy DailySeriesChart / TopPostsTable) will land separately as Session 11b so the a11y patches commit cleanly on their own.
 
 ## What Changes
 
-- **Widget — CaptureForm dialog semantics**: Wrap the form in `role="dialog"`, set `aria-modal="true"`, and reference a new visible-but-styled `<h3 id="pulsepress-capture-title">` (or `aria-labelledby` on the existing prompt copy if it already serves as the title). Add `aria-describedby` pointing at the consent helper so the dialog's purpose is announced on open.
+- **Widget — CaptureForm dialog semantics**: Wrap the form in `role="dialog"`, set `aria-modal="true"`, and reference a new visible-but-styled `<h3 id="moonfarmer-reactions-lead-capture-capture-title">` (or `aria-labelledby` on the existing prompt copy if it already serves as the title). Add `aria-describedby` pointing at the consent helper so the dialog's purpose is announced on open.
 - **Admin SPA — ToggleField i18n**: Add `toggle: { on, off }` to the admin payload's `i18n` block (PHP + types). Thread it through ToggleField props with sensible English fallbacks.
-- **Admin SPA — visible focus on panel**: Replace `outline: none` on `.pulsepress-panel` with a `:focus-visible` rule that uses the existing accent ring tokens. Keep the panel non-focused-by-default look unchanged.
+- **Admin SPA — visible focus on panel**: Replace `outline: none` on `.moonfarmer-reactions-lead-capture-panel` with a `:focus-visible` rule that uses the existing accent ring tokens. Keep the panel non-focused-by-default look unchanged.
 - **BREAKING**: none. All changes are additive at the markup/ARIA level or replace hardcoded English with localised copy.
 
 ## Capabilities
@@ -20,7 +20,7 @@ The perf wins from the same audit (lazy CaptureForm and lazy DailySeriesChart / 
 ### Modified Capabilities
 
 - `widget`: CaptureForm announces as a dialog, with a labelled title and described-by reference.
-- `admin-spa`: ToggleField surface text is fully localised; `.pulsepress-panel` keyboard focus is visible.
+- `admin-spa`: ToggleField surface text is fully localised; `.moonfarmer-reactions-lead-capture-panel` keyboard focus is visible.
 
 ## Impact
 

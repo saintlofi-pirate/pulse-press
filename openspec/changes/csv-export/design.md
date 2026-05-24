@@ -1,6 +1,6 @@
 ## Context
 
-`pulsepress_captures` stores consented emails with full metadata. There is no way for an admin to retrieve them today; the only inputs that matter are the column list, the file name, and the permission gate. The hard part is making the response stream correctly through a REST route while keeping the column set extensible for Pro.
+`moonfarmer_reactions_lead_capture_captures` stores consented emails with full metadata. There is no way for an admin to retrieve them today; the only inputs that matter are the column list, the file name, and the permission gate. The hard part is making the response stream correctly through a REST route while keeping the column set extensible for Pro.
 
 The constraint: WordPress's REST framework wants to JSON-encode responses. We need raw CSV bytes. The standard workaround is to bypass the framework's serialiser by `echo`-ing the body inside the callback, calling `header_remove()` / `header()` to fix the response headers, and exiting via `wp_die('', '', ['response' => 200])` so PHP doesn't re-enter REST output buffering.
 
@@ -35,7 +35,7 @@ The constraint: WordPress's REST framework wants to JSON-encode responses. We ne
 The controller's `download` method:
 
 1. Validates capability and nonce (permission_callback handled the cap; the controller re-asserts in case of a misconfigured filter).
-2. Computes the filename: `pulsepress-captures-YmdHis.csv` using site timezone.
+2. Computes the filename: `moonfarmer-reactions-lead-capture-captures-YmdHis.csv` using site timezone.
 3. Calls `nocache_headers()`, then `header_remove('Content-Type')`, `header('Content-Type: text/csv; charset=utf-8')`, `header('Content-Disposition: attachment; filename=...')`, `header('X-Content-Type-Options: nosniff')`.
 4. Echoes a UTF-8 BOM (`"\xEF\xBB\xBF"`) so Excel handles non-ASCII correctly.
 5. Streams the CSV using the `CaptureExporter` with an `echo`-based emitter.
@@ -45,7 +45,7 @@ The controller's `download` method:
 
 `CaptureExporter::stream(callable $emit, array $options = [])` takes the emit callback as a parameter so tests pass a closure that captures lines into an array, while the controller passes a closure that `echo`-s.
 
-Chunked reads: `SELECT … FROM pulsepress_captures ORDER BY id ASC LIMIT $chunkSize OFFSET $offset`. `chunkSize` defaults to 500 (filterable via `$options['chunk_size']`).
+Chunked reads: `SELECT … FROM moonfarmer_reactions_lead_capture_captures ORDER BY id ASC LIMIT $chunkSize OFFSET $offset`. `chunkSize` defaults to 500 (filterable via `$options['chunk_size']`).
 
 ### D4. Column registry + filter
 
@@ -60,7 +60,7 @@ $columns = [
     'source'               => ['label' => 'Source',             'render' => fn($r) => $r['source']],
     'created_at'           => ['label' => 'Captured at',        'render' => fn($r) => $r['created_at']],
 ];
-$columns = apply_filters('pulsepress_export_columns', $columns);
+$columns = apply_filters('moonfarmer_reactions_lead_capture_export_columns', $columns);
 ```
 
 Pro adds `esp_sync_status` by hooking the filter and appending its column definition. The `render` callable receives the raw row array; Pro can join its own per-capture state.
@@ -75,7 +75,7 @@ We can't use `fputcsv` directly (writes to a stream resource, not a callback). T
 
 ### D7. Filename includes a timestamp
 
-`pulsepress-captures-20260514T103015Z.csv`. Site-timezone date for legibility, `Z` to signal it's a snapshot timestamp.
+`moonfarmer-reactions-lead-capture-captures-20260514T103015Z.csv`. Site-timezone date for legibility, `Z` to signal it's a snapshot timestamp.
 
 ### D8. Admin button uses fetch + Blob + temporary <a>
 

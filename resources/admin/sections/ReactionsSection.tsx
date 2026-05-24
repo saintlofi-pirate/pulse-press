@@ -2,11 +2,11 @@ import { CheckboxListField } from '../components/fields/CheckboxListField';
 import { ToggleField } from '../components/fields/ToggleField';
 import { StatusPill } from '../components/StatusPill';
 import type { UseSettingsState } from '../hooks/useSettingsState';
-import type { PulsePressAdminData } from '../types';
+import type { MoonfarmerReactionsLeadCaptureAdminData } from '../types';
 
 interface Props {
   state: UseSettingsState;
-  adminData: PulsePressAdminData;
+  adminData: MoonfarmerReactionsLeadCaptureAdminData;
 }
 
 export function ReactionsSection({ state, adminData }: Props) {
@@ -15,13 +15,13 @@ export function ReactionsSection({ state, adminData }: Props) {
   const visibleReactionOptions = settings.enabled_reactions.map((r) => ({ value: r, label: i18n.fields.reactionLabels[r] ?? r }));
 
   return (
-    <section class="pulsepress-section" aria-labelledby="pulsepress-section-reactions-title">
-      <header class="pulsepress-section__header">
-        <h2 id="pulsepress-section-reactions-title">{i18n.sections.reactionsTitle}</h2>
-        <p class="pulsepress-section__helper">{i18n.sections.reactionsHelper}</p>
+    <section class="moonfarmer-reactions-lead-capture-section" aria-labelledby="moonfarmer-reactions-lead-capture-section-reactions-title">
+      <header class="moonfarmer-reactions-lead-capture-section__header">
+        <h2 id="moonfarmer-reactions-lead-capture-section-reactions-title">{i18n.sections.reactionsTitle}</h2>
+        <p class="moonfarmer-reactions-lead-capture-section__helper">{i18n.sections.reactionsHelper}</p>
       </header>
 
-      <div class="pulsepress-section__body">
+      <div class="moonfarmer-reactions-lead-capture-section__body">
         <CheckboxListField
           label={i18n.fields.enabledReactionsLabel}
           helper={i18n.fields.enabledReactionsHelper}

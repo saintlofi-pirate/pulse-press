@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace PulsePress\Captures;
+namespace Moonfarmer\ReactionsLeadCapture\Captures;
 
 
 if (!defined('ABSPATH')) {
@@ -20,7 +20,7 @@ final class Captures
 
     public static function isValidSource(string $source): bool
     {
-        $allowed = apply_filters('pulsepress_capture_sources', self::SOURCES);
+        $allowed = apply_filters('moonfarmer_reactions_lead_capture_capture_sources', self::SOURCES);
         if (!is_array($allowed)) {
             $allowed = self::SOURCES;
         }
@@ -29,7 +29,7 @@ final class Captures
 
     public static function consentTextVersion(): string
     {
-        $value = apply_filters('pulsepress_consent_text_version', self::DEFAULT_VERSION);
+        $value = apply_filters('moonfarmer_reactions_lead_capture_consent_text_version', self::DEFAULT_VERSION);
         return is_string($value) && $value !== '' ? $value : self::DEFAULT_VERSION;
     }
 }

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace PulsePress\Blocks;
+namespace Moonfarmer\ReactionsLeadCapture\Blocks;
 
 
 if (!defined('ABSPATH')) {
@@ -13,12 +13,12 @@ final class WidgetMarkup
     public static function container(int $postId): string
     {
         $attrs = [
-            'class'                   => 'pulsepress',
-            'data-pulsepress-widget'  => '',
-            'data-pulsepress-post-id' => (string) $postId,
+            'class'                   => 'moonfarmer-reactions-lead-capture',
+            'data-moonfarmer-reactions-lead-capture-widget'  => '',
+            'data-moonfarmer-reactions-lead-capture-post-id' => (string) $postId,
         ];
 
-        $filtered = apply_filters('pulsepress_widget_container_attrs', $attrs, $postId);
+        $filtered = apply_filters('moonfarmer_reactions_lead_capture_widget_container_attrs', $attrs, $postId);
         if (!is_array($filtered)) {
             $filtered = $attrs;
         }

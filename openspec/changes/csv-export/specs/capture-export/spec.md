@@ -1,13 +1,13 @@
 ## ADDED Requirements
 
-### Requirement: GET /pulsepress/v1/captures.csv streams the captures table as CSV
+### Requirement: GET /moonfarmer-reactions-lead-capture/v1/captures.csv streams the captures table as CSV
 
-The plugin SHALL register `GET /wp-json/pulsepress/v1/captures.csv` requiring `current_user_can('manage_options')`. The endpoint SHALL respond with `Content-Type: text/csv; charset=utf-8` and `Content-Disposition: attachment; filename=pulsepress-captures-{timestamp}.csv`. The body SHALL be a UTF-8 BOM followed by one header row and one row per capture in `pulsepress_captures`.
+The plugin SHALL register `GET /wp-json/moonfarmer-reactions-lead-capture/v1/captures.csv` requiring `current_user_can('manage_options')`. The endpoint SHALL respond with `Content-Type: text/csv; charset=utf-8` and `Content-Disposition: attachment; filename=moonfarmer-reactions-lead-capture-captures-{timestamp}.csv`. The body SHALL be a UTF-8 BOM followed by one header row and one row per capture in `moonfarmer_reactions_lead_capture_captures`.
 
 #### Scenario: Admin downloads the CSV
 
-- **WHEN** an admin sends `GET /wp-json/pulsepress/v1/captures.csv` with a valid REST nonce
-- **THEN** the response status is `200`, the `Content-Type` header is `text/csv; charset=utf-8`, the `Content-Disposition` header begins with `attachment; filename=pulsepress-captures-`, and the body starts with the UTF-8 BOM `\xEF\xBB\xBF` followed by the CSV header line
+- **WHEN** an admin sends `GET /wp-json/moonfarmer-reactions-lead-capture/v1/captures.csv` with a valid REST nonce
+- **THEN** the response status is `200`, the `Content-Type` header is `text/csv; charset=utf-8`, the `Content-Disposition` header begins with `attachment; filename=moonfarmer-reactions-lead-capture-captures-`, and the body starts with the UTF-8 BOM `\xEF\xBB\xBF` followed by the CSV header line
 
 #### Scenario: Non-admin is rejected
 
@@ -28,13 +28,13 @@ The default columns SHALL be, in order: `consent_at`, `email`, `post_id`, `post_
 - **WHEN** the CSV is rendered with no filter overrides
 - **THEN** the header line equals `"Consent timestamp","Email","Post ID","Post title","Reaction","Consent version","Source","Captured at"` (RFC 4180 quoting)
 
-### Requirement: pulsepress_export_columns filter extends or overrides columns
+### Requirement: moonfarmer_reactions_lead_capture_export_columns filter extends or overrides columns
 
-The exporter SHALL apply `apply_filters('pulsepress_export_columns', $columns)` to the column definition map before streaming. Each entry SHALL declare `label` (string) and `render` (callable receiving the raw row array). Invalid entries (non-string labels or non-callable renders) SHALL be skipped with a debug log line.
+The exporter SHALL apply `apply_filters('moonfarmer_reactions_lead_capture_export_columns', $columns)` to the column definition map before streaming. Each entry SHALL declare `label` (string) and `render` (callable receiving the raw row array). Invalid entries (non-string labels or non-callable renders) SHALL be skipped with a debug log line.
 
 #### Scenario: Pro adds an ESP-sync column
 
-- **WHEN** a Pro plugin registers `add_filter('pulsepress_export_columns', fn($c) => $c + ['esp_sync_status' => ['label' => 'ESP', 'render' => fn($r) => 'synced']])`
+- **WHEN** a Pro plugin registers `add_filter('moonfarmer_reactions_lead_capture_export_columns', fn($c) => $c + ['esp_sync_status' => ['label' => 'ESP', 'render' => fn($r) => 'synced']])`
 - **THEN** the rendered CSV header contains an additional `"ESP"` column and every data row carries `"synced"` for that column
 
 #### Scenario: Invalid column entry is skipped
@@ -42,14 +42,14 @@ The exporter SHALL apply `apply_filters('pulsepress_export_columns', $columns)` 
 - **WHEN** a hook returns an entry with `render: 'not-a-callable'`
 - **THEN** the exporter skips that entry, the rest of the CSV renders normally, and an error_log entry names the offending key
 
-### Requirement: pulsepress_before_export action can short-circuit
+### Requirement: moonfarmer_reactions_lead_capture_before_export action can short-circuit
 
-The exporter SHALL fire `do_action('pulsepress_before_export', \WP_REST_Request $request)` inside a try-block before streaming. A handler MAY throw `PulsePress\Http\RestException` to abort the export; the controller SHALL return the wrapped `WP_Error` instead of streaming.
+The exporter SHALL fire `do_action('moonfarmer_reactions_lead_capture_before_export', \WP_REST_Request $request)` inside a try-block before streaming. A handler MAY throw `Moonfarmer\ReactionsLeadCapture\Http\RestException` to abort the export; the controller SHALL return the wrapped `WP_Error` instead of streaming.
 
 #### Scenario: Rate-limit blocks the export
 
-- **WHEN** a plugin registers `add_action('pulsepress_before_export', function () { throw new \PulsePress\Http\RestException(new \WP_Error('pulsepress_rate_limited', 'Too many exports.', ['status' => 429])); })`
-- **THEN** the response is `429` with code `pulsepress_rate_limited` and no CSV bytes are streamed
+- **WHEN** a plugin registers `add_action('moonfarmer_reactions_lead_capture_before_export', function () { throw new \Moonfarmer\ReactionsLeadCapture\Http\RestException(new \WP_Error('moonfarmer_reactions_lead_capture_rate_limited', 'Too many exports.', ['status' => 429])); })`
+- **THEN** the response is `429` with code `moonfarmer_reactions_lead_capture_rate_limited` and no CSV bytes are streamed
 
 ### Requirement: Rows are RFC 4180-escaped
 
@@ -78,11 +78,11 @@ The exporter SHALL fetch captures in batches of at most 500 rows (filterable via
 - **WHEN** the captures table contains 1,500 rows and the exporter is called with default options
 - **THEN** the underlying SELECT runs three times with `LIMIT 500 OFFSET 0/500/1000` (verified via wpdb stub or query log)
 
-### Requirement: Reads only from pulsepress_captures
+### Requirement: Reads only from moonfarmer_reactions_lead_capture_captures
 
-The exporter SHALL NOT issue queries against `pulsepress_reactions` or `pulsepress_daily_agg`. Title lookups via `get_the_title` are permitted (they read `wp_posts`).
+The exporter SHALL NOT issue queries against `moonfarmer_reactions_lead_capture_reactions` or `moonfarmer_reactions_lead_capture_daily_agg`. Title lookups via `get_the_title` are permitted (they read `wp_posts`).
 
 #### Scenario: Codebase grep audit
 
-- **WHEN** running `grep -rE "FROM .+pulsepress_(reactions|daily_agg)" app/Captures/CaptureExporter.php`
+- **WHEN** running `grep -rE "FROM .+moonfarmer_reactions_lead_capture_(reactions|daily_agg)" app/Captures/CaptureExporter.php`
 - **THEN** the search returns no matches

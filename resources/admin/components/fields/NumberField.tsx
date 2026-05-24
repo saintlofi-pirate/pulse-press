@@ -30,7 +30,7 @@ export function NumberField({ label, helper, value, onChange, status, error, min
     >
       <input
         id={id}
-        class="pulsepress-input pulsepress-number"
+        class="moonfarmer-reactions-lead-capture-input moonfarmer-reactions-lead-capture-number"
         type="number"
         value={Number.isFinite(value) ? value : 0}
         min={min}

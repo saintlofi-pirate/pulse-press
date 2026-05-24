@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace PulsePress\Reactions;
+namespace Moonfarmer\ReactionsLeadCapture\Reactions;
 
 use WP_REST_Request;
 
@@ -12,9 +12,9 @@ if (!defined('ABSPATH')) {
 
 final class UserHash
 {
-    public const SALT_SCOPE            = 'pulsepress_dedup';
-    public const SALT_SCOPE_CAPTURE_IP = 'pulsepress_capture_ip';
-    public const SALT_SCOPE_CAPTURE_UA = 'pulsepress_capture_ua';
+    public const SALT_SCOPE            = 'moonfarmer_reactions_lead_capture_dedup';
+    public const SALT_SCOPE_CAPTURE_IP = 'moonfarmer_reactions_lead_capture_capture_ip';
+    public const SALT_SCOPE_CAPTURE_UA = 'moonfarmer_reactions_lead_capture_capture_ua';
 
     public static function compute(string $ip, string $userAgent): string
     {
@@ -53,7 +53,7 @@ final class UserHash
     private static function resolveFromRequest(WP_REST_Request $request): array
     {
         $remote = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash((string) $_SERVER['REMOTE_ADDR'])) : '';
-        $ip     = (string) apply_filters('pulsepress_client_ip', $remote, $request);
+        $ip     = (string) apply_filters('moonfarmer_reactions_lead_capture_client_ip', $remote, $request);
 
         // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Unslashed and sanitized on the next line.
         $rawUa     = isset($_SERVER['HTTP_USER_AGENT']) ? (string) $_SERVER['HTTP_USER_AGENT'] : '';

@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-use PulsePress\Analytics\AnalyticsRepository;
-use PulsePress\Analytics\MetricsCalculator;
-use PulsePress\Analytics\MetricsEnvelope;
-use PulsePress\Settings\Settings;
-use PulsePress\Settings\SettingsRepository;
+use Moonfarmer\ReactionsLeadCapture\Analytics\AnalyticsRepository;
+use Moonfarmer\ReactionsLeadCapture\Analytics\MetricsCalculator;
+use Moonfarmer\ReactionsLeadCapture\Analytics\MetricsEnvelope;
+use Moonfarmer\ReactionsLeadCapture\Settings\Settings;
+use Moonfarmer\ReactionsLeadCapture\Settings\SettingsRepository;
 use Tests\Stubs\OptionStore;
 use Tests\Stubs\WpdbStub;
 
@@ -14,7 +14,7 @@ function pp_calculator(array $dailyRows = [], array $capRows = [], array $topRow
     $wpdb = new WpdbStub();
     $wpdb->resultsByQuery['GROUP BY agg_date, reaction_type'] = $dailyRows;
     $wpdb->resultsByQuery['GROUP BY agg.post_id, caps.captures'] = $topRows;
-    $wpdb->resultsByQuery['FROM wp_pulsepress_captures'] = $capRows;
+    $wpdb->resultsByQuery['FROM wp_moonfarmer_reactions_lead_capture_captures'] = $capRows;
     $repo = new AnalyticsRepository($wpdb);
     return new MetricsCalculator($repo, new SettingsRepository());
 }

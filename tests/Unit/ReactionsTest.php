@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-use PulsePress\Reactions\Reactions;
+use Moonfarmer\ReactionsLeadCapture\Reactions\Reactions;
 use Tests\Stubs\FilterRegistry;
 
 it('exposes exactly six default reaction types', function () {
@@ -25,12 +25,12 @@ it('rejects near-matches because comparison is strict and case-sensitive', funct
 });
 
 it('lets a filter override the allowlist', function () {
-    FilterRegistry::addFilter('pulsepress_reaction_types', fn () => ['celebrate']);
+    FilterRegistry::addFilter('moonfarmer_reactions_lead_capture_reaction_types', fn () => ['celebrate']);
     expect(Reactions::isValid('celebrate'))->toBeTrue();
     expect(Reactions::isValid('love'))->toBeFalse();
 });
 
 it('falls back to the constant when the filter returns a non-array value', function () {
-    FilterRegistry::addFilter('pulsepress_reaction_types', fn () => 'not-an-array');
+    FilterRegistry::addFilter('moonfarmer_reactions_lead_capture_reaction_types', fn () => 'not-an-array');
     expect(Reactions::isValid('love'))->toBeTrue();
 });

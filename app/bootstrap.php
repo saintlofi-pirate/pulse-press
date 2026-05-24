@@ -7,15 +7,15 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-use PulsePress\Providers\AdminServiceProvider;
-use PulsePress\Providers\AnalyticsServiceProvider;
-use PulsePress\Providers\AppServiceProvider;
-use PulsePress\Providers\BlockServiceProvider;
-use PulsePress\Providers\CaptureServiceProvider;
-use PulsePress\Providers\DatabaseServiceProvider;
-use PulsePress\Providers\RestServiceProvider;
-use PulsePress\Providers\SettingsServiceProvider;
-use PulsePress\Providers\WidgetServiceProvider;
+use Moonfarmer\ReactionsLeadCapture\Providers\AdminServiceProvider;
+use Moonfarmer\ReactionsLeadCapture\Providers\AnalyticsServiceProvider;
+use Moonfarmer\ReactionsLeadCapture\Providers\AppServiceProvider;
+use Moonfarmer\ReactionsLeadCapture\Providers\BlockServiceProvider;
+use Moonfarmer\ReactionsLeadCapture\Providers\CaptureServiceProvider;
+use Moonfarmer\ReactionsLeadCapture\Providers\DatabaseServiceProvider;
+use Moonfarmer\ReactionsLeadCapture\Providers\RestServiceProvider;
+use Moonfarmer\ReactionsLeadCapture\Providers\SettingsServiceProvider;
+use Moonfarmer\ReactionsLeadCapture\Providers\WidgetServiceProvider;
 
 return [
     'providers' => [

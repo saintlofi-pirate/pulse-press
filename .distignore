@@ -1,4 +1,5 @@
 /.git
+/.code-review-graph
 /.github
 /.gitignore
 /.distignore

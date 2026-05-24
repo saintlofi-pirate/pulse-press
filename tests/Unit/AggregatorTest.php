@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
 
-use PulsePress\Analytics\AggregationResult;
-use PulsePress\Analytics\Aggregator;
+use Moonfarmer\ReactionsLeadCapture\Analytics\AggregationResult;
+use Moonfarmer\ReactionsLeadCapture\Analytics\Aggregator;
 use Tests\Stubs\FilterRegistry;
 use Tests\Stubs\WpdbStub;
 
@@ -16,7 +16,7 @@ it('runs a SELECT with UTC bounds converted from the site-local date', function 
 
     $selectQuery = collect($wpdb->queries)->first(fn ($q) => str_contains($q, 'GROUP BY post_id, reaction_type'));
     expect($selectQuery)
-        ->toContain('FROM wp_pulsepress_reactions')
+        ->toContain('FROM wp_moonfarmer_reactions_lead_capture_reactions')
         ->toContain("'2026-05-13 00:00:00'")
         ->toContain("'2026-05-14 00:00:00'");
 });
@@ -35,13 +35,13 @@ it('upserts one row per group into the daily_agg table', function () {
     expect($result->rowsWritten)->toBe(2);
     expect($result->groupsProcessed)->toBe(2);
 
-    $upserts = array_values(array_filter($wpdb->queries, fn ($q) => str_contains($q, 'INSERT INTO wp_pulsepress_daily_agg')));
+    $upserts = array_values(array_filter($wpdb->queries, fn ($q) => str_contains($q, 'INSERT INTO wp_moonfarmer_reactions_lead_capture_daily_agg')));
     expect($upserts)->toHaveCount(2);
     expect($upserts[0])->toContain('ON DUPLICATE KEY UPDATE')->toContain("'2026-05-13'")->toContain("'love'")->toContain('3');
     expect($upserts[1])->toContain("'angry'")->toContain('2');
 });
 
-it('fires pulsepress_after_aggregate on success', function () {
+it('fires moonfarmer_reactions_lead_capture_after_aggregate on success', function () {
     $wpdb = new WpdbStub();
     $wpdb->resultsByQuery['GROUP BY post_id, reaction_type'] = [
         ['post_id' => 7, 'reaction_type' => 'love', 'c' => '1'],
@@ -50,7 +50,7 @@ it('fires pulsepress_after_aggregate on success', function () {
 
     $agg->aggregate(new DateTimeImmutable('2026-05-13 00:00:00', new DateTimeZone('UTC')));
 
-    $calls = FilterRegistry::actionCalls('pulsepress_after_aggregate');
+    $calls = FilterRegistry::actionCalls('moonfarmer_reactions_lead_capture_after_aggregate');
     expect($calls)->toHaveCount(1);
     expect($calls[0][0])->toBeInstanceOf(AggregationResult::class);
 });
@@ -64,7 +64,7 @@ it('fires the action even for an empty day with zero counts', function () {
 
     expect($result->groupsProcessed)->toBe(0);
     expect($result->rowsWritten)->toBe(0);
-    expect(FilterRegistry::actionCalls('pulsepress_after_aggregate'))->toHaveCount(1);
+    expect(FilterRegistry::actionCalls('moonfarmer_reactions_lead_capture_after_aggregate'))->toHaveCount(1);
 });
 
 it('converts a PST local date to the correct UTC bounds (DST-aware)', function () {

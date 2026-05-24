@@ -2,7 +2,7 @@
 
 ## Project
 
-PulsePress is a WordPress plugin for reactions, inline email capture, and analytics. The free plugin should be useful on its own; Pro should add provider sync, longer analytics, A/B testing, advanced targeting, webhooks, white-labeling, and support.
+Moonfarmer Reactions Lead Capture is a WordPress plugin for reactions, inline email capture, and analytics. The free plugin should be useful on its own; Pro should add provider sync, longer analytics, A/B testing, advanced targeting, webhooks, white-labeling, and support.
 
 ## PR Draft Template
 
@@ -77,7 +77,7 @@ Commit messages should include a short uppercase-prefixed subject line and the s
 
 ## Accessibility
 
-Full spec: `docs/pulsepress-v1-plan.md` §Accessibility — WCAG 2.1 AA First. Summary:
+Full spec: `docs/moonfarmer-reactions-lead-capture-v1-plan.md` §Accessibility — WCAG 2.1 AA First. Summary:
 
 - Real semantic elements only — `<button>`, `<a>`, `<input>`, `<label>`, `<dialog>` — never `<div>` with onclick.
 - Keyboard works for everything; visible focus rings via `:focus-visible`; modals manage focus + close on Escape.
@@ -91,13 +91,13 @@ A UI PR that can't tick the relevant boxes goes back for revision before merge.
 
 ## Code Quality
 
-Full spec: `docs/pulsepress-v1-plan.md` §Code Quality Principles. Summary:
+Full spec: `docs/moonfarmer-reactions-lead-capture-v1-plan.md` §Code Quality Principles. Summary:
 
-- **Hooks and filters first.** Every decision point gets `apply_filters('pulsepress_<thing>', ...)`; every side effect gets `do_action('pulsepress_<noun>_<verb>', ...)`. Pro never modifies Free internals — it attaches via hooks. Document new hooks in `docs/hooks-and-filters.md` and in the change's OpenSpec spec under ADDED Requirements **in the same commit** that introduces them.
+- **Hooks and filters first.** Every decision point gets `apply_filters('moonfarmer_reactions_lead_capture_<thing>', ...)`; every side effect gets `do_action('moonfarmer_reactions_lead_capture_<noun>_<verb>', ...)`. Pro never modifies Free internals — it attaches via hooks. Document new hooks in `docs/hooks-and-filters.md` and in the change's OpenSpec spec under ADDED Requirements **in the same commit** that introduces them.
 - **Clean.** Names earn length. No dead code. Comments explain WHY, never WHAT. No premature abstractions. No defensive error handling for things the framework or type system already guards.
 - **Modular.** One responsibility per file. Constructor injection over service location. Static helpers reserved for value objects; anything with state/side-effects is instance-class. Service providers are the wiring layer; feature code doesn't `new` its own collaborators. Files over ~200 lines are a smell.
 - **Maintainable.** Test the contract, not the implementation. Runtime PHP must stay compatible with PHP 7.4 through 8.4. Use typed parameters, returns, and properties where PHP 7.4 allows them; avoid PHP 8-only syntax in shipped runtime files. `final class` by default; inheritance is opt-in. Reuse existing helpers (`Schema::tableName`, etc.) before writing new ones. Migrations + option keys are append-only.
-- **Easy to extend.** Public methods of repositories/services are part of the API surface — once shipped, they're stable. Settings/meta/transient/option keys are namespaced under `pulsepress_` / `_pulsepress_` and documented.
+- **Easy to extend.** Public methods of repositories/services are part of the API surface — once shipped, they're stable. Settings/meta/transient/option keys are namespaced under `moonfarmer_reactions_lead_capture_` / `_moonfarmer_reactions_lead_capture_` and documented.
 
 A PR that violates these goes back for changes; an OpenSpec design that violates them gets rewritten before code starts.
 

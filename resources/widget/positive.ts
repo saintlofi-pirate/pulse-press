@@ -1,6 +1,6 @@
-import type { PulsePressData, ReactionType } from './types';
+import type { MoonfarmerReactionsLeadCaptureData, ReactionType } from './types';
 
-export function isPositive(type: ReactionType | null, data: PulsePressData): boolean {
+export function isPositive(type: ReactionType | null, data: MoonfarmerReactionsLeadCaptureData): boolean {
   if (type === null) {
     return false;
   }

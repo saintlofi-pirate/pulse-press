@@ -25,7 +25,7 @@ export interface CaptureI18n {
   dismiss: string;
 }
 
-export interface PulsePressData {
+export interface MoonfarmerReactionsLeadCaptureData {
   root: string;
   nonce: string;
   postId: number;
@@ -74,6 +74,6 @@ export interface CaptureResponse {
 
 declare global {
   interface Window {
-    PulsePressData?: PulsePressData;
+    MoonfarmerReactionsLeadCaptureData?: MoonfarmerReactionsLeadCaptureData;
   }
 }

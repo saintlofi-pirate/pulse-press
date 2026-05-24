@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace PulsePress\Database;
+namespace Moonfarmer\ReactionsLeadCapture\Database;
 
 use wpdb;
 
@@ -14,9 +14,9 @@ final class Schema
 {
     public const VERSION = 1;
 
-    public const TABLE_REACTIONS  = 'pulsepress_reactions';
-    public const TABLE_CAPTURES   = 'pulsepress_captures';
-    public const TABLE_DAILY_AGG  = 'pulsepress_daily_agg';
+    public const TABLE_REACTIONS  = 'moonfarmer_reactions_lead_capture_reactions';
+    public const TABLE_CAPTURES   = 'moonfarmer_reactions_lead_capture_captures';
+    public const TABLE_DAILY_AGG  = 'moonfarmer_reactions_lead_capture_daily_agg';
 
     /**
      * Map of un-prefixed table name → CREATE TABLE SQL ready for dbDelta().
@@ -86,7 +86,7 @@ final class Schema
     public static function tableName(wpdb $wpdb, string $unprefixed): string
     {
         if (!in_array($unprefixed, [self::TABLE_REACTIONS, self::TABLE_CAPTURES, self::TABLE_DAILY_AGG], true)) {
-            throw new \InvalidArgumentException('Unknown PulsePress table.');
+            throw new \InvalidArgumentException('Unknown Moonfarmer Reactions Lead Capture table.');
         }
 
         $table = $wpdb->prefix . $unprefixed;

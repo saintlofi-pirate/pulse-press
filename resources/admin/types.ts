@@ -1,4 +1,4 @@
-import type { AnimationMode, PulsePressData, ReactionType, WidgetDesign } from '../widget/types';
+import type { AnimationMode, MoonfarmerReactionsLeadCaptureData, ReactionType, WidgetDesign } from '../widget/types';
 
 export type SettingsState = {
   count_visibility: 'always' | 'never' | 'threshold';
@@ -58,7 +58,7 @@ export interface ExtensionAnalyticsPanel {
   fallback?: string;
 }
 
-export interface PulsePressAdminData {
+export interface MoonfarmerReactionsLeadCaptureAdminData {
   restRoot: string;
   nonce: string;
   settings: SettingsState;
@@ -174,12 +174,12 @@ export interface ExtensionContext {
   id: string;
   kind: ExtensionKind;
   data: unknown;
-  adminData: PulsePressAdminData;
+  adminData: MoonfarmerReactionsLeadCaptureAdminData;
 }
 
 export type ExtensionRenderer = (root: HTMLElement, ctx: ExtensionContext) => void | (() => void);
 
-export interface PulsePressAdminApi {
+export interface MoonfarmerReactionsLeadCaptureAdminApi {
   registerTabRenderer: (id: string, renderer: ExtensionRenderer) => void;
   registerCardRenderer: (id: string, renderer: ExtensionRenderer) => void;
   registerPanelRenderer: (id: string, renderer: ExtensionRenderer) => void;
@@ -187,10 +187,10 @@ export interface PulsePressAdminApi {
 
 declare global {
   interface Window {
-    PulsePressAdminData?: PulsePressAdminData;
-    PulsePressAdmin?: PulsePressAdminApi;
+    MoonfarmerReactionsLeadCaptureAdminData?: MoonfarmerReactionsLeadCaptureAdminData;
+    MoonfarmerReactionsLeadCaptureAdmin?: MoonfarmerReactionsLeadCaptureAdminApi;
   }
 }
 
 // Re-export front-end types so admin files can pull from one place.
-export type { AnimationMode, PulsePressData, ReactionType, WidgetDesign };
+export type { AnimationMode, MoonfarmerReactionsLeadCaptureData, ReactionType, WidgetDesign };

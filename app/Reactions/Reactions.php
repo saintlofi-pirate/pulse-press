@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace PulsePress\Reactions;
+namespace Moonfarmer\ReactionsLeadCapture\Reactions;
 
 
 if (!defined('ABSPATH')) {
@@ -25,7 +25,7 @@ final class Reactions
 
     public static function isValid(string $type): bool
     {
-        $allowed = apply_filters('pulsepress_reaction_types', self::TYPES);
+        $allowed = apply_filters('moonfarmer_reactions_lead_capture_reaction_types', self::TYPES);
         if (!is_array($allowed)) {
             $allowed = self::TYPES;
         }

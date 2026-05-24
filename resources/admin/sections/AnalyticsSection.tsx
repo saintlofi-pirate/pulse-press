@@ -5,13 +5,13 @@ import type { DailySeriesChart as DailySeriesChartComponent } from '../component
 import { ExtensionMount } from '../components/ExtensionMount';
 import { MetricCard } from '../components/MetricCard';
 import type { TopPostsTable as TopPostsTableComponent } from '../components/TopPostsTable';
-import type { MetricsEnvelope, PulsePressAdminData } from '../types';
+import type { MetricsEnvelope, MoonfarmerReactionsLeadCaptureAdminData } from '../types';
 
 type ChartProps = Parameters<typeof DailySeriesChartComponent>[0];
 type TableProps = Parameters<typeof TopPostsTableComponent>[0];
 
 interface Props {
-  adminData: PulsePressAdminData;
+  adminData: MoonfarmerReactionsLeadCaptureAdminData;
 }
 
 type Status = 'loading' | 'ready' | 'error';
@@ -78,24 +78,24 @@ export function AnalyticsSection({ adminData }: Props) {
 
   if (status === 'loading') {
     return (
-      <section class="pulsepress-section" aria-busy="true">
-        <header class="pulsepress-section__header">
+      <section class="moonfarmer-reactions-lead-capture-section" aria-busy="true">
+        <header class="moonfarmer-reactions-lead-capture-section__header">
           <h2>{adminData.i18n.sections.analyticsTitle}</h2>
-          <p class="pulsepress-section__helper">{adminData.i18n.sections.analyticsHelper}</p>
+          <p class="moonfarmer-reactions-lead-capture-section__helper">{adminData.i18n.sections.analyticsHelper}</p>
         </header>
-        <p class="pulsepress-loading-skeleton">{i18n.loadingState}</p>
+        <p class="moonfarmer-reactions-lead-capture-loading-skeleton">{i18n.loadingState}</p>
       </section>
     );
   }
 
   if (status === 'error' || data === null) {
     return (
-      <section class="pulsepress-section">
-        <header class="pulsepress-section__header">
+      <section class="moonfarmer-reactions-lead-capture-section">
+        <header class="moonfarmer-reactions-lead-capture-section__header">
           <h2>{adminData.i18n.sections.analyticsTitle}</h2>
         </header>
-        <p role="alert" class="pulsepress-error">{error ?? i18n.errorState}</p>
-        <button type="button" class="pulsepress-submit" onClick={() => void load()}>{i18n.retry}</button>
+        <p role="alert" class="moonfarmer-reactions-lead-capture-error">{error ?? i18n.errorState}</p>
+        <button type="button" class="moonfarmer-reactions-lead-capture-submit" onClick={() => void load()}>{i18n.retry}</button>
       </section>
     );
   }
@@ -109,25 +109,25 @@ export function AnalyticsSection({ adminData }: Props) {
     : i18n.sentimentInsightFallback;
 
   return (
-    <section class="pulsepress-section" aria-labelledby="pulsepress-section-analytics-title">
-      <header class="pulsepress-section__header">
-        <h2 id="pulsepress-section-analytics-title">{adminData.i18n.sections.analyticsTitle}</h2>
-        <p class="pulsepress-section__helper">
+    <section class="moonfarmer-reactions-lead-capture-section" aria-labelledby="moonfarmer-reactions-lead-capture-section-analytics-title">
+      <header class="moonfarmer-reactions-lead-capture-section__header">
+        <h2 id="moonfarmer-reactions-lead-capture-section-analytics-title">{adminData.i18n.sections.analyticsTitle}</h2>
+        <p class="moonfarmer-reactions-lead-capture-section__helper">
           {adminData.i18n.sections.analyticsHelper}
           {data.clamped && (
             <>
               {' '}
-              <span class="pulsepress-clamped-notice">{i18n.clampedNotice}</span>
+              <span class="moonfarmer-reactions-lead-capture-clamped-notice">{i18n.clampedNotice}</span>
             </>
           )}
         </p>
       </header>
 
       {isEmpty ? (
-        <p class="pulsepress-empty-state">{i18n.emptyState}</p>
+        <p class="moonfarmer-reactions-lead-capture-empty-state">{i18n.emptyState}</p>
       ) : (
-        <div class="pulsepress-section__body">
-          <div class="pulsepress-metric-grid">
+        <div class="moonfarmer-reactions-lead-capture-section__body">
+          <div class="moonfarmer-reactions-lead-capture-metric-grid">
             <MetricCard title={i18n.totalReactionsLabel} value={formatInt(data.totalReactions)} helper={i18n.totalReactionsHelper} emphasis />
             <MetricCard title={i18n.totalCapturesLabel}  value={formatInt(data.totalCaptures)}  helper={i18n.totalCapturesHelper} />
             <MetricCard title={i18n.sentimentRateLabel}  value={formatPercent(data.sentimentRate, '—')} helper={i18n.sentimentRateHelper} />
@@ -139,15 +139,15 @@ export function AnalyticsSection({ adminData }: Props) {
             ))}
           </div>
 
-          <p class="pulsepress-insight" role="status">{sentimentInsight}</p>
+          <p class="moonfarmer-reactions-lead-capture-insight" role="status">{sentimentInsight}</p>
 
           {LazyChart !== null
             ? <LazyChart series={data.dailySeries} from={data.from} to={data.to} i18n={i18n} />
-            : <div class="pulsepress-skeleton pulsepress-skeleton--chart" role="status" aria-live="polite" aria-label={i18n.loadingState} />}
+            : <div class="moonfarmer-reactions-lead-capture-skeleton moonfarmer-reactions-lead-capture-skeleton--chart" role="status" aria-live="polite" aria-label={i18n.loadingState} />}
 
           {LazyTable !== null
             ? <LazyTable rows={data.topPosts} titles={data.postTitles} i18n={i18n} />
-            : <div class="pulsepress-skeleton pulsepress-skeleton--table" role="status" aria-live="polite" aria-label={i18n.loadingState} />}
+            : <div class="moonfarmer-reactions-lead-capture-skeleton moonfarmer-reactions-lead-capture-skeleton--table" role="status" aria-live="polite" aria-label={i18n.loadingState} />}
 
           {adminData.analyticsPanels.map((panel) => (
             <ExtensionMount

@@ -1,6 +1,6 @@
 ## Context
 
-The widget today decides whether to render based on a single check in `WidgetServiceProvider::maybeAppendWidget`: `is_singular()` + `pulsepress_widget_auto_insert($default, $postType)`. Block and shortcode render unconditionally as long as the post is public. There is no per-post escape hatch and no "Pages should never see the widget, even via shortcode" hard rule.
+The widget today decides whether to render based on a single check in `WidgetServiceProvider::maybeAppendWidget`: `is_singular()` + `moonfarmer_reactions_lead_capture_widget_auto_insert($default, $postType)`. Block and shortcode render unconditionally as long as the post is public. There is no per-post escape hatch and no "Pages should never see the widget, even via shortcode" hard rule.
 
 The precedence rule from gap 8 D3 is:
 
@@ -33,8 +33,8 @@ The cleanest way to enforce this consistently is a single resolver that every re
 ### D1. Precedence rules, explicit
 
 ```
-mode = get_post_meta($postId, '_pulsepress_widget_state', true) ?: 'auto';
-mode = apply_filters('pulsepress_visibility_mode', $mode, $postId, $context);
+mode = get_post_meta($postId, '_moonfarmer_reactions_lead_capture_widget_state', true) ?: 'auto';
+mode = apply_filters('moonfarmer_reactions_lead_capture_visibility_mode', $mode, $postId, $context);
 
 if ($mode === 'off') return false;
 if ($mode === 'on')  return true;  // explicit on beats hide-on list
@@ -52,7 +52,7 @@ return match ($context) {
 
 ### D2. Meta key naming and storage
 
-`_pulsepress_widget_state` (leading underscore so WordPress hides it from the default Custom Fields meta box). Value is a string: `'auto'`, `'on'`, or `'off'`. Missing/empty is treated as `'auto'`.
+`_moonfarmer_reactions_lead_capture_widget_state` (leading underscore so WordPress hides it from the default Custom Fields meta box). Value is a string: `'auto'`, `'on'`, or `'off'`. Missing/empty is treated as `'auto'`.
 
 Registered via `register_post_meta` for every public post type with:
 
@@ -71,7 +71,7 @@ Bound as a singleton in `AdminServiceProvider::register()` (or a new tiny provid
 
 ### D4. Meta box renders on every public post type
 
-The meta box appears on every `get_post_types(['public' => true])` post type by default. The `pulsepress_meta_box_post_types` filter lets a site narrow or extend the list (e.g., exclude `attachment`).
+The meta box appears on every `get_post_types(['public' => true])` post type by default. The `moonfarmer_reactions_lead_capture_meta_box_post_types` filter lets a site narrow or extend the list (e.g., exclude `attachment`).
 
 ### D5. Dynamic post-type choices for the admin SPA
 
@@ -96,7 +96,7 @@ When the resolver returns false, the block and shortcode return an empty string.
 - **Risk**: A post is saved with `'on'` for a post type that's later added to "Never show on" — the per-post override still wins. → Mitigation: this matches D1 by design. The admin can fix by editing the post meta.
 - **Risk**: `register_post_meta` for every public post type bloats the REST schema. → Mitigation: each registration is a tiny array entry; even 50 post types is < 5 KB of schema.
 - **Risk**: The meta box renders in the post editor sidebar but a Gutenberg-block-editor user uses the document-side panel for meta. → Mitigation: standard `add_meta_box` is rendered by Gutenberg in the right sidebar under "Block" → no special handling needed.
-- **Risk**: Filter `pulsepress_visibility_mode` lets Pro/3rd parties override the decision, including overriding the admin's explicit `'on'`/`'off'`. → Mitigation: documented. The filter is intended as a last-mile policy hook; admins should know that hooks beat their UI choices.
+- **Risk**: Filter `moonfarmer_reactions_lead_capture_visibility_mode` lets Pro/3rd parties override the decision, including overriding the admin's explicit `'on'`/`'off'`. → Mitigation: documented. The filter is intended as a last-mile policy hook; admins should know that hooks beat their UI choices.
 - **Trade-off**: No bulk edit in the post list. Acceptable — meta-box per-post is enough for v1; bulk edit is a future polish.
 
 ## Migration Plan

@@ -1,4 +1,4 @@
-# PulsePress Brand And WordPress.org Assets
+# Moonfarmer Reactions Lead Capture Brand And WordPress.org Assets
 
 Source SVGs live in `source/`.
 

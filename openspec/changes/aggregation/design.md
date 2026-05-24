@@ -6,7 +6,7 @@ Gap decisions from `docs/gap-questions-and-session-tasks.md` set the constraints
 - **Gap 7** — analytics must define numerator, denominator, and time window per metric; daily aggregation uses the WordPress site timezone.
 - **No raw-event dashboard queries** — Session 9 reads only the daily aggregate table.
 
-The reactions table is the source. Each row carries `post_id`, `reaction_type`, `updated_at`. Aggregation buckets rows by site-local day and emits one row per `(date, post_id, reaction_type)` triple into `pulsepress_daily_agg`. The schema's UNIQUE KEY enforces upsert semantics; no read-then-write race.
+The reactions table is the source. Each row carries `post_id`, `reaction_type`, `updated_at`. Aggregation buckets rows by site-local day and emits one row per `(date, post_id, reaction_type)` triple into `moonfarmer_reactions_lead_capture_daily_agg`. The schema's UNIQUE KEY enforces upsert semantics; no read-then-write race.
 
 ## Goals / Non-Goals
 
@@ -47,17 +47,17 @@ Two implementations available conceptually: `WpCronScheduler` (ships in Free) an
 
 The cron handler computes `$date = (new DateTimeImmutable('yesterday', wp_timezone()))->modify('00:00:00')` and passes that into `Aggregator::aggregate()`. The handler runs at 02:00 site-local; "yesterday" at that hour reliably points to the previous day.
 
-The filter `apply_filters('pulsepress_aggregation_date', $date)` lets ops scripts rebuild a specific day:
+The filter `apply_filters('moonfarmer_reactions_lead_capture_aggregation_date', $date)` lets ops scripts rebuild a specific day:
 
 ```php
-add_filter('pulsepress_aggregation_date', fn() => new DateTimeImmutable('2026-05-10', wp_timezone()));
+add_filter('moonfarmer_reactions_lead_capture_aggregation_date', fn() => new DateTimeImmutable('2026-05-10', wp_timezone()));
 ```
 
 After one cron tick the override fires for that day, then the filter is removed and normal "yesterday" resumes.
 
 ### D3. `wp_timezone()` is the source of truth
 
-Site-local day boundaries come from `wp_timezone()`. The filter `pulsepress_aggregation_timezone` is exposed only for edge cases (multi-tenant networks); the default returns `wp_timezone()` directly.
+Site-local day boundaries come from `wp_timezone()`. The filter `moonfarmer_reactions_lead_capture_aggregation_timezone` is exposed only for edge cases (multi-tenant networks); the default returns `wp_timezone()` directly.
 
 The SQL boundary uses `DATE_FORMAT` rather than MySQL's `TIMEZONE` so the application controls the conversion:
 
@@ -81,7 +81,7 @@ This is the correct way to bucket "PST day Tuesday" given UTC timestamps in the 
 
 ```sql
 SELECT post_id, reaction_type, COUNT(*) AS c
-FROM <prefix>pulsepress_reactions
+FROM <prefix>moonfarmer_reactions_lead_capture_reactions
 WHERE updated_at >= %s AND updated_at < %s
 GROUP BY post_id, reaction_type
 ```
@@ -89,7 +89,7 @@ GROUP BY post_id, reaction_type
 For each result row:
 
 ```sql
-INSERT INTO <prefix>pulsepress_daily_agg
+INSERT INTO <prefix>moonfarmer_reactions_lead_capture_daily_agg
   (agg_date, post_id, reaction_type, count, updated_at)
 VALUES (%s, %d, %s, %d, %s)
 ON DUPLICATE KEY UPDATE
@@ -106,16 +106,16 @@ The UNIQUE KEY `(agg_date, post_id, reaction_type)` enforces uniqueness; the ups
 Registering with a static "next-run date" baked in would fail across days. The handler each fire:
 
 1. Computes the target date as "yesterday in site-local time".
-2. Filters via `pulsepress_aggregation_date`.
+2. Filters via `moonfarmer_reactions_lead_capture_aggregation_date`.
 3. Calls `Aggregator::aggregate($date)`.
 
 ### D6. Activation schedules the cron at 02:00 site-local
 
 ```php
-if (!$scheduler->isScheduled('pulsepress_aggregate_reactions')) {
+if (!$scheduler->isScheduled('moonfarmer_reactions_lead_capture_aggregate_reactions')) {
     $firstRun = (new DateTimeImmutable('today 02:00', wp_timezone()))
         ->modify('+1 day')->getTimestamp();
-    $scheduler->schedule('pulsepress_aggregate_reactions', 'daily', $firstRun);
+    $scheduler->schedule('moonfarmer_reactions_lead_capture_aggregate_reactions', 'daily', $firstRun);
 }
 ```
 
@@ -138,7 +138,7 @@ Returned from `aggregate()` so the after-action hook can include timing for tele
 
 ### D8. Failure mode: log and continue
 
-If the SELECT fails, the aggregator logs via `error_log('[PulsePress] aggregation failed: …')` and returns an AggregationResult with zero counts. The cron does not re-run automatically; the next daily fire picks up. Manual recovery via the `pulsepress_aggregation_date` filter + a fresh cron run.
+If the SELECT fails, the aggregator logs via `error_log('[Moonfarmer Reactions Lead Capture] aggregation failed: …')` and returns an AggregationResult with zero counts. The cron does not re-run automatically; the next daily fire picks up. Manual recovery via the `moonfarmer_reactions_lead_capture_aggregation_date` filter + a fresh cron run.
 
 ### D9. No PII in aggregates
 
@@ -148,7 +148,7 @@ The SELECT explicitly excludes `user_hash`. The aggregate row has no traceable v
 
 - **Risk**: a DST transition makes a 25-hour or 23-hour day. → Mitigation: site-local bounds correctly handle this — the `+1 day` modify operates in `wp_timezone()` so the conversion to UTC straddles the DST shift naturally.
 - **Risk**: WP-Cron is unreliable on low-traffic sites. → Mitigation: documented in Session 4 — same caveat applies. A future session can add a "Set up real cron" hint in the admin.
-- **Risk**: site admin manually edits a row in `pulsepress_daily_agg`. → Mitigation: the next aggregation overwrites — counts are derived, not source-of-truth.
+- **Risk**: site admin manually edits a row in `moonfarmer_reactions_lead_capture_daily_agg`. → Mitigation: the next aggregation overwrites — counts are derived, not source-of-truth.
 - **Risk**: the aggregator runs while a write is in flight; the count is off by one. → Mitigation: write skew of ±1 is acceptable for analytics. The day's bucket converges within seconds when the in-flight write commits.
 - **Risk**: aggregation runs forever on a site with millions of reactions per day. → Mitigation: the GROUP BY uses the `idx_updated` index; on a 1M-row daily window the query is sub-second. If needed, a future session can chunk by post id ranges.
 - **Trade-off**: no "incremental aggregation" within a day. We re-aggregate the full day each run. Acceptable — once per day, mostly idle.

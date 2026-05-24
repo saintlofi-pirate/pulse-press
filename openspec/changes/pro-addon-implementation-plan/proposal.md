@@ -1,6 +1,6 @@
 ## Why
 
-PulsePress Free now has a real WordPress.org package path and a documented extension surface. Before building paid features, Pro needs a concrete implementation plan that aligns with Free instead of drifting into internal coupling.
+Moonfarmer Reactions Lead Capture Free now has a real WordPress.org package path and a documented extension surface. Before building paid features, Pro needs a concrete implementation plan that aligns with Free instead of drifting into internal coupling.
 
 The existing `docs/pro-roadmap.md` captures product direction and feature sketches. This change adds the engineering execution plan: separate repo shape, bootstrap contract, Free hook reuse map, Pro-owned storage, service providers, feature sessions, validation matrix, and release coordination.
 
@@ -14,7 +14,7 @@ The existing `docs/pro-roadmap.md` captures product direction and feature sketch
 
 ## Out Of Scope
 
-- Creating the private `pulsepress-pro` repo.
+- Creating the private `moonfarmer-reactions-lead-capture-pro` repo.
 - Implementing Pro code.
 - Choosing the first ESP provider or license server vendor.
 - Changing Free hooks in this slice.

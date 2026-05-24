@@ -1,4 +1,4 @@
-# PulsePress Gap Questions And Session Tasks
+# Moonfarmer Reactions Lead Capture Gap Questions And Session Tasks
 
 This document turns the open gaps into decision questions with recommended answers. It also splits the build into small sessions so future Codex or Claude runs can stay focused and avoid burning a large weekly token/session budget.
 
@@ -8,7 +8,7 @@ This document turns the open gaps into decision questions with recommended answe
 - Accept the recommended answer unless there is a strong reason to change it.
 - Keep each implementation session to one slice from the task list.
 - Start each coding session by reading only:
-  - `docs/pulsepress-v1-plan.md`
+  - `docs/moonfarmer-reactions-lead-capture-v1-plan.md`
   - this file's current slice
   - the directly relevant code files
 - Promote a slice into an OpenSpec change when it changes API, schema, analytics, privacy, or the Free/Pro boundary.
@@ -126,7 +126,7 @@ Recommended answer:
 2. Block attributes override post and global settings for that block.
 3. Post-level settings override global settings.
 4. Global settings apply as the fallback.
-5. Auto-insert should skip posts that already contain the PulsePress block or shortcode.
+5. Auto-insert should skip posts that already contain the Moonfarmer Reactions Lead Capture block or shortcode.
 
 Decision: no duplicate widgets from auto-insert.
 
@@ -161,7 +161,7 @@ Decision: add these as v1 non-goals to prevent scope creep.
 
 These were confirmed on 2026-05-12:
 
-1. PulsePress Pro is a separate addon plugin.
+1. Moonfarmer Reactions Lead Capture Pro is a separate addon plugin.
 2. WP-Cron is acceptable for v1 aggregation, with Action Scheduler support later.
 3. Raw reactions are kept indefinitely by default, with optional pruning.
 4. Email capture requires an explicit checkbox.
@@ -177,9 +177,9 @@ Goal: create the minimal plugin skeleton using `wp-plugin-matrix` selectively.
 
 Scope:
 
-- Copy/adapt the starter's plugin entry shape into `pulsepress.php`.
-- Rename constants from `WP_PLUGIN_MATRIX_*` to `PULSEPRESS_*`.
-- Rename namespace from `WPPluginMatrix` to `PulsePress`.
+- Copy/adapt the starter's plugin entry shape into `moonfarmer-reactions-lead-capture.php`.
+- Rename constants from `WP_PLUGIN_MATRIX_*` to `MOONFARMER_REACTIONS_LEAD_CAPTURE_*`.
+- Rename namespace from `WPPluginMatrix` to `Moonfarmer Reactions Lead Capture`.
 - Keep Composer PSR-4 autoloading.
 - Keep a slim service provider/bootstrap pattern.
 - Keep activation/deactivation hooks.
@@ -191,7 +191,7 @@ Verification:
 - `composer dump-autoload` if Composer is introduced.
 - PHP syntax check on touched PHP files.
 - Confirm plugin appears in WP admin if local WP is available.
-- Confirm no remaining `WPPluginMatrix`, `WP_PLUGIN_MATRIX`, `wp-plugin-matrix`, or starter demo labels remain in PulsePress-owned files.
+- Confirm no remaining `WPPluginMatrix`, `WP_PLUGIN_MATRIX`, `wp-plugin-matrix`, or starter demo labels remain in Moonfarmer Reactions Lead Capture-owned files.
 
 ### Session 1: Schema And Migrations
 
@@ -199,8 +199,8 @@ Goal: create safe database installation and versioning.
 
 Scope:
 
-- Migration service adapted from the starter, but with PulsePress table names and safer versioning.
-- `pulsepress_db_version` option.
+- Migration service adapted from the starter, but with Moonfarmer Reactions Lead Capture table names and safer versioning.
+- `moonfarmer_reactions_lead_capture_db_version` option.
 - Three custom tables.
 - Indexes for post/date/reaction/hash lookups.
 - Uninstall behavior setting placeholder.
@@ -220,8 +220,8 @@ Goal: make reaction writes and counts work.
 
 Scope:
 
-- `POST /pulsepress/v1/react`.
-- `GET /pulsepress/v1/counts/{post_id}`.
+- `POST /moonfarmer-reactions-lead-capture/v1/react`.
+- `GET /moonfarmer-reactions-lead-capture/v1/counts/{post_id}`.
 - Nonce validation.
 - Dedup/replacement semantics.
 - Transient count cache invalidation.
@@ -263,7 +263,7 @@ Goal: save consented captures safely.
 
 Scope:
 
-- `POST /pulsepress/v1/capture`.
+- `POST /moonfarmer-reactions-lead-capture/v1/capture`.
 - Consent fields.
 - Email validation.
 - Capture table writes.
@@ -298,7 +298,7 @@ Verification:
 
 Goal: expose core Free settings through a smooth SPA-style admin page on par with the best WP-ecosystem plugins, with a live widget preview that updates as the admin tunes settings.
 
-Design bar (full spec in `pulsepress-v1-plan.md` §Admin UI Design Direction): Preact SPA shell mounted in wp-admin; hash-routed tabs; optimistic REST-based field saves with inline status; cards over tables; one accent; sentence case; system font; 150–200 ms motion; `prefers-reduced-motion` respected; `@wordpress/components` reskinned via CSS variables; designed empty/loading states; visible focus rings; WCAG 2.1 AA; no nag bars; restrained upgrade card.
+Design bar (full spec in `moonfarmer-reactions-lead-capture-v1-plan.md` §Admin UI Design Direction): Preact SPA shell mounted in wp-admin; hash-routed tabs; optimistic REST-based field saves with inline status; cards over tables; one accent; sentence case; system font; 150–200 ms motion; `prefers-reduced-motion` respected; `@wordpress/components` reskinned via CSS variables; designed empty/loading states; visible focus rings; WCAG 2.1 AA; no nag bars; restrained upgrade card.
 
 **Live widget preview is non-negotiable** — a side-by-side panel re-renders the `ReactionBar` component with the in-flight settings (icon preset, design preset, theme, reactions, labels, count visibility) on every change. The preview reuses the same Preact component the front-end ships, so configuration drift between admin and front end is impossible by construction. Preview interactions are muted (no REST write, no localStorage). Mock counts make the preview legible at all settings.
 
@@ -307,14 +307,14 @@ Scope:
 - Count visibility (always / never / threshold).
 - Threshold value.
 - Widget design preset (Minimal / Expressive).
-- **Icon style preset (Classic outline / Emoji)** — exposed to JS via `pulsepress_widget_icons` filter so Pro can plug in additional presets without code changes.
+- **Icon style preset (Classic outline / Emoji)** — exposed to JS via `moonfarmer_reactions_lead_capture_widget_icons` filter so Pro can plug in additional presets without code changes.
 - Positive reactions (which types trigger the future capture UI).
 - Auto-insert post types (checkbox list of public post types).
 - Auto-insert position (above / below / both).
 - Theme mode (light / dark / auto via `prefers-color-scheme`).
 - Data retention / uninstall options (already-reserved option keys).
 - **Allow guest reactions toggle** — when off, `/react` permission callback adds `is_user_logged_in()`.
-- **Per-post override meta box** on the post editor (Auto / Force on / Force off). Saved as `_pulsepress_widget_state` post meta. Display precedence: post-level wins over global auto-insert settings (gap 8 D1).
+- **Per-post override meta box** on the post editor (Auto / Force on / Force off). Saved as `_moonfarmer_reactions_lead_capture_widget_state` post meta. Display precedence: post-level wins over global auto-insert settings (gap 8 D1).
 - Reskin starter admin menu / page pattern is acceptable only if it lands lighter than a custom page. Otherwise build a custom page that honours the design bar.
 - Prefer WordPress-native components over Element Plus. Style via CSS variables, never inline overrides.
 
@@ -327,7 +327,7 @@ Verification:
 - Per-post override beats global auto-insert in every combination.
 - Disabling "Allow guest reactions" causes anonymous `POST /react` to return 401.
 - Frontend respects every setting (theme, position, icon style, auto-insert post types).
-- Admin assets load only on PulsePress admin pages and on the post editor screen where the meta box renders.
+- Admin assets load only on Moonfarmer Reactions Lead Capture admin pages and on the post editor screen where the meta box renders.
 - Visible focus rings on every interactive control; tab order matches visual order; `prefers-reduced-motion` disables transitions.
 - Settings page renders cleanly at 1280px and 2560px widths; no horizontal scrollbars at common breakpoints.
 
@@ -338,8 +338,8 @@ Goal: ship the Emoji icon preset alongside Classic and let admins switch via Set
 Scope:
 
 - Extract `resources/widget/icons.ts` into a presets map: `{ classic: {love: '<svg…>', …}, emoji: {love: '❤️', …} }`.
-- Add a `pulsepress_widget_icons` filter that lets PHP override icon strings before they reach JS through `pulsepress_widget_data`. Pro plugs in two more presets here.
-- JS chooses preset based on `PulsePressData.iconStyle`, default `'classic'`.
+- Add a `moonfarmer_reactions_lead_capture_widget_icons` filter that lets PHP override icon strings before they reach JS through `moonfarmer_reactions_lead_capture_widget_data`. Pro plugs in two more presets here.
+- JS chooses preset based on `MoonfarmerReactionsLeadCaptureData.iconStyle`, default `'classic'`.
 - Settings UI shows a card-based preset picker (visual preview thumbnails, not a dropdown) styled to the admin design bar.
 
 OpenSpec: covered under Session 6's settings change; no separate spec needed.
@@ -357,7 +357,7 @@ Goal: support manual placement.
 Scope:
 
 - Gutenberg block.
-- `[pulsepress]` shortcode.
+- `[moonfarmer-reactions-lead-capture]` shortcode.
 - Attribute parity.
 - Display precedence.
 - Auto-insert duplicate detection.

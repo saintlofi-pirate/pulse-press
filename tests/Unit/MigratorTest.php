@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
 
-use PulsePress\Database\Migrator;
-use PulsePress\Database\Schema;
+use Moonfarmer\ReactionsLeadCapture\Database\Migrator;
+use Moonfarmer\ReactionsLeadCapture\Database\Schema;
 use Tests\Stubs\DbDeltaSpy;
 use Tests\Stubs\ErrorLogSpy;
 use Tests\Stubs\OptionStore;
@@ -12,9 +12,9 @@ function pp_migrator_with_existing_tables(): Migrator
 {
     $wpdb = new WpdbStub();
     $wpdb->existingTables = [
-        'wp_pulsepress_reactions'  => null,
-        'wp_pulsepress_captures'   => null,
-        'wp_pulsepress_daily_agg'  => null,
+        'wp_moonfarmer_reactions_lead_capture_reactions'  => null,
+        'wp_moonfarmer_reactions_lead_capture_captures'   => null,
+        'wp_moonfarmer_reactions_lead_capture_daily_agg'  => null,
     ];
     return new Migrator($wpdb, new Schema());
 }
@@ -53,9 +53,9 @@ it('does not bump the version when a declared table is missing post-flight', fun
 
     $wpdb = new WpdbStub();
     $wpdb->existingTables = [
-        'wp_pulsepress_reactions' => null,
+        'wp_moonfarmer_reactions_lead_capture_reactions' => null,
         // captures intentionally missing
-        'wp_pulsepress_daily_agg' => null,
+        'wp_moonfarmer_reactions_lead_capture_daily_agg' => null,
     ];
     $migrator = new Migrator($wpdb, new Schema());
 
@@ -64,7 +64,7 @@ it('does not bump the version when a declared table is missing post-flight', fun
     expect($result)->toBeFalse();
     expect(OptionStore::get(Migrator::VERSION_OPTION))->toBe('0');
     expect(ErrorLogSpy::messages())
-        ->toContain('[PulsePress] migration failed: missing table wp_pulsepress_captures');
+        ->toContain('[Moonfarmer Reactions Lead Capture] migration failed: missing table wp_moonfarmer_reactions_lead_capture_captures');
 });
 
 it('does not run dbDelta twice across two invocations in the same release', function () {

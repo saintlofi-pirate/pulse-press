@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-use PulsePress\Analytics\WpCronScheduler;
+use Moonfarmer\ReactionsLeadCapture\Analytics\WpCronScheduler;
 use Tests\Stubs\CronSpy;
 
 it('schedules an event via wp_schedule_event', function () {

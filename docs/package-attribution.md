@@ -1,15 +1,15 @@
 # Package Attribution
 
-PulsePress Free ships under GPL-2.0-or-later.
+Moonfarmer Reactions Lead Capture Free ships under GPL-2.0-or-later.
 
 ## Runtime PHP
 
-- PulsePress PHP source: GPL-2.0-or-later.
+- Moonfarmer Reactions Lead Capture PHP source: GPL-2.0-or-later.
 - Composer production autoload files: generated from Composer metadata during packaging.
 
 ## Runtime JavaScript
 
-- PulsePress admin and widget source: GPL-2.0-or-later.
+- Moonfarmer Reactions Lead Capture admin and widget source: GPL-2.0-or-later.
 - Preact: MIT license. Bundled into the Vite output and compatible with GPL-2.0-or-later distribution.
 
 ## Development-Only Dependencies

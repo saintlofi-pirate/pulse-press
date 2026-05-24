@@ -1,26 +1,26 @@
 <?php
 declare(strict_types=1);
 
-use PulsePress\Core\Application;
-use PulsePress\Providers\WidgetServiceProvider;
-use PulsePress\Settings\Settings;
-use PulsePress\Settings\SettingsRepository;
-use PulsePress\View\Manifest;
-use PulsePress\Visibility\VisibilityResolver;
+use Moonfarmer\ReactionsLeadCapture\Core\Application;
+use Moonfarmer\ReactionsLeadCapture\Providers\WidgetServiceProvider;
+use Moonfarmer\ReactionsLeadCapture\Settings\Settings;
+use Moonfarmer\ReactionsLeadCapture\Settings\SettingsRepository;
+use Moonfarmer\ReactionsLeadCapture\View\Manifest;
+use Moonfarmer\ReactionsLeadCapture\Visibility\VisibilityResolver;
 use Tests\Stubs\AssetSpy;
 use Tests\Stubs\FilterRegistry;
 use Tests\Stubs\OptionStore;
 use Tests\Stubs\PostRegistry;
 use Tests\Stubs\WpEnv;
 
-if (!defined('PULSEPRESS_DIR')) {
-    define('PULSEPRESS_DIR', __DIR__ . '/../../');
+if (!defined('MOONFARMER_REACTIONS_LEAD_CAPTURE_DIR')) {
+    define('MOONFARMER_REACTIONS_LEAD_CAPTURE_DIR', __DIR__ . '/../../');
 }
-if (!defined('PULSEPRESS_URL')) {
-    define('PULSEPRESS_URL', 'https://example.test/wp-content/plugins/pulse-press/');
+if (!defined('MOONFARMER_REACTIONS_LEAD_CAPTURE_URL')) {
+    define('MOONFARMER_REACTIONS_LEAD_CAPTURE_URL', 'https://example.test/wp-content/plugins/moonfarmer-reactions-lead-capture/');
 }
-if (!defined('PULSEPRESS_VERSION')) {
-    define('PULSEPRESS_VERSION', '0.1.0-test');
+if (!defined('MOONFARMER_REACTIONS_LEAD_CAPTURE_VERSION')) {
+    define('MOONFARMER_REACTIONS_LEAD_CAPTURE_VERSION', '0.1.0-test');
 }
 
 final class PpTestApplication extends Application
@@ -67,7 +67,7 @@ it('does not enqueue on non-singular pages by default', function () {
 
 function pp_make_temp_manifest(array $entry): Manifest
 {
-    $dir  = sys_get_temp_dir() . '/pulsepress-widget-' . uniqid();
+    $dir  = sys_get_temp_dir() . '/moonfarmer-reactions-lead-capture-widget-' . uniqid();
     mkdir($dir, 0o777, true);
     $path = $dir . '/manifest.json';
     file_put_contents($path, json_encode(['resources/widget/index.ts' => $entry]));
@@ -95,11 +95,11 @@ it('enqueues script + style + data payload on a singular post when manifest reso
     expect($inline)->toHaveCount(1);
     expect($inline[0]['args']['position'])->toBe('before');
 
-    preg_match('/^window\.PulsePressData = (.*);$/', $inline[0]['args']['data'], $matches);
+    preg_match('/^window\.MoonfarmerReactionsLeadCaptureData = (.*);$/', $inline[0]['args']['data'], $matches);
     $data = json_decode($matches[1] ?? '{}', true);
 
     expect($data['postId'])->toBe(209);
-    expect($data['root'])->toBe('https://example.test/wp-json/pulsepress/v1/');
+    expect($data['root'])->toBe('https://example.test/wp-json/moonfarmer-reactions-lead-capture/v1/');
     expect($data['reactions'])->toBe(['love', 'insightful', 'funny', 'sad', 'surprised', 'angry']);
     expect($data['allowGuestReactions'])->toBeTrue();
     expect($data['countThreshold'])->toBe(5);
@@ -114,10 +114,10 @@ it('enqueues script + style + data payload on a singular post when manifest reso
     ]);
 });
 
-it('enqueues on non-singular pages when pulsepress_widget_enqueue is filtered true', function () {
+it('enqueues on non-singular pages when moonfarmer_reactions_lead_capture_widget_enqueue is filtered true', function () {
     WpEnv::setAdmin(false);
     WpEnv::setSingular(null);
-    FilterRegistry::addFilter('pulsepress_widget_enqueue', fn () => true);
+    FilterRegistry::addFilter('moonfarmer_reactions_lead_capture_widget_enqueue', fn () => true);
 
     $manifest = pp_make_temp_manifest(['file' => 'js/widget.abc.js']);
     $provider = pp_make_provider($manifest);
@@ -145,7 +145,7 @@ it('does not enqueue on a singular post hidden by settings', function () {
 it('enqueues on a singular page when it contains the shortcode', function () {
     WpEnv::setAdmin(false);
     WpEnv::setSingular('page', 88);
-    WpEnv::setPostContent('<p>Intro</p>[pulsepress]');
+    WpEnv::setPostContent('<p>Intro</p>[moonfarmer-reactions-lead-capture]');
     PostRegistry::register(88, 'publish', true, 'page');
     OptionStore::set(Settings::OPTION_NAME, ['auto_insert_post_types' => []]);
 
@@ -160,7 +160,7 @@ it('enqueues on a singular page when it contains the shortcode', function () {
 it('enqueues on a singular page when it contains the reactions block', function () {
     WpEnv::setAdmin(false);
     WpEnv::setSingular('page', 89);
-    WpEnv::setPostContent('<!-- wp:pulsepress/reactions /-->');
+    WpEnv::setPostContent('<!-- wp:moonfarmer-reactions-lead-capture/reactions /-->');
     PostRegistry::register(89, 'publish', true, 'page');
     OptionStore::set(Settings::OPTION_NAME, ['auto_insert_post_types' => []]);
 
@@ -180,8 +180,8 @@ it('appends the widget container to single-post content', function () {
     $result = $provider->maybeAppendWidget('<p>Body</p>');
 
     expect($result)->toContain('<p>Body</p>');
-    expect($result)->toContain('data-pulsepress-widget');
-    expect($result)->toContain('data-pulsepress-post-id="42"');
+    expect($result)->toContain('data-moonfarmer-reactions-lead-capture-widget');
+    expect($result)->toContain('data-moonfarmer-reactions-lead-capture-post-id="42"');
 });
 
 it('skips appending on non-singular contexts', function () {
@@ -194,10 +194,10 @@ it('skips appending on non-singular contexts', function () {
     expect($result)->toBe('<p>Body</p>');
 });
 
-it('skips appending when pulsepress_widget_auto_insert filters to false', function () {
+it('skips appending when moonfarmer_reactions_lead_capture_widget_auto_insert filters to false', function () {
     WpEnv::setAdmin(false);
     WpEnv::setSingular('post', 42);
-    FilterRegistry::addFilter('pulsepress_widget_auto_insert', fn () => false);
+    FilterRegistry::addFilter('moonfarmer_reactions_lead_capture_widget_auto_insert', fn () => false);
     $provider = pp_make_provider();
 
     $result = $provider->maybeAppendWidget('<p>Body</p>');

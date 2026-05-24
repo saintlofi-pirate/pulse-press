@@ -1,11 +1,11 @@
 import { ToggleField } from '../components/fields/ToggleField';
 import { StatusPill } from '../components/StatusPill';
 import type { UseSettingsState } from '../hooks/useSettingsState';
-import type { PulsePressAdminData } from '../types';
+import type { MoonfarmerReactionsLeadCaptureAdminData } from '../types';
 
 interface Props {
   state: UseSettingsState;
-  adminData: PulsePressAdminData;
+  adminData: MoonfarmerReactionsLeadCaptureAdminData;
 }
 
 export function PrivacySection({ state, adminData }: Props) {
@@ -13,13 +13,13 @@ export function PrivacySection({ state, adminData }: Props) {
   const { settings, fieldStatus, errors, update } = state;
 
   return (
-    <section class="pulsepress-section" aria-labelledby="pulsepress-section-privacy-title">
-      <header class="pulsepress-section__header">
-        <h2 id="pulsepress-section-privacy-title">{i18n.sections.privacyTitle}</h2>
-        <p class="pulsepress-section__helper">{i18n.sections.privacyHelper}</p>
+    <section class="moonfarmer-reactions-lead-capture-section" aria-labelledby="moonfarmer-reactions-lead-capture-section-privacy-title">
+      <header class="moonfarmer-reactions-lead-capture-section__header">
+        <h2 id="moonfarmer-reactions-lead-capture-section-privacy-title">{i18n.sections.privacyTitle}</h2>
+        <p class="moonfarmer-reactions-lead-capture-section__helper">{i18n.sections.privacyHelper}</p>
       </header>
 
-      <div class="pulsepress-section__body">
+      <div class="moonfarmer-reactions-lead-capture-section__body">
         <ToggleField
           label={i18n.fields.deleteOnUninstallLabel}
           helper={i18n.fields.deleteOnUninstallHelper}

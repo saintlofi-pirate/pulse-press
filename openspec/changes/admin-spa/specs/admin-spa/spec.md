@@ -1,13 +1,13 @@
 ## ADDED Requirements
 
-### Requirement: Admin SPA mounts on the PulsePress settings screen
+### Requirement: Admin SPA mounts on the Moonfarmer Reactions Lead Capture settings screen
 
-The admin app SHALL mount into `<div id="pulsepress-admin">` on the WordPress page registered at `Settings → PulsePress` (slug `pulsepress`). The mount SHALL run on `DOMContentLoaded` (or immediately if already loaded). The JS bundle and CSS SHALL be enqueued only on that page; no other admin or front-end page SHALL include them.
+The admin app SHALL mount into `<div id="moonfarmer-reactions-lead-capture-admin">` on the WordPress page registered at `Settings → Moonfarmer Reactions Lead Capture` (slug `moonfarmer-reactions-lead-capture`). The mount SHALL run on `DOMContentLoaded` (or immediately if already loaded). The JS bundle and CSS SHALL be enqueued only on that page; no other admin or front-end page SHALL include them.
 
 #### Scenario: Mount on the settings page
 
-- **WHEN** an admin loads `/wp-admin/options-general.php?page=pulsepress`
-- **THEN** the page contains `<div id="pulsepress-admin">` populated by the Preact app, and the admin JS/CSS handles are enqueued
+- **WHEN** an admin loads `/wp-admin/options-general.php?page=moonfarmer-reactions-lead-capture`
+- **THEN** the page contains `<div id="moonfarmer-reactions-lead-capture-admin">` populated by the Preact app, and the admin JS/CSS handles are enqueued
 
 #### Scenario: No enqueue on other admin pages
 
@@ -19,19 +19,19 @@ The admin app SHALL mount into `<div id="pulsepress-admin">` on the WordPress pa
 - **WHEN** a visitor loads any front-end page
 - **THEN** the admin SPA assets are not enqueued (only the widget assets are)
 
-### Requirement: PulsePressAdminData payload is localized
+### Requirement: MoonfarmerReactionsLeadCaptureAdminData payload is localized
 
-The plugin SHALL emit `window.PulsePressAdminData` via `wp_localize_script` on the admin page, containing at minimum: `restRoot` (REST URL ending in `/wp-json/pulsepress/v1/`), `nonce` (`wp_create_nonce('wp_rest')`), `settings` (current effective settings), `defaults` (`Settings::DEFAULTS`), `choices` (`Settings::CHOICES`), `schemaVersion` (`Settings::SCHEMA_VERSION`), `reactions` (filtered Reactions::TYPES), `version` (plugin version), and `i18n` (UI strings). The payload SHALL pass through `apply_filters('pulsepress_admin_data', $payload)` before emission.
+The plugin SHALL emit `window.MoonfarmerReactionsLeadCaptureAdminData` via `wp_localize_script` on the admin page, containing at minimum: `restRoot` (REST URL ending in `/wp-json/moonfarmer-reactions-lead-capture/v1/`), `nonce` (`wp_create_nonce('wp_rest')`), `settings` (current effective settings), `defaults` (`Settings::DEFAULTS`), `choices` (`Settings::CHOICES`), `schemaVersion` (`Settings::SCHEMA_VERSION`), `reactions` (filtered Reactions::TYPES), `version` (plugin version), and `i18n` (UI strings). The payload SHALL pass through `apply_filters('moonfarmer_reactions_lead_capture_admin_data', $payload)` before emission.
 
 #### Scenario: Payload contains the settings and choices
 
 - **WHEN** the admin page loads
-- **THEN** `PulsePressAdminData.settings.icon_style` is a string, `PulsePressAdminData.choices.icon_style` is `['classic', 'emoji']`, and `PulsePressAdminData.schemaVersion` is an integer
+- **THEN** `MoonfarmerReactionsLeadCaptureAdminData.settings.icon_style` is a string, `MoonfarmerReactionsLeadCaptureAdminData.choices.icon_style` is `['classic', 'emoji']`, and `MoonfarmerReactionsLeadCaptureAdminData.schemaVersion` is an integer
 
 #### Scenario: Filter can extend the payload
 
-- **WHEN** a plugin registers `add_filter('pulsepress_admin_data', fn($d) => $d + ['proLicense' => '…'])`
-- **THEN** `PulsePressAdminData.proLicense` equals `'…'` on the rendered page
+- **WHEN** a plugin registers `add_filter('moonfarmer_reactions_lead_capture_admin_data', fn($d) => $d + ['proLicense' => '…'])`
+- **THEN** `MoonfarmerReactionsLeadCaptureAdminData.proLicense` equals `'…'` on the rendered page
 
 ### Requirement: Hash-routed tabs
 
@@ -44,7 +44,7 @@ The SPA SHALL implement four tabs — `display`, `reactions`, `capture`, `privac
 
 #### Scenario: Deep-linking to a tab
 
-- **WHEN** the admin loads `?page=pulsepress#capture`
+- **WHEN** the admin loads `?page=moonfarmer-reactions-lead-capture#capture`
 - **THEN** the `capture` tab is active and its panel is visible
 
 #### Scenario: Keyboard arrow navigation
@@ -64,7 +64,7 @@ The SPA SHALL implement four tabs — `display`, `reactions`, `capture`, `privac
 
 ### Requirement: Optimistic settings update with rollback on failure
 
-When the admin toggles a control, the local state SHALL apply the change immediately, then fire `POST /pulsepress/v1/settings`. On success, the server response SHALL replace local state and a transient "Saved" pill SHALL render near the field for ~1.5 seconds. On failure, local state SHALL roll back and an inline error SHALL render with `role="alert"` until the next save or until the field is changed again.
+When the admin toggles a control, the local state SHALL apply the change immediately, then fire `POST /moonfarmer-reactions-lead-capture/v1/settings`. On success, the server response SHALL replace local state and a transient "Saved" pill SHALL render near the field for ~1.5 seconds. On failure, local state SHALL roll back and an inline error SHALL render with `role="alert"` until the next save or until the field is changed again.
 
 #### Scenario: Successful save
 
@@ -127,19 +127,19 @@ Each section SHALL include a "Reset to defaults" affordance at the bottom that P
 
 ### Requirement: WordPress admin menu page registered
 
-The plugin SHALL register a WordPress submenu under "Settings → PulsePress" via `add_options_page('PulsePress', 'PulsePress', 'manage_options', 'pulsepress', $callback)`. The callback SHALL output `<div class="wrap"><div id="pulsepress-admin">Loading…</div></div>` so the SPA can mount into `#pulsepress-admin`. The callback SHALL be defined in `AdminServiceProvider` (moved from `SettingsServiceProvider`) so asset enqueue and page output live in the same provider.
+The plugin SHALL register a WordPress submenu under "Settings → Moonfarmer Reactions Lead Capture" via `add_options_page('Moonfarmer Reactions Lead Capture', 'Moonfarmer Reactions Lead Capture', 'manage_options', 'moonfarmer-reactions-lead-capture', $callback)`. The callback SHALL output `<div class="wrap"><div id="moonfarmer-reactions-lead-capture-admin">Loading…</div></div>` so the SPA can mount into `#moonfarmer-reactions-lead-capture-admin`. The callback SHALL be defined in `AdminServiceProvider` (moved from `SettingsServiceProvider`) so asset enqueue and page output live in the same provider.
 
 #### Scenario: Menu appears for admins
 
 - **WHEN** an admin loads `/wp-admin/options-general.php`
-- **THEN** a submenu item labelled "PulsePress" exists linking to `/wp-admin/options-general.php?page=pulsepress`
+- **THEN** a submenu item labelled "Moonfarmer Reactions Lead Capture" exists linking to `/wp-admin/options-general.php?page=moonfarmer-reactions-lead-capture`
 
 #### Scenario: Page renders the SPA mount node
 
-- **WHEN** an admin loads `/wp-admin/options-general.php?page=pulsepress`
-- **THEN** the HTML contains `<div id="pulsepress-admin">Loading…</div>`
+- **WHEN** an admin loads `/wp-admin/options-general.php?page=moonfarmer-reactions-lead-capture`
+- **THEN** the HTML contains `<div id="moonfarmer-reactions-lead-capture-admin">Loading…</div>`
 
 #### Scenario: Page is not visible to non-admins
 
 - **WHEN** a non-admin loads `/wp-admin/`
-- **THEN** the "PulsePress" submenu item does not appear
+- **THEN** the "Moonfarmer Reactions Lead Capture" submenu item does not appear

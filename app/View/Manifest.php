@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace PulsePress\View;
+namespace Moonfarmer\ReactionsLeadCapture\View;
 
 
 if (!defined('ABSPATH')) {
@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) {
 
 final class Manifest
 {
-    public const CACHE_KEY = 'pulsepress_vite_manifest_v1';
+    public const CACHE_KEY = 'moonfarmer_reactions_lead_capture_vite_manifest_v1';
     public const CACHE_TTL = 86400;
 
     private string $manifestPath;

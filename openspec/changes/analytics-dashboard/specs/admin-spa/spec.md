@@ -2,7 +2,7 @@
 
 ### Requirement: Analytics tab renders metric cards, top posts, and daily chart
 
-The admin SPA SHALL register an **Analytics** tab as the second top-level tab (after Display, before Reactions) addressable via `#analytics`. The tab SHALL fetch `GET /pulsepress/v1/analytics/summary` on activation and render:
+The admin SPA SHALL register an **Analytics** tab as the second top-level tab (after Display, before Reactions) addressable via `#analytics`. The tab SHALL fetch `GET /moonfarmer-reactions-lead-capture/v1/analytics/summary` on activation and render:
 
 - Four metric cards in a responsive grid: Total reactions, Total captures, Sentiment %, Capture %. Each card is a `<section role="region" aria-labelledby="…">` with an `<h3>` title, a large number, and a one-line helper.
 - A top-posts `<table>` with `<caption class="screen-reader-only">`, four columns (`<th scope="col">`: Post / Total / Positive / Captures). Each row uses `<th scope="row">` for the post title.
@@ -17,7 +17,7 @@ The admin SPA SHALL register an **Analytics** tab as the second top-level tab (a
 #### Scenario: Tab fetches on activation
 
 - **WHEN** an admin clicks the Analytics tab for the first time
-- **THEN** a network request to `/wp-json/pulsepress/v1/analytics/summary` fires with no `from`/`to` parameters (using the 30-day default)
+- **THEN** a network request to `/wp-json/moonfarmer-reactions-lead-capture/v1/analytics/summary` fires with no `from`/`to` parameters (using the 30-day default)
 
 #### Scenario: Cards render with the right shape
 
@@ -71,5 +71,5 @@ The SPA SHALL implement five tabs — `display`, `analytics`, `reactions`, `capt
 
 #### Scenario: Deep-linking to analytics
 
-- **WHEN** the admin loads `?page=pulsepress#analytics`
+- **WHEN** the admin loads `?page=moonfarmer-reactions-lead-capture#analytics`
 - **THEN** the Analytics tab is active and its panel begins fetching summary data

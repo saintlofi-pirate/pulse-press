@@ -15,7 +15,7 @@ A secondary constraint: **partial activation must degrade gracefully**. If Pro d
 
 **Goals:**
 
-- One filter per injection point: `pulsepress_admin_tabs`, `pulsepress_admin_metric_cards`, `pulsepress_admin_analytics_panels`. Free reads each, serialises into the admin payload, and the SPA loops them.
+- One filter per injection point: `moonfarmer_reactions_lead_capture_admin_tabs`, `moonfarmer_reactions_lead_capture_admin_metric_cards`, `moonfarmer_reactions_lead_capture_admin_analytics_panels`. Free reads each, serialises into the admin payload, and the SPA loops them.
 - One JS registry per injection point: `registerTabRenderer / registerCardRenderer / registerPanelRenderer`. Pro registers its renderers synchronously when its bundle loads.
 - The registry is reactive: if Pro registers after Free has mounted, Free re-renders via a custom-event listener.
 - Defensive fallback: when a slot exists in the payload but no renderer is registered, the SPA renders a calm "This section is provided by another plugin that didn't load. Try refreshing the page." copy.
@@ -23,7 +23,7 @@ A secondary constraint: **partial activation must degrade gracefully**. If Pro d
 
 **Non-Goals:**
 
-- No `pulsepress_admin_settings_panels` filter. Settings fields rely on Free's form primitives (ToggleField, RadioField, etc.); the data plumbing for that is heavier than a render slot. Pro's settings fields are deferred — Pro can ship a custom tab via `pulsepress_admin_tabs` and render whatever it wants inside.
+- No `moonfarmer_reactions_lead_capture_admin_settings_panels` filter. Settings fields rely on Free's form primitives (ToggleField, RadioField, etc.); the data plumbing for that is heavier than a render slot. Pro's settings fields are deferred — Pro can ship a custom tab via `moonfarmer_reactions_lead_capture_admin_tabs` and render whatever it wants inside.
 - No bidirectional data flow. Free emits initial state via the payload; updates from Pro back into Free's state are out of scope (Pro communicates via its own REST endpoints).
 - No security boundary inside the SPA. Extension renderers run with the same privileges as Free's code — they're Pro's own code anyway, loaded by Pro's enqueue. Capability gating happens at Pro's REST routes.
 - No "extension marketplace". Each Pro plugin enqueues its own JS; there is no in-product discovery.
@@ -69,13 +69,13 @@ class ExtensionRegistry {
   getPanel = (id: string) => this.panels.get(id);
 
   private notify = () => {
-    window.dispatchEvent(new CustomEvent('pulsepress:extension-registered'));
+    window.dispatchEvent(new CustomEvent('moonfarmer-reactions-lead-capture:extension-registered'));
   };
 }
 
 // At the top of index.tsx, before mounting:
 const registry = new ExtensionRegistry();
-window.PulsePressAdmin = {
+window.MoonfarmerReactionsLeadCaptureAdmin = {
   registerTabRenderer:   registry.registerTabRenderer,
   registerCardRenderer:  registry.registerCardRenderer,
   registerPanelRenderer: registry.registerPanelRenderer,
@@ -106,13 +106,13 @@ export function ExtensionMount({ kind, id, data, fallback }: Props) {
   }, [renderer, id, data]);
 
   if (!renderer) {
-    return <div class="pulsepress-extension-fallback" role="status">{fallback ?? defaultFallback()}</div>;
+    return <div class="moonfarmer-reactions-lead-capture-extension-fallback" role="status">{fallback ?? defaultFallback()}</div>;
   }
-  return <div ref={ref} class="pulsepress-extension-mount" data-extension-id={id} data-extension-kind={kind} />;
+  return <div ref={ref} class="moonfarmer-reactions-lead-capture-extension-mount" data-extension-id={id} data-extension-kind={kind} />;
 }
 ```
 
-`useExtensionTick` is a Preact hook that increments on every `pulsepress:extension-registered` event, forcing components to re-evaluate `getRenderer`.
+`useExtensionTick` is a Preact hook that increments on every `moonfarmer-reactions-lead-capture:extension-registered` event, forcing components to re-evaluate `getRenderer`.
 
 ### D4. Tab order is `order` field, sorted ascending
 
@@ -129,7 +129,7 @@ interface ExtensionContext {
   id: string;
   kind: 'tab' | 'card' | 'panel';
   data: unknown; // the entry's `data` field from PHP (renderer-defined shape)
-  adminData: PulsePressAdminData; // full admin context (read-only — Pro shouldn't mutate)
+  adminData: MoonfarmerReactionsLeadCaptureAdminData; // full admin context (read-only — Pro shouldn't mutate)
 }
 ```
 
@@ -151,7 +151,7 @@ private function publicTabs(): array
         ['id' => 'capture',   'label' => $this->i18n()['tabs']['capture'],   'order' => 40],
         ['id' => 'privacy',   'label' => $this->i18n()['tabs']['privacy'],   'order' => 50],
     ];
-    $extra = (array) apply_filters('pulsepress_admin_tabs', []);
+    $extra = (array) apply_filters('moonfarmer_reactions_lead_capture_admin_tabs', []);
     $all   = $this->mergeById(array_merge($base, $extra));
     usort($all, fn ($a, $b) => $a['order'] <=> $b['order']);
     return $all;
@@ -194,7 +194,7 @@ The sentiment insight callout and the daily chart stay between Free's cards and 
 
 - **Risk**: Pro renderer throws → crashes Free's React tree. → Mitigation: ExtensionMount wraps the renderer call in a try/catch and logs to `console.error`. Falls back to the same "didn't load" copy. Pro's error doesn't take down Free.
 - **Risk**: Pro renders a memory-leaky component that doesn't clean up. → Mitigation: renderer protocol allows a cleanup return value; the example docs recommend Pro return its unmount function. Free invokes it on `useEffect` cleanup. Pro that doesn't cleanly unmount eventually shows up in profiles; documented gotcha.
-- **Risk**: Pro registers a card with the same `id` as a Free metric card. → Mitigation: Free's cards use names not in any Pro namespace (`total_reactions`, `total_captures`, `sentiment_rate`, `capture_rate`). Pro is expected to namespace (e.g. `pulsepresspro_compare`). No hard enforcement; would only mis-render Pro's card.
+- **Risk**: Pro registers a card with the same `id` as a Free metric card. → Mitigation: Free's cards use names not in any Pro namespace (`total_reactions`, `total_captures`, `sentiment_rate`, `capture_rate`). Pro is expected to namespace (e.g. `moonfarmer-reactions-lead-capturepro_compare`). No hard enforcement; would only mis-render Pro's card.
 - **Risk**: A Pro tab is registered via filter but never registers its JS renderer (Pro bundle failed). → Mitigation: that's exactly what the fallback UI is for. Admin sees "didn't load" and refreshes; if persistent, deactivates Pro.
 - **Risk**: Extension contexts grow over time (carrying more `adminData` fields than necessary). → Mitigation: `adminData` is already shallow; we don't deep-clone; Pro shouldn't mutate. Documented.
 - **Trade-off**: No settings-panels injection in this slice. Pro that wants to add settings fields ships its own tab. Acceptable for v1 Pro.
@@ -206,8 +206,8 @@ No data migration. Defaults preserve existing UI. Rollback is `git revert`.
 For deployment safety:
 
 1. Land the change.
-2. Visit Settings → PulsePress with no Pro plugin → confirm the SPA renders identically to today.
-3. Drop a hand-coded `mu-plugins/pulsepress-pro-mock.php` that registers an extra tab + metric card + analytics panel via the filters; load a small JS in the same file that calls `window.PulsePressAdmin.registerTabRenderer('test_tab', ...)`. Confirm the extra tab + card + panel render correctly.
+2. Visit Settings → Moonfarmer Reactions Lead Capture with no Pro plugin → confirm the SPA renders identically to today.
+3. Drop a hand-coded `mu-plugins/moonfarmer-reactions-lead-capture-pro-mock.php` that registers an extra tab + metric card + analytics panel via the filters; load a small JS in the same file that calls `window.MoonfarmerReactionsLeadCaptureAdmin.registerTabRenderer('test_tab', ...)`. Confirm the extra tab + card + panel render correctly.
 4. Deactivate the mock file → confirm the SPA returns to its baseline.
 
 ## Open Questions

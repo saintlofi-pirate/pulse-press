@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-use PulsePress\Captures\CaptureInput;
-use PulsePress\Captures\CaptureRecord;
-use PulsePress\Captures\CaptureRepository;
+use Moonfarmer\ReactionsLeadCapture\Captures\CaptureInput;
+use Moonfarmer\ReactionsLeadCapture\Captures\CaptureRecord;
+use Moonfarmer\ReactionsLeadCapture\Captures\CaptureRepository;
 use Tests\Stubs\WpdbStub;
 
 function pp_capture_input(string $email = 'reader@example.com', int $postId = 42): CaptureInput

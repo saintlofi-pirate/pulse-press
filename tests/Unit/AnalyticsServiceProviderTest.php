@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-use PulsePress\Analytics\Aggregator;
-use PulsePress\Analytics\AnalyticsRepository;
-use PulsePress\Analytics\MetricsCalculator;
-use PulsePress\Core\Application;
-use PulsePress\Providers\AnalyticsServiceProvider;
-use PulsePress\Reactions\ReactionRepository;
-use PulsePress\Settings\Settings;
-use PulsePress\Settings\SettingsRepository;
+use Moonfarmer\ReactionsLeadCapture\Analytics\Aggregator;
+use Moonfarmer\ReactionsLeadCapture\Analytics\AnalyticsRepository;
+use Moonfarmer\ReactionsLeadCapture\Analytics\MetricsCalculator;
+use Moonfarmer\ReactionsLeadCapture\Core\Application;
+use Moonfarmer\ReactionsLeadCapture\Providers\AnalyticsServiceProvider;
+use Moonfarmer\ReactionsLeadCapture\Reactions\ReactionRepository;
+use Moonfarmer\ReactionsLeadCapture\Settings\Settings;
+use Moonfarmer\ReactionsLeadCapture\Settings\SettingsRepository;
 use Tests\Stubs\FilterRegistry;
 use Tests\Stubs\OptionStore;
 use Tests\Stubs\WpdbStub;
@@ -38,12 +38,12 @@ it('keeps raw reactions when retention is disabled', function () {
 
     $provider->runScheduledAggregation();
 
-    $selects = array_filter($wpdb->queries, fn (string $query): bool => str_contains($query, 'FROM wp_pulsepress_reactions'));
-    $deletes = array_filter($wpdb->queries, fn (string $query): bool => str_contains($query, 'DELETE FROM wp_pulsepress_reactions'));
+    $selects = array_filter($wpdb->queries, fn (string $query): bool => str_contains($query, 'FROM wp_moonfarmer_reactions_lead_capture_reactions'));
+    $deletes = array_filter($wpdb->queries, fn (string $query): bool => str_contains($query, 'DELETE FROM wp_moonfarmer_reactions_lead_capture_reactions'));
 
     expect($selects)->not->toBeEmpty();
     expect($deletes)->toBeEmpty();
-    expect(FilterRegistry::actionCalls('pulsepress_reactions_retention_purged'))->toBeEmpty();
+    expect(FilterRegistry::actionCalls('moonfarmer_reactions_lead_capture_reactions_retention_purged'))->toBeEmpty();
 });
 
 it('purges raw reactions older than the saved retention window after aggregation', function () {
@@ -57,7 +57,7 @@ it('purges raw reactions older than the saved retention window after aggregation
 
     $delete = null;
     foreach ($wpdb->queries as $query) {
-        if (str_contains($query, 'DELETE FROM wp_pulsepress_reactions')) {
+        if (str_contains($query, 'DELETE FROM wp_moonfarmer_reactions_lead_capture_reactions')) {
             $delete = $query;
             break;
         }
@@ -65,7 +65,7 @@ it('purges raw reactions older than the saved retention window after aggregation
     expect($delete)->not->toBeNull();
     expect($delete)->toContain('updated_at <');
 
-    $calls = FilterRegistry::actionCalls('pulsepress_reactions_retention_purged');
+    $calls = FilterRegistry::actionCalls('moonfarmer_reactions_lead_capture_reactions_retention_purged');
     expect($calls)->toHaveCount(1);
     expect($calls[0][0])->toBe(6);
     expect($calls[0][1])->toBeInstanceOf(DateTimeImmutable::class);

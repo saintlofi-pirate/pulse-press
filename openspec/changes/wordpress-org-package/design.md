@@ -6,11 +6,11 @@ The release artifact is built from a temporary copy of the repository, not from 
 2. `npm run build`
 3. `composer install --no-dev --optimize-autoloader`
 4. prune any ignored files that were needed only for the build
-5. zip the remaining `pulsepress/` directory
+5. zip the remaining `moonfarmer-reactions-lead-capture/` directory
 
 Runtime files kept in the package:
 
-- `pulsepress.php`, `uninstall.php`, `index.php`, `readme.txt`, `license.txt`
+- `moonfarmer-reactions-lead-capture.php`, `uninstall.php`, `index.php`, `readme.txt`, `license.txt`
 - `app/`
 - `blocks/`
 - `dist/`
@@ -45,7 +45,7 @@ Final images are not generated in this slice because they require product taste/
 
 ## D4. License And Attribution
 
-PulsePress code is GPL-2.0-or-later. The package includes `license.txt` and `docs/package-attribution.md` records third-party dependencies reviewed for the Free package. The build uses Composer production install and Vite output so dev-only packages do not ship.
+Moonfarmer Reactions Lead Capture code is GPL-2.0-or-later. The package includes `license.txt` and `docs/package-attribution.md` records third-party dependencies reviewed for the Free package. The build uses Composer production install and Vite output so dev-only packages do not ship.
 
 ## D5. Verification
 

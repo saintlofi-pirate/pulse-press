@@ -1,6 +1,6 @@
-# PulsePress Pro Addon Implementation Plan
+# Moonfarmer Reactions Lead Capture Pro Addon Implementation Plan
 
-This is the build plan for `pulsepress-pro`, a separate paid addon that extends the Free plugin without modifying Free internals.
+This is the build plan for `moonfarmer-reactions-lead-capture-pro`, a separate paid addon that extends the Free plugin without modifying Free internals.
 
 Free remains the complete WordPress.org product. Pro adds automation, scale, deeper analysis, and agency controls by consuming the public Free hook/JS surface documented in `docs/hooks-and-filters.md`.
 
@@ -30,7 +30,7 @@ Free remains the complete WordPress.org product. Pro adds automation, scale, dee
 
 ### Pro Must Not
 
-- Fork, patch, or replace files inside `pulse-press/`.
+- Fork, patch, or replace files inside `moonfarmer-reactions-lead-capture/`.
 - Depend on Free private implementation classes unless Free explicitly promotes them as stable public API.
 - Store duplicate copies of Free reaction/capture rows.
 - Gate Free features behind a Pro license.
@@ -38,11 +38,11 @@ Free remains the complete WordPress.org product. Pro adds automation, scale, dee
 
 ## 2. Repository Shape
 
-Private repo: `pulsepress-pro`
+Private repo: `moonfarmer-reactions-lead-capture-pro`
 
 ```text
-pulsepress-pro/
-├── pulsepress-pro.php
+moonfarmer-reactions-lead-capture-pro/
+├── moonfarmer-reactions-lead-capture-pro.php
 ├── composer.json
 ├── package.json
 ├── vite.config.js
@@ -66,7 +66,7 @@ pulsepress-pro/
 └── openspec/
 ```
 
-Namespace: `PulsePressPro\`.
+Namespace: `Moonfarmer Reactions Lead CapturePro\`.
 
 Runtime PHP support: PHP 7.4 through 8.4, matching Free. Avoid PHP 8-only runtime syntax.
 
@@ -74,26 +74,26 @@ Runtime PHP support: PHP 7.4 through 8.4, matching Free. Avoid PHP 8-only runtim
 
 ### Plugin Header
 
-`pulsepress-pro.php`:
+`moonfarmer-reactions-lead-capture-pro.php`:
 
 ```php
 /**
- * Plugin Name:       PulsePress Pro
- * Description:       Provider sync, advanced analytics, A/B testing, and agency controls for PulsePress.
+ * Plugin Name:       Moonfarmer Reactions Lead Capture Pro
+ * Description:       Provider sync, advanced analytics, A/B testing, and agency controls for Moonfarmer Reactions Lead Capture.
  * Version:           0.1.0
  * Requires at least: 6.2
  * Requires PHP:      7.4
- * Requires Plugins:  pulse-press
- * Text Domain:       pulsepress-pro
+ * Requires Plugins:  moonfarmer-reactions-lead-capture
+ * Text Domain:       moonfarmer-reactions-lead-capture-pro
  */
 ```
 
 ### Load Sequence
 
 1. Exit if `ABSPATH` is not defined.
-2. Define Pro constants: `PULSEPRESS_PRO_VERSION`, `PULSEPRESS_PRO_FILE`, `PULSEPRESS_PRO_DIR`, `PULSEPRESS_PRO_URL`, `PULSEPRESS_PRO_BASENAME`.
+2. Define Pro constants: `MOONFARMER_REACTIONS_LEAD_CAPTURE_PRO_VERSION`, `MOONFARMER_REACTIONS_LEAD_CAPTURE_PRO_FILE`, `MOONFARMER_REACTIONS_LEAD_CAPTURE_PRO_DIR`, `MOONFARMER_REACTIONS_LEAD_CAPTURE_PRO_URL`, `MOONFARMER_REACTIONS_LEAD_CAPTURE_PRO_BASENAME`.
 3. Check PHP/WP floors.
-4. Check Free is active by verifying `defined('PULSEPRESS_VERSION')`.
+4. Check Free is active by verifying `defined('MOONFARMER_REACTIONS_LEAD_CAPTURE_VERSION')`.
 5. Check minimum Free version.
 6. Load Composer autoload.
 7. Boot Pro on `plugins_loaded` priority `20`, after Free boots at priority `5`.
@@ -102,16 +102,16 @@ Runtime PHP support: PHP 7.4 through 8.4, matching Free. Avoid PHP 8-only runtim
 
 Initial Pro requires the first Free version that contains:
 
-- `pulsepress_admin_tabs`
-- `pulsepress_admin_metric_cards`
-- `pulsepress_admin_analytics_panels`
-- `window.PulsePressAdmin.registerTabRenderer`
-- `window.PulsePressAdmin.registerCardRenderer`
-- `window.PulsePressAdmin.registerPanelRenderer`
-- `pulsepress_after_capture`
-- `pulsepress_after_aggregate`
-- `pulsepress_export_columns`
-- `pulsepress_analytics_max_days`
+- `moonfarmer_reactions_lead_capture_admin_tabs`
+- `moonfarmer_reactions_lead_capture_admin_metric_cards`
+- `moonfarmer_reactions_lead_capture_admin_analytics_panels`
+- `window.MoonfarmerReactionsLeadCaptureAdmin.registerTabRenderer`
+- `window.MoonfarmerReactionsLeadCaptureAdmin.registerCardRenderer`
+- `window.MoonfarmerReactionsLeadCaptureAdmin.registerPanelRenderer`
+- `moonfarmer_reactions_lead_capture_after_capture`
+- `moonfarmer_reactions_lead_capture_after_aggregate`
+- `moonfarmer_reactions_lead_capture_export_columns`
+- `moonfarmer_reactions_lead_capture_analytics_max_days`
 
 Until Free has a stable tagged release, Pro should use a constant like:
 
@@ -125,16 +125,16 @@ Update this before paid distribution.
 
 | Pro Capability | Free Surface To Reuse | Pro-Owned Work |
 | --- | --- | --- |
-| Admin tabs | `pulsepress_admin_tabs`, JS tab renderer registry | Pro tab renderers and Pro REST endpoints |
-| Metric cards | `pulsepress_admin_metric_cards`, JS card renderer registry | Comparison cards, license cards, sync health |
-| Analytics panels | `pulsepress_admin_analytics_panels`, JS panel renderer registry | Segments, A/B result panels, rollup panels |
-| Widget variant data | `pulsepress_widget_data`, `pulsepress_widget_container_attrs` | Variant assignment and Pro widget payload |
-| ESP sync | `pulsepress_after_capture`, `pulsepress_export_columns` | Provider adapters, job queue, sync status |
-| Long analytics | `pulsepress_after_aggregate`, `pulsepress_analytics_max_days`, `pulsepress_analytics_window` | Weekly/monthly rollups and Pro analytics API |
-| A/B testing | `pulsepress_widget_data`, `pulsepress_after_react`, `pulsepress_after_capture` | Assignment, test config, result calculator |
+| Admin tabs | `moonfarmer_reactions_lead_capture_admin_tabs`, JS tab renderer registry | Pro tab renderers and Pro REST endpoints |
+| Metric cards | `moonfarmer_reactions_lead_capture_admin_metric_cards`, JS card renderer registry | Comparison cards, license cards, sync health |
+| Analytics panels | `moonfarmer_reactions_lead_capture_admin_analytics_panels`, JS panel renderer registry | Segments, A/B result panels, rollup panels |
+| Widget variant data | `moonfarmer_reactions_lead_capture_widget_data`, `moonfarmer_reactions_lead_capture_widget_container_attrs` | Variant assignment and Pro widget payload |
+| ESP sync | `moonfarmer_reactions_lead_capture_after_capture`, `moonfarmer_reactions_lead_capture_export_columns` | Provider adapters, job queue, sync status |
+| Long analytics | `moonfarmer_reactions_lead_capture_after_aggregate`, `moonfarmer_reactions_lead_capture_analytics_max_days`, `moonfarmer_reactions_lead_capture_analytics_window` | Weekly/monthly rollups and Pro analytics API |
+| A/B testing | `moonfarmer_reactions_lead_capture_widget_data`, `moonfarmer_reactions_lead_capture_after_react`, `moonfarmer_reactions_lead_capture_after_capture` | Assignment, test config, result calculator |
 | Segments | Pro REST routes and Free post/reaction/capture data | Segment query layer and saved segment definitions |
-| Webhooks | `pulsepress_after_react`, `pulsepress_after_capture`, `pulsepress_after_aggregate`, `pulsepress_settings_saved` | Event formatter, signing, delivery jobs |
-| White-label | `pulsepress_admin_data`, `pulsepress_widget_data` | Brand settings, CSS sanitization, scoped injection |
+| Webhooks | `moonfarmer_reactions_lead_capture_after_react`, `moonfarmer_reactions_lead_capture_after_capture`, `moonfarmer_reactions_lead_capture_after_aggregate`, `moonfarmer_reactions_lead_capture_settings_saved` | Event formatter, signing, delivery jobs |
+| White-label | `moonfarmer_reactions_lead_capture_admin_data`, `moonfarmer_reactions_lead_capture_widget_data` | Brand settings, CSS sanitization, scoped injection |
 
 If a Pro feature cannot be built with this map, add a new Free hook first. Do not reach around the contract.
 
@@ -159,9 +159,9 @@ Each provider owns one vertical slice. Providers attach to Free hooks in `boot()
 
 ## 6. Storage Plan
 
-All Pro tables are prefixed through `$wpdb->prefix` and namespaced with `pulsepress_pro_`.
+All Pro tables are prefixed through `$wpdb->prefix` and namespaced with `moonfarmer_reactions_lead_capture_pro_`.
 
-### `pulsepress_pro_esp_connections`
+### `moonfarmer_reactions_lead_capture_pro_esp_connections`
 
 - `id`
 - `provider`
@@ -171,7 +171,7 @@ All Pro tables are prefixed through `$wpdb->prefix` and namespaced with `pulsepr
 - `created_at`
 - `updated_at`
 
-### `pulsepress_pro_esp_jobs`
+### `moonfarmer_reactions_lead_capture_pro_esp_jobs`
 
 - `id`
 - `capture_id`
@@ -185,7 +185,7 @@ All Pro tables are prefixed through `$wpdb->prefix` and namespaced with `pulsepr
 - `created_at`
 - `updated_at`
 
-### `pulsepress_pro_ab_tests`
+### `moonfarmer_reactions_lead_capture_pro_ab_tests`
 
 - `id`
 - `name`
@@ -197,7 +197,7 @@ All Pro tables are prefixed through `$wpdb->prefix` and namespaced with `pulsepr
 - `created_at`
 - `updated_at`
 
-### `pulsepress_pro_ab_assignments`
+### `moonfarmer_reactions_lead_capture_pro_ab_assignments`
 
 - `id`
 - `test_id`
@@ -208,7 +208,7 @@ All Pro tables are prefixed through `$wpdb->prefix` and namespaced with `pulsepr
 
 Unique key: `(test_id, post_id, user_hash)`.
 
-### `pulsepress_pro_weekly_agg`
+### `moonfarmer_reactions_lead_capture_pro_weekly_agg`
 
 - `week_start`
 - `post_id`
@@ -219,7 +219,7 @@ Unique key: `(test_id, post_id, user_hash)`.
 
 Unique key: `(week_start, post_id, reaction_type)`.
 
-### `pulsepress_pro_monthly_agg`
+### `moonfarmer_reactions_lead_capture_pro_monthly_agg`
 
 - `month_start`
 - `post_id`
@@ -230,7 +230,7 @@ Unique key: `(week_start, post_id, reaction_type)`.
 
 Unique key: `(month_start, post_id, reaction_type)`.
 
-### `pulsepress_pro_segments`
+### `moonfarmer_reactions_lead_capture_pro_segments`
 
 - `id`
 - `name`
@@ -239,7 +239,7 @@ Unique key: `(month_start, post_id, reaction_type)`.
 - `created_at`
 - `updated_at`
 
-### `pulsepress_pro_webhooks`
+### `moonfarmer_reactions_lead_capture_pro_webhooks`
 
 - `id`
 - `url`
@@ -251,7 +251,7 @@ Unique key: `(month_start, post_id, reaction_type)`.
 - `created_at`
 - `updated_at`
 
-### `pulsepress_pro_webhook_deliveries`
+### `moonfarmer_reactions_lead_capture_pro_webhook_deliveries`
 
 - `id`
 - `webhook_id`
@@ -265,7 +265,7 @@ Unique key: `(month_start, post_id, reaction_type)`.
 - `created_at`
 - `updated_at`
 
-### `pulsepress_pro_reports`
+### `moonfarmer_reactions_lead_capture_pro_reports`
 
 - `id`
 - `type`
@@ -282,17 +282,17 @@ Unique key: `(month_start, post_id, reaction_type)`.
 
 ### Options
 
-- `pulsepress_pro_license_key`
-- `pulsepress_pro_license_status`
-- `pulsepress_pro_license_features`
-- `pulsepress_pro_license_expires_at`
-- `pulsepress_pro_license_checked_at`
-- `pulsepress_pro_license_grace_until`
+- `moonfarmer_reactions_lead_capture_pro_license_key`
+- `moonfarmer_reactions_lead_capture_pro_license_status`
+- `moonfarmer_reactions_lead_capture_pro_license_features`
+- `moonfarmer_reactions_lead_capture_pro_license_expires_at`
+- `moonfarmer_reactions_lead_capture_pro_license_checked_at`
+- `moonfarmer_reactions_lead_capture_pro_license_grace_until`
 
 ### Resolution Order
 
-1. `PULSEPRESS_PRO_LICENSE_KEY` constant.
-2. `pulsepress_pro/license_key` filter.
+1. `MOONFARMER_REACTIONS_LEAD_CAPTURE_PRO_LICENSE_KEY` constant.
+2. `moonfarmer_reactions_lead_capture_pro/license_key` filter.
 3. Stored option.
 
 ### Behavior
@@ -312,16 +312,16 @@ Pro uses a private update server. Update checks hook into WordPress update trans
 Pro ships its own Vite admin bundle and registers renderers into Free's admin app:
 
 ```js
-window.PulsePressAdmin.registerTabRenderer('pro-sync', renderSyncTab);
-window.PulsePressAdmin.registerCardRenderer('pro-compare-30', renderCompareCard);
-window.PulsePressAdmin.registerPanelRenderer('pro-segments', renderSegmentsPanel);
+window.MoonfarmerReactionsLeadCaptureAdmin.registerTabRenderer('pro-sync', renderSyncTab);
+window.MoonfarmerReactionsLeadCaptureAdmin.registerCardRenderer('pro-compare-30', renderCompareCard);
+window.MoonfarmerReactionsLeadCaptureAdmin.registerPanelRenderer('pro-segments', renderSegmentsPanel);
 ```
 
 PHP declares the slots:
 
-- Pro top-level tab: `pulsepress_admin_tabs`
-- Comparison cards: `pulsepress_admin_metric_cards`
-- Segments/A-B panels: `pulsepress_admin_analytics_panels`
+- Pro top-level tab: `moonfarmer_reactions_lead_capture_admin_tabs`
+- Comparison cards: `moonfarmer_reactions_lead_capture_admin_metric_cards`
+- Segments/A-B panels: `moonfarmer_reactions_lead_capture_admin_analytics_panels`
 
 Pro UI states:
 
@@ -333,7 +333,7 @@ Pro UI states:
 
 ## 9. REST API
 
-Namespace: `pulsepress/v1/pro`.
+Namespace: `moonfarmer-reactions-lead-capture/v1/pro`.
 
 Routes:
 
@@ -377,7 +377,7 @@ Goal: installable Pro skeleton that safely no-ops without Free.
 
 Deliverables:
 
-- `pulsepress-pro.php`
+- `moonfarmer-reactions-lead-capture-pro.php`
 - Composer autoload
 - Pro service container
 - Free presence/version check
@@ -436,10 +436,10 @@ Deliverables:
 
 - connection storage
 - encrypted credentials
-- `pulsepress_after_capture` job enqueue
+- `moonfarmer_reactions_lead_capture_after_capture` job enqueue
 - provider adapter interface
 - queue worker
-- sync status column via `pulsepress_export_columns`
+- sync status column via `moonfarmer_reactions_lead_capture_export_columns`
 
 Verification:
 
@@ -455,10 +455,10 @@ Goal: fast long-window analytics and previous-period comparison.
 Deliverables:
 
 - weekly/monthly tables
-- hook into `pulsepress_after_aggregate`
+- hook into `moonfarmer_reactions_lead_capture_after_aggregate`
 - Pro analytics summary endpoint
-- metric cards through `pulsepress_admin_metric_cards`
-- raise `pulsepress_analytics_max_days` only when rollups are available
+- metric cards through `moonfarmer_reactions_lead_capture_admin_metric_cards`
+- raise `moonfarmer_reactions_lead_capture_analytics_max_days` only when rollups are available
 
 Verification:
 
@@ -587,7 +587,7 @@ Compatibility rules:
 Pro plugin header should eventually include:
 
 ```php
- * Requires Plugins:  pulse-press
+ * Requires Plugins:  moonfarmer-reactions-lead-capture
 ```
 
 Pro admin should also show a clear minimum Free version warning because `Requires Plugins` only checks presence, not feature-level contract compatibility.

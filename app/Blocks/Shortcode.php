@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace PulsePress\Blocks;
+namespace Moonfarmer\ReactionsLeadCapture\Blocks;
 
-use PulsePress\Core\Application;
-use PulsePress\Visibility\VisibilityResolver;
+use Moonfarmer\ReactionsLeadCapture\Core\Application;
+use Moonfarmer\ReactionsLeadCapture\Visibility\VisibilityResolver;
 
 
 if (!defined('ABSPATH')) {
@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
 
 final class Shortcode
 {
-    public const TAG = 'pulsepress';
+    public const TAG = 'moonfarmer-reactions-lead-capture';
 
     public static function render($attrs, ?string $content = null, string $tag = self::TAG): string
     {

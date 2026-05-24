@@ -1,22 +1,22 @@
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 import type { Ref } from 'preact';
 import { postCapture, RestError } from '../api';
-import type { PulsePressData, ReactionType } from '../types';
+import type { MoonfarmerReactionsLeadCaptureData, ReactionType } from '../types';
 
 interface Props {
   postId: number;
   reactionType: ReactionType;
-  data: PulsePressData;
+  data: MoonfarmerReactionsLeadCaptureData;
   triggerRef: Ref<HTMLButtonElement>;
   onDone: (result: { status: 'inserted' | 'already_exists' }) => void;
   onDismiss: () => void;
 }
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const EMAIL_INPUT_ID    = 'pulsepress-capture-email';
-const CONSENT_INPUT_ID  = 'pulsepress-capture-consent';
-const CONSENT_HELP_ID   = 'pulsepress-capture-consent-help';
-const CAPTURE_TITLE_ID  = 'pulsepress-capture-title';
+const EMAIL_INPUT_ID    = 'moonfarmer-reactions-lead-capture-capture-email';
+const CONSENT_INPUT_ID  = 'moonfarmer-reactions-lead-capture-capture-consent';
+const CONSENT_HELP_ID   = 'moonfarmer-reactions-lead-capture-capture-consent-help';
+const CAPTURE_TITLE_ID  = 'moonfarmer-reactions-lead-capture-capture-title';
 
 export function CaptureForm({ postId, reactionType, data, triggerRef, onDone, onDismiss }: Props) {
   const i18n = data.i18n.capture;
@@ -89,7 +89,7 @@ export function CaptureForm({ postId, reactionType, data, triggerRef, onDone, on
         finish(i18n.thanks, 'inserted');
       } catch (err) {
         if (err instanceof RestError) {
-          if (err.code === 'pulsepress_capture_already_exists') {
+          if (err.code === 'moonfarmer_reactions_lead_capture_capture_already_exists') {
             finish(i18n.alreadyCaptured, 'already_exists');
             return;
           }
@@ -120,16 +120,16 @@ export function CaptureForm({ postId, reactionType, data, triggerRef, onDone, on
 
   if (successMessage !== null) {
     return (
-      <div class="pulsepress-capture pulsepress-capture-success">
+      <div class="moonfarmer-reactions-lead-capture-capture moonfarmer-reactions-lead-capture-capture-success">
         <p role="status" aria-live="polite">{successMessage}</p>
-        <button type="button" class="pulsepress-link" onClick={onDismiss}>{i18n.dismiss}</button>
+        <button type="button" class="moonfarmer-reactions-lead-capture-link" onClick={onDismiss}>{i18n.dismiss}</button>
       </div>
     );
   }
 
   return (
     <form
-      class="pulsepress-capture"
+      class="moonfarmer-reactions-lead-capture-capture"
       role="dialog"
       aria-modal="true"
       aria-labelledby={CAPTURE_TITLE_ID}
@@ -137,14 +137,14 @@ export function CaptureForm({ postId, reactionType, data, triggerRef, onDone, on
       onKeyDown={handleKeyDown}
       noValidate
     >
-      <h3 id={CAPTURE_TITLE_ID} class="pulsepress-capture-title">{i18n.prompt}</h3>
+      <h3 id={CAPTURE_TITLE_ID} class="moonfarmer-reactions-lead-capture-capture-title">{i18n.prompt}</h3>
 
-      <div class="pulsepress-field">
-        <label class="pulsepress-label" for={EMAIL_INPUT_ID}>{i18n.label}</label>
+      <div class="moonfarmer-reactions-lead-capture-field">
+        <label class="moonfarmer-reactions-lead-capture-label" for={EMAIL_INPUT_ID}>{i18n.label}</label>
         <input
           ref={emailRef}
           id={EMAIL_INPUT_ID}
-          class="pulsepress-input"
+          class="moonfarmer-reactions-lead-capture-input"
           type="email"
           autocomplete="email"
           inputMode="email"
@@ -156,29 +156,29 @@ export function CaptureForm({ postId, reactionType, data, triggerRef, onDone, on
         />
       </div>
 
-      <div class="pulsepress-field pulsepress-consent-field">
+      <div class="moonfarmer-reactions-lead-capture-field moonfarmer-reactions-lead-capture-consent-field">
         <input
           ref={consentRef}
           id={CONSENT_INPUT_ID}
-          class="pulsepress-checkbox"
+          class="moonfarmer-reactions-lead-capture-checkbox"
           type="checkbox"
           required
           aria-describedby={CONSENT_HELP_ID}
           checked={consent}
           onChange={(e) => setConsent((e.target as HTMLInputElement).checked)}
         />
-        <label class="pulsepress-consent-label" for={CONSENT_INPUT_ID}>{i18n.consent}</label>
-        <p id={CONSENT_HELP_ID} class="pulsepress-consent-help">{i18n.consentHelper}</p>
+        <label class="moonfarmer-reactions-lead-capture-consent-label" for={CONSENT_INPUT_ID}>{i18n.consent}</label>
+        <p id={CONSENT_HELP_ID} class="moonfarmer-reactions-lead-capture-consent-help">{i18n.consentHelper}</p>
       </div>
 
       {error !== null && (
-        <p class="pulsepress-error" role="alert">{error}</p>
+        <p class="moonfarmer-reactions-lead-capture-error" role="alert">{error}</p>
       )}
 
-      <div class="pulsepress-capture-actions">
+      <div class="moonfarmer-reactions-lead-capture-capture-actions">
         <button
           type="submit"
-          class="pulsepress-submit"
+          class="moonfarmer-reactions-lead-capture-submit"
           disabled={submitting}
           aria-busy={submitting ? 'true' : 'false'}
         >
@@ -186,7 +186,7 @@ export function CaptureForm({ postId, reactionType, data, triggerRef, onDone, on
         </button>
         <button
           type="button"
-          class="pulsepress-link"
+          class="moonfarmer-reactions-lead-capture-link"
           onClick={onDismiss}
         >
           {i18n.dismiss}

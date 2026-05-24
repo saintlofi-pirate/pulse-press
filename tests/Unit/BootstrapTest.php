@@ -2,54 +2,54 @@
 declare(strict_types=1);
 
 it('ships a plugin entry file that declares the version constant', function () {
-    $entry = file_get_contents(dirname(__DIR__, 2) . '/pulse-press.php');
+    $entry = file_get_contents(dirname(__DIR__, 2) . '/moonfarmer-reactions-lead-capture.php');
     expect($entry)
-        ->toContain("define('PULSEPRESS_VERSION'")
-        ->and($entry)->toContain("define('PULSEPRESS_FILE'")
-        ->and($entry)->toContain("define('PULSEPRESS_DIR'")
-        ->and($entry)->toContain("define('PULSEPRESS_URL'");
+        ->toContain("define('MOONFARMER_REACTIONS_LEAD_CAPTURE_VERSION'")
+        ->and($entry)->toContain("define('MOONFARMER_REACTIONS_LEAD_CAPTURE_FILE'")
+        ->and($entry)->toContain("define('MOONFARMER_REACTIONS_LEAD_CAPTURE_DIR'")
+        ->and($entry)->toContain("define('MOONFARMER_REACTIONS_LEAD_CAPTURE_URL'");
 });
 
 it('autoloads the core application class via Composer', function () {
-    expect(class_exists(\PulsePress\Core\Application::class, true))->toBeTrue();
-    expect(class_exists(\PulsePress\Core\Container::class, true))->toBeTrue();
-    expect(class_exists(\PulsePress\Core\ServiceProvider::class, true))->toBeTrue();
+    expect(class_exists(\Moonfarmer\ReactionsLeadCapture\Core\Application::class, true))->toBeTrue();
+    expect(class_exists(\Moonfarmer\ReactionsLeadCapture\Core\Container::class, true))->toBeTrue();
+    expect(class_exists(\Moonfarmer\ReactionsLeadCapture\Core\ServiceProvider::class, true))->toBeTrue();
 });
 
 it('autoloads the database schema and migrator classes', function () {
-    expect(class_exists(\PulsePress\Database\Schema::class, true))->toBeTrue();
-    expect(class_exists(\PulsePress\Database\Migrator::class, true))->toBeTrue();
-    expect(class_exists(\PulsePress\Providers\DatabaseServiceProvider::class, true))->toBeTrue();
+    expect(class_exists(\Moonfarmer\ReactionsLeadCapture\Database\Schema::class, true))->toBeTrue();
+    expect(class_exists(\Moonfarmer\ReactionsLeadCapture\Database\Migrator::class, true))->toBeTrue();
+    expect(class_exists(\Moonfarmer\ReactionsLeadCapture\Providers\DatabaseServiceProvider::class, true))->toBeTrue();
 });
 
 it('autoloads the reaction domain, REST controller, and provider', function () {
-    expect(class_exists(\PulsePress\Reactions\Reactions::class, true))->toBeTrue();
-    expect(class_exists(\PulsePress\Reactions\UserHash::class, true))->toBeTrue();
-    expect(class_exists(\PulsePress\Reactions\ReactionRepository::class, true))->toBeTrue();
-    expect(class_exists(\PulsePress\Http\Controllers\ReactionController::class, true))->toBeTrue();
-    expect(class_exists(\PulsePress\Http\RestException::class, true))->toBeTrue();
-    expect(class_exists(\PulsePress\Providers\RestServiceProvider::class, true))->toBeTrue();
+    expect(class_exists(\Moonfarmer\ReactionsLeadCapture\Reactions\Reactions::class, true))->toBeTrue();
+    expect(class_exists(\Moonfarmer\ReactionsLeadCapture\Reactions\UserHash::class, true))->toBeTrue();
+    expect(class_exists(\Moonfarmer\ReactionsLeadCapture\Reactions\ReactionRepository::class, true))->toBeTrue();
+    expect(class_exists(\Moonfarmer\ReactionsLeadCapture\Http\Controllers\ReactionController::class, true))->toBeTrue();
+    expect(class_exists(\Moonfarmer\ReactionsLeadCapture\Http\RestException::class, true))->toBeTrue();
+    expect(class_exists(\Moonfarmer\ReactionsLeadCapture\Providers\RestServiceProvider::class, true))->toBeTrue();
 });
 
 it('autoloads the widget manifest and provider', function () {
-    expect(class_exists(\PulsePress\View\Manifest::class, true))->toBeTrue();
-    expect(class_exists(\PulsePress\Providers\WidgetServiceProvider::class, true))->toBeTrue();
+    expect(class_exists(\Moonfarmer\ReactionsLeadCapture\View\Manifest::class, true))->toBeTrue();
+    expect(class_exists(\Moonfarmer\ReactionsLeadCapture\Providers\WidgetServiceProvider::class, true))->toBeTrue();
 });
 
 it('autoloads the capture domain, controller, and provider', function () {
-    expect(class_exists(\PulsePress\Captures\Captures::class, true))->toBeTrue();
-    expect(class_exists(\PulsePress\Captures\CaptureInput::class, true))->toBeTrue();
-    expect(class_exists(\PulsePress\Captures\CaptureRecord::class, true))->toBeTrue();
-    expect(class_exists(\PulsePress\Captures\CaptureRepository::class, true))->toBeTrue();
-    expect(class_exists(\PulsePress\Captures\FraudPurger::class, true))->toBeTrue();
-    expect(class_exists(\PulsePress\Http\Controllers\CaptureController::class, true))->toBeTrue();
-    expect(class_exists(\PulsePress\Providers\CaptureServiceProvider::class, true))->toBeTrue();
+    expect(class_exists(\Moonfarmer\ReactionsLeadCapture\Captures\Captures::class, true))->toBeTrue();
+    expect(class_exists(\Moonfarmer\ReactionsLeadCapture\Captures\CaptureInput::class, true))->toBeTrue();
+    expect(class_exists(\Moonfarmer\ReactionsLeadCapture\Captures\CaptureRecord::class, true))->toBeTrue();
+    expect(class_exists(\Moonfarmer\ReactionsLeadCapture\Captures\CaptureRepository::class, true))->toBeTrue();
+    expect(class_exists(\Moonfarmer\ReactionsLeadCapture\Captures\FraudPurger::class, true))->toBeTrue();
+    expect(class_exists(\Moonfarmer\ReactionsLeadCapture\Http\Controllers\CaptureController::class, true))->toBeTrue();
+    expect(class_exists(\Moonfarmer\ReactionsLeadCapture\Providers\CaptureServiceProvider::class, true))->toBeTrue();
 });
 
-it('does not retain starter strings in PulsePress-owned files', function () {
+it('does not retain starter strings in Moonfarmer Reactions Lead Capture-owned files', function () {
     $root = dirname(__DIR__, 2);
     $paths = [
-        $root . '/pulse-press.php',
+        $root . '/moonfarmer-reactions-lead-capture.php',
         $root . '/composer.json',
         $root . '/package.json',
         $root . '/vite.config.js',

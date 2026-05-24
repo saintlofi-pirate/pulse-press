@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace PulsePress\Blocks;
+namespace Moonfarmer\ReactionsLeadCapture\Blocks;
 
-use PulsePress\Core\Application;
-use PulsePress\Visibility\VisibilityResolver;
+use Moonfarmer\ReactionsLeadCapture\Core\Application;
+use Moonfarmer\ReactionsLeadCapture\Visibility\VisibilityResolver;
 
 
 if (!defined('ABSPATH')) {

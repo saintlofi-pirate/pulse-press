@@ -1,6 +1,6 @@
 ## Context
 
-PulsePress has a scaffolded plugin (Session 0) but no storage. Three tables show up in every later session: `pulsepress_reactions` (writes from Session 2's REST endpoint, reads from Session 3's count fetch, source-of-truth for Session 8's aggregation), `pulsepress_captures` (writes from Session 4's capture endpoint, reads from Session 10's CSV export), and `pulsepress_daily_agg` (writes from Session 8's aggregation, reads from Session 9's dashboard). The data semantics that constrain the design are recorded in `docs/gap-questions-and-session-tasks.md`:
+Moonfarmer Reactions Lead Capture has a scaffolded plugin (Session 0) but no storage. Three tables show up in every later session: `moonfarmer_reactions_lead_capture_reactions` (writes from Session 2's REST endpoint, reads from Session 3's count fetch, source-of-truth for Session 8's aggregation), `moonfarmer_reactions_lead_capture_captures` (writes from Session 4's capture endpoint, reads from Session 10's CSV export), and `moonfarmer_reactions_lead_capture_daily_agg` (writes from Session 8's aggregation, reads from Session 9's dashboard). The data semantics that constrain the design are recorded in `docs/gap-questions-and-session-tasks.md`:
 
 - **Gap 3 (retention)**: raw reactions indefinite by default with optional pruning; captures kept until manual delete/export; fraud-review IP metadata purged after 30 days; uninstall defaults to keep, with explicit opt-in to delete.
 - **Gap 5 (hash)**: server soft deduplication uses HMAC-SHA256 over IP + UA with a server-side secret salt (not the WP nonce — nonce rotation would break dedup). The schema stores 64-char hex strings; the secret rotation policy lives outside the schema.
@@ -14,7 +14,7 @@ The starter at `wp-plugin-matrx` uses a `wp_migrations` log table plus glob-load
 **Goals:**
 
 - Three tables created on fresh activation with the indexes Sessions 2–10 will actually read by.
-- Idempotent migrator: running `migrate()` twice in the same code version is a no-op (a `get_option('pulsepress_db_version')` read, then nothing).
+- Idempotent migrator: running `migrate()` twice in the same code version is a no-op (a `get_option('moonfarmer_reactions_lead_capture_db_version')` read, then nothing).
 - The activation hook installs schema atomically, so a freshly activated plugin can immediately accept REST writes once Session 2 lands.
 - A `plugins_loaded` guard upgrades schema after a plugin update without requiring the site owner to re-activate.
 - Uninstall is opt-in destructive: the default leaves data alone (the conservative WordPress.org choice), the opt-in drops all tables and options cleanly.
@@ -23,9 +23,9 @@ The starter at `wp-plugin-matrx` uses a `wp_migrations` log table plus glob-load
 **Non-Goals:**
 
 - No down/rollback migrations. WordPress plugins rarely need them and they double the surface area for very little real-world value. Schema changes that can't be expressed via dbDelta will use one-off delta callbacks introduced as needed.
-- No migration log table. The `pulsepress_db_version` integer is enough.
+- No migration log table. The `moonfarmer_reactions_lead_capture_db_version` integer is enough.
 - No WP-CLI command for forcing migration. Activation + `plugins_loaded` covers fresh install and upgrade; WP-CLI can be added behind the same `Migrator` service in a later session if required.
-- No data-pruning cron. Gap 3 commits to "optional pruning" — the option is reserved (`pulsepress_retention_days`) but the actual pruning job is Session 8 territory.
+- No data-pruning cron. Gap 3 commits to "optional pruning" — the option is reserved (`moonfarmer_reactions_lead_capture_retention_days`) but the actual pruning job is Session 8 territory.
 - No fraud-metadata purger job. Gap 3 commits to a 30-day purge — the column (`fraud_metadata_purge_at`) is reserved here and the cron is wired alongside the IP-hash writer in Session 4.
 - No settings UI. Settings page is Session 6.
 - No PII inserts. Schema-only slice.
@@ -38,7 +38,7 @@ A single integer constant, bumped manually for each schema change, drives migrat
 
 - Makes the "current code-side schema version" obvious from the source tree.
 - Removes timestamp parsing and class-name reflection from the runner.
-- Trivially unit-testable: `Schema::VERSION` is a constant, `pulsepress_db_version` is an option.
+- Trivially unit-testable: `Schema::VERSION` is a constant, `moonfarmer_reactions_lead_capture_db_version` is an option.
 - Survives squashed commits and reordered PRs; file-based migrations break in both.
 
 **Alternative considered**: starter-style file-per-migration. Rejected — adds glob ordering, parser regex, and a `wp_migrations` log table for a domain with maybe ten lifetime migrations.
@@ -54,7 +54,7 @@ A single integer constant, bumped manually for each schema change, drives migrat
 
 `dbDelta`'s well-known gotchas (two spaces after PRIMARY KEY, KEY name required) live entirely inside `Schema`, where they can be diffed once and never thought about again.
 
-### D3. Schema version stored as integer string in `pulsepress_db_version`
+### D3. Schema version stored as integer string in `moonfarmer_reactions_lead_capture_db_version`
 
 The option already exists from Session 0 with value `'0'`. We keep it a string for backwards-compat with the seed (no migration on the migration). Inside `Migrator` we cast to `(int)` for comparison and `(string)` for writes.
 
@@ -62,35 +62,35 @@ The option already exists from Session 0 with value `'0'`. We keep it a string f
 
 Gap 6's replacement rule maps directly to a `UNIQUE KEY uniq_post_user (post_id, user_hash)`. Session 2's REST handler will use `INSERT ... ON DUPLICATE KEY UPDATE reaction_type = VALUES(reaction_type), updated_at = VALUES(updated_at)`. The constraint enforces the rule at the storage layer, not just at application code — no race-induced duplicates.
 
-We deliberately do NOT keep an event log. The trade-off is that hot-changing users lose history, but the plan commits to that semantic and aggregate counts are owned by `pulsepress_daily_agg`.
+We deliberately do NOT keep an event log. The trade-off is that hot-changing users lose history, but the plan commits to that semantic and aggregate counts are owned by `moonfarmer_reactions_lead_capture_daily_agg`.
 
-### D5. `pulsepress_captures` has `(email, post_id)` unique
+### D5. `moonfarmer_reactions_lead_capture_captures` has `(email, post_id)` unique
 
 A single email shouldn't capture twice for the same post (it would corrupt CSV export and inflate capture rate). Different posts may all capture the same email — that's intentional, since each capture has its own consent context.
 
 `email` is stored case-insensitively at the application layer (Session 4 normalises before insert) and as VARCHAR(190) so the unique index fits in InnoDB's 767-byte legacy limit even on hosts that haven't enabled `innodb_large_prefix`. Alternative considered: VARCHAR(254) per RFC 5321. Rejected — 190 fits the universal limit; hosts that need longer emails are vanishingly rare and we can ALTER later.
 
-### D6. `pulsepress_daily_agg` keyed by `(agg_date, post_id, reaction_type)`
+### D6. `moonfarmer_reactions_lead_capture_daily_agg` keyed by `(agg_date, post_id, reaction_type)`
 
 Aggregation needs upsert semantics: re-running for the same day should replace the row, not duplicate. The composite unique index plus `INSERT ... ON DUPLICATE KEY UPDATE` is the cheapest implementation. `agg_date` is a SQL DATE because we never need sub-day granularity in the free product.
 
 ### D7. Activation-hook idempotency through `Migrator::migrate()`
 
-The Session 0 activation hook seeded `pulsepress_db_version='0'`. We keep that seed (it makes the first-activation comparison work), then call `Migrator::migrate()` right after. On reactivation, the migrator sees `pulsepress_db_version >= Schema::VERSION` and exits without doing work. There is no second activation seed; the migrator owns version writes from now on.
+The Session 0 activation hook seeded `moonfarmer_reactions_lead_capture_db_version='0'`. We keep that seed (it makes the first-activation comparison work), then call `Migrator::migrate()` right after. On reactivation, the migrator sees `moonfarmer_reactions_lead_capture_db_version >= Schema::VERSION` and exits without doing work. There is no second activation seed; the migrator owns version writes from now on.
 
 ### D8. `uninstall.php` defaults to non-destructive
 
-WordPress invokes `uninstall.php` only when an admin clicks "Delete" on the plugin row. If `pulsepress_delete_on_uninstall` is `false` (the default), uninstall is a no-op — the admin keeps their data and can reinstall without loss. If `true`, the file:
+WordPress invokes `uninstall.php` only when an admin clicks "Delete" on the plugin row. If `moonfarmer_reactions_lead_capture_delete_on_uninstall` is `false` (the default), uninstall is a no-op — the admin keeps their data and can reinstall without loss. If `true`, the file:
 
 1. `DROP TABLE` each of the three custom tables.
-2. `delete_option()` for every `pulsepress_*` option key, including `pulsepress_db_version`.
-3. Deletes nothing in `wp_options` outside the `pulsepress_` prefix.
+2. `delete_option()` for every `moonfarmer_reactions_lead_capture_*` option key, including `moonfarmer_reactions_lead_capture_db_version`.
+3. Deletes nothing in `wp_options` outside the `moonfarmer_reactions_lead_capture_` prefix.
 
 WordPress.org review prefers this opt-in pattern; surprise data loss is a common rejection reason.
 
 ### D9. `plugins_loaded` priority for `DatabaseServiceProvider::boot()` is the default (10), but the guard runs before any other DB access
 
-The provider's `boot()` reads `pulsepress_db_version` and short-circuits when current. Other providers register their hooks but do not touch the DB until later actions (`rest_api_init` for routes, `wp_enqueue_scripts` for assets), so even on a schema mismatch we're guaranteed to have run `migrate()` before any feature query happens.
+The provider's `boot()` reads `moonfarmer_reactions_lead_capture_db_version` and short-circuits when current. Other providers register their hooks but do not touch the DB until later actions (`rest_api_init` for routes, `wp_enqueue_scripts` for assets), so even on a schema mismatch we're guaranteed to have run `migrate()` before any feature query happens.
 
 ### D10. PHP 8.1 `readonly` and named constants
 
@@ -98,9 +98,9 @@ The provider's `boot()` reads `pulsepress_db_version` and short-circuits when cu
 
 ## Risks / Trade-offs
 
-- **Risk**: `dbDelta` silently swallowing a syntax error and leaving the table unchanged. → Mitigation: after `dbDelta` returns, `Migrator` queries `INFORMATION_SCHEMA.TABLES` for the existence of every declared table and aborts with a logged error if any are missing. We only write `pulsepress_db_version` after this post-flight check passes.
-- **Risk**: An admin runs a manual DROP on `pulsepress_reactions`. → Mitigation: the `plugins_loaded` guard checks `pulsepress_db_version`, sees no mismatch, and does not recover. The admin must re-activate. Acceptable — manual DROPs are a "you broke it, you fix it" path. A future health-check action can detect missing tables and prompt re-activation.
-- **Risk**: A site upgrades from PulsePress vN to vN+1 mid-request between when the option is read and when migrate runs. → Mitigation: irrelevant. WP plugin upgrades replace the filesystem before the next request; mid-request upgrades aren't a thing.
+- **Risk**: `dbDelta` silently swallowing a syntax error and leaving the table unchanged. → Mitigation: after `dbDelta` returns, `Migrator` queries `INFORMATION_SCHEMA.TABLES` for the existence of every declared table and aborts with a logged error if any are missing. We only write `moonfarmer_reactions_lead_capture_db_version` after this post-flight check passes.
+- **Risk**: An admin runs a manual DROP on `moonfarmer_reactions_lead_capture_reactions`. → Mitigation: the `plugins_loaded` guard checks `moonfarmer_reactions_lead_capture_db_version`, sees no mismatch, and does not recover. The admin must re-activate. Acceptable — manual DROPs are a "you broke it, you fix it" path. A future health-check action can detect missing tables and prompt re-activation.
+- **Risk**: A site upgrades from Moonfarmer Reactions Lead Capture vN to vN+1 mid-request between when the option is read and when migrate runs. → Mitigation: irrelevant. WP plugin upgrades replace the filesystem before the next request; mid-request upgrades aren't a thing.
 - **Risk**: dbDelta has known limitations around composite UNIQUE indexes and column reordering. → Mitigation: Schema constants are diffed by humans on every bump; the post-flight check verifies the tables exist; column-rename or unique-index-rename migrations will be expressed as raw `$wpdb->query()` deltas behind a numbered method on `Migrator` introduced when needed.
 - **Trade-off**: No event log means we cannot reconstruct historical sentiment for users who change reactions. Daily aggregation captures the snapshot at end-of-day. Documented in gap decisions and accepted.
 - **Trade-off**: VARCHAR(190) for `email` is shorter than RFC 5321 allows. Accepted per D5.
@@ -110,7 +110,7 @@ The provider's `boot()` reads `pulsepress_db_version` and short-circuits when cu
 
 This is the first schema. There is no data to migrate. The deploy path on a fresh install:
 
-1. Admin activates PulsePress → activation hook seeds `pulsepress_db_version='0'` (Session 0 behaviour, kept for the first-activation comparison) → activation hook calls `Migrator::migrate()` → all three tables created via `dbDelta` → `pulsepress_db_version='1'`.
+1. Admin activates Moonfarmer Reactions Lead Capture → activation hook seeds `moonfarmer_reactions_lead_capture_db_version='0'` (Session 0 behaviour, kept for the first-activation comparison) → activation hook calls `Migrator::migrate()` → all three tables created via `dbDelta` → `moonfarmer_reactions_lead_capture_db_version='1'`.
 2. Next request: `plugins_loaded` runs `DatabaseServiceProvider::boot()` → option is `1`, Schema::VERSION is `1`, no work performed.
 
 The deploy path on a future schema bump (illustrative, not part of this change):

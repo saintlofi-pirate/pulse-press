@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace PulsePress\Analytics;
+namespace Moonfarmer\ReactionsLeadCapture\Analytics;
 
 use DateTimeImmutable;
-use PulsePress\Settings\SettingsRepository;
+use Moonfarmer\ReactionsLeadCapture\Settings\SettingsRepository;
 
 
 if (!defined('ABSPATH')) {
@@ -84,7 +84,7 @@ final class MetricsCalculator
         foreach ($postIds as $id) {
             $title = get_the_title($id);
             if (!is_string($title) || $title === '') {
-                $out[$id] = __('(deleted post)', 'pulse-press');
+                $out[$id] = __('(deleted post)', 'moonfarmer-reactions-lead-capture');
             } else {
                 $out[$id] = $title;
             }

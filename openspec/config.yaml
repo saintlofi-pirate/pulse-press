@@ -1,14 +1,14 @@
 schema: spec-driven
 
 context: |
-  Project: PulsePress, a WordPress plugin for reactions, inline email capture, and analytics.
+  Project: Moonfarmer Reactions Lead Capture, a WordPress plugin for reactions, inline email capture, and analytics.
   Product principle: the free plugin must be genuinely useful for WordPress.org distribution; Pro adds ESP sync, A/B testing, longer analytics, advanced targeting, webhooks, white-labeling, and support.
   Design direction: polished, calm, generous spacing, one primary accent, strong typographic hierarchy, sentence case, and a refined Adham Dannaway-inspired product feel.
   Frontend widget: Preact, Motion One, Tabler Icons, optimistic updates, localStorage plus first-party cookie deduplication, and inline email capture after positive reactions.
   Admin UI: native WordPress admin feel using WordPress components, analytics dashboards over aggregated data, and uPlot for time-series charts when needed.
   Backend: namespaced PHP, Composer autoloading, WP REST API, WP-CLI, Action Scheduler, custom tables via prepared $wpdb queries, and transient count caches.
   Bootstrap source: selectively reuse /Volumes/Projects/work/wp_lab/wp-content/plugins/wp-plugin-matrx (https://github.com/nkb-bd/wp-plugin-matrix.git, local revision 5ec965b) for plugin bootstrap, Composer/PSR-4 shape, service providers, migrations, routing, assets, tests, Vite, and packaging scaffolds.
-  Bootstrap constraint: do not inherit the starter's Vue/Element Plus/Chart.js/Quill-heavy demo admin stack by default; keep PulsePress lean with Preact for the widget and WordPress-native admin components where practical.
+  Bootstrap constraint: do not inherit the starter's Vue/Element Plus/Chart.js/Quill-heavy demo admin stack by default; keep Moonfarmer Reactions Lead Capture lean with Preact for the widget and WordPress-native admin components where practical.
   Privacy: no tracking by default, no raw PII for reaction deduplication, consent timestamps for captures, and timed purging of fraud-review metadata.
   Planning rule: use OpenSpec for non-trivial API, schema, analytics, privacy, or free/pro boundary changes.
 

@@ -1,9 +1,9 @@
 import { useCallback, useRef, useState } from 'preact/hooks';
 import { downloadCaptureCsv } from '../api';
-import type { PulsePressAdminData } from '../types';
+import type { MoonfarmerReactionsLeadCaptureAdminData } from '../types';
 
 interface Props {
-  adminData: PulsePressAdminData;
+  adminData: MoonfarmerReactionsLeadCaptureAdminData;
 }
 
 type Status = 'idle' | 'preparing' | 'success' | 'error';
@@ -42,15 +42,15 @@ export function CaptureExportButton({ adminData }: Props) {
   }, [adminData.nonce, adminData.restRoot, i18n.error]);
 
   return (
-    <section class="pulsepress-export-region" aria-labelledby="pulsepress-export-label">
-      <div class="pulsepress-export-region__head">
-        <h3 id="pulsepress-export-label">{i18n.label}</h3>
-        <p class="pulsepress-export-helper">{i18n.helper}</p>
+    <section class="moonfarmer-reactions-lead-capture-export-region" aria-labelledby="moonfarmer-reactions-lead-capture-export-label">
+      <div class="moonfarmer-reactions-lead-capture-export-region__head">
+        <h3 id="moonfarmer-reactions-lead-capture-export-label">{i18n.label}</h3>
+        <p class="moonfarmer-reactions-lead-capture-export-helper">{i18n.helper}</p>
       </div>
-      <div class="pulsepress-export-region__actions">
+      <div class="moonfarmer-reactions-lead-capture-export-region__actions">
         <button
           type="button"
-          class="pulsepress-submit"
+          class="moonfarmer-reactions-lead-capture-submit"
           onClick={() => void trigger()}
           aria-busy={status === 'preparing' ? 'true' : 'false'}
           disabled={status === 'preparing'}
@@ -58,13 +58,13 @@ export function CaptureExportButton({ adminData }: Props) {
           {status === 'preparing' ? i18n.preparing : i18n.label}
         </button>
         {status === 'success' && (
-          <span class="pulsepress-export-status pulsepress-pill pulsepress-pill--saved" role="status" aria-live="polite">
+          <span class="moonfarmer-reactions-lead-capture-export-status moonfarmer-reactions-lead-capture-pill moonfarmer-reactions-lead-capture-pill--saved" role="status" aria-live="polite">
             {i18n.downloadStarted}
           </span>
         )}
       </div>
       {status === 'error' && error !== null && (
-        <p class="pulsepress-error" role="alert">{error}</p>
+        <p class="moonfarmer-reactions-lead-capture-error" role="alert">{error}</p>
       )}
     </section>
   );

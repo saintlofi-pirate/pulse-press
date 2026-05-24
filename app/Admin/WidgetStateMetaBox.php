@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace PulsePress\Admin;
+namespace Moonfarmer\ReactionsLeadCapture\Admin;
 
-use PulsePress\Visibility\VisibilityResolver;
+use Moonfarmer\ReactionsLeadCapture\Visibility\VisibilityResolver;
 use WP_Post;
 
 
@@ -13,9 +13,9 @@ if (!defined('ABSPATH')) {
 
 final class WidgetStateMetaBox
 {
-    public const META_BOX_ID    = 'pulsepress-widget-state';
-    public const NONCE_ACTION   = 'pulsepress_widget_state';
-    public const NONCE_FIELD    = 'pulsepress_widget_state_nonce';
+    public const META_BOX_ID    = 'moonfarmer-reactions-lead-capture-widget-state';
+    public const NONCE_ACTION   = 'moonfarmer_reactions_lead_capture_widget_state';
+    public const NONCE_FIELD    = 'moonfarmer_reactions_lead_capture_widget_state_nonce';
 
     public function register(): void
     {
@@ -44,7 +44,7 @@ final class WidgetStateMetaBox
         foreach ($this->applicablePostTypes() as $postType) {
             add_meta_box(
                 self::META_BOX_ID,
-                __('PulsePress reactions', 'pulse-press'),
+                __('Moonfarmer Reactions Lead Capture reactions', 'moonfarmer-reactions-lead-capture'),
                 [$this, 'render'],
                 $postType,
                 'side',
@@ -63,25 +63,25 @@ final class WidgetStateMetaBox
 
         $options = [
             VisibilityResolver::MODE_AUTO => [
-                'label' => __('Auto (follow global settings)', 'pulse-press'),
-                'help'  => __('Use the site-wide auto-insert configuration.', 'pulse-press'),
+                'label' => __('Auto (follow global settings)', 'moonfarmer-reactions-lead-capture'),
+                'help'  => __('Use the site-wide auto-insert configuration.', 'moonfarmer-reactions-lead-capture'),
             ],
             VisibilityResolver::MODE_ON => [
-                'label' => __('Always show', 'pulse-press'),
-                'help'  => __('Force the widget to render on this post, even if its post type is excluded globally.', 'pulse-press'),
+                'label' => __('Always show', 'moonfarmer-reactions-lead-capture'),
+                'help'  => __('Force the widget to render on this post, even if its post type is excluded globally.', 'moonfarmer-reactions-lead-capture'),
             ],
             VisibilityResolver::MODE_OFF => [
-                'label' => __('Always hide', 'pulse-press'),
-                'help'  => __('Suppress the widget on this post, including via block or shortcode.', 'pulse-press'),
+                'label' => __('Always hide', 'moonfarmer-reactions-lead-capture'),
+                'help'  => __('Suppress the widget on this post, including via block or shortcode.', 'moonfarmer-reactions-lead-capture'),
             ],
         ];
 
-        echo '<fieldset class="pulsepress-meta-box">';
-        echo '<legend class="screen-reader-text">' . esc_html__('PulsePress widget visibility', 'pulse-press') . '</legend>';
+        echo '<fieldset class="moonfarmer-reactions-lead-capture-meta-box">';
+        echo '<legend class="screen-reader-text">' . esc_html__('Moonfarmer Reactions Lead Capture widget visibility', 'moonfarmer-reactions-lead-capture') . '</legend>';
         foreach ($options as $value => $entry) {
-            $id = 'pulsepress-state-' . $value;
+            $id = 'moonfarmer-reactions-lead-capture-state-' . $value;
             printf(
-                '<p style="margin:0 0 .5rem"><label for="%1$s" style="display:flex;gap:.4rem;align-items:flex-start"><input type="radio" id="%1$s" name="pulsepress_widget_state" value="%2$s"%3$s /> <span><strong>%4$s</strong><br><span style="color:#646970;font-size:.85em">%5$s</span></span></label></p>',
+                '<p style="margin:0 0 .5rem"><label for="%1$s" style="display:flex;gap:.4rem;align-items:flex-start"><input type="radio" id="%1$s" name="moonfarmer_reactions_lead_capture_widget_state" value="%2$s"%3$s /> <span><strong>%4$s</strong><br><span style="color:#646970;font-size:.85em">%5$s</span></span></label></p>',
                 esc_attr($id),
                 esc_attr($value),
                 checked($current, $value, false),
@@ -104,11 +104,11 @@ final class WidgetStateMetaBox
         if (!current_user_can('edit_post', $postId)) {
             return;
         }
-        if (!isset($_POST['pulsepress_widget_state'])) {
+        if (!isset($_POST['moonfarmer_reactions_lead_capture_widget_state'])) {
             return;
         }
 
-        $rawValue = sanitize_text_field(wp_unslash((string) $_POST['pulsepress_widget_state']));
+        $rawValue = sanitize_text_field(wp_unslash((string) $_POST['moonfarmer_reactions_lead_capture_widget_state']));
         $value    = VisibilityResolver::sanitiseMode($rawValue);
         update_post_meta($postId, VisibilityResolver::META_KEY, $value);
     }
@@ -117,7 +117,7 @@ final class WidgetStateMetaBox
     public function applicablePostTypes(): array
     {
         $types = function_exists('get_post_types') ? get_post_types(['public' => true]) : ['post'];
-        $types = (array) apply_filters('pulsepress_meta_box_post_types', $types);
+        $types = (array) apply_filters('moonfarmer_reactions_lead_capture_meta_box_post_types', $types);
         return array_values(array_filter($types, 'is_string'));
     }
 }

@@ -1,11 +1,11 @@
 import { useId, useMemo } from 'preact/hooks';
-import type { MetricsEnvelope, PulsePressAdminData } from '../types';
+import type { MetricsEnvelope, MoonfarmerReactionsLeadCaptureAdminData } from '../types';
 
 interface Props {
   series: MetricsEnvelope['dailySeries'];
   from: string;
   to: string;
-  i18n: PulsePressAdminData['i18n']['analytics'];
+  i18n: MoonfarmerReactionsLeadCaptureAdminData['i18n']['analytics'];
 }
 
 const VIEW_W = 400;
@@ -47,14 +47,14 @@ export function DailySeriesChart({ series, from, to, i18n }: Props) {
   const barW   = innerW / bars.length;
 
   return (
-    <div class="pulsepress-chart">
+    <div class="moonfarmer-reactions-lead-capture-chart">
       <svg
         viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
         role="img"
         aria-labelledby={labelId}
         preserveAspectRatio="none"
       >
-        <text id={labelId} class="pulsepress-sr-only">{i18n.chartLabel}</text>
+        <text id={labelId} class="moonfarmer-reactions-lead-capture-sr-only">{i18n.chartLabel}</text>
         {bars.map((bar, i) => {
           const h = (bar.total / max) * innerH;
           const x = PADDING + i * barW;
@@ -68,7 +68,7 @@ export function DailySeriesChart({ series, from, to, i18n }: Props) {
                 height={h}
                 rx={2}
                 ry={2}
-                class="pulsepress-chart__bar"
+                class="moonfarmer-reactions-lead-capture-chart__bar"
                 aria-label={`${bar.date}: ${bar.total}`}
               >
                 <title>{`${bar.date}: ${bar.total}`}</title>

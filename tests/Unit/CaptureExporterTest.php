@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-use PulsePress\Captures\CaptureExporter;
+use Moonfarmer\ReactionsLeadCapture\Captures\CaptureExporter;
 use Tests\Stubs\FilterRegistry;
 use Tests\Stubs\PostRegistry;
 use Tests\Stubs\WpdbStub;
@@ -33,7 +33,7 @@ function pp_capture_rows(): array
 function pp_exporter(?array $rows = null): array
 {
     $wpdb = new WpdbStub();
-    $wpdb->resultsByQuery['FROM wp_pulsepress_captures ORDER BY id ASC'] = $rows ?? pp_capture_rows();
+    $wpdb->resultsByQuery['FROM wp_moonfarmer_reactions_lead_capture_captures ORDER BY id ASC'] = $rows ?? pp_capture_rows();
     return [new CaptureExporter($wpdb), $wpdb];
 }
 
@@ -76,7 +76,7 @@ it('uses CRLF line endings between rows', function () {
 });
 
 it('lets a filter add a column', function () {
-    FilterRegistry::addFilter('pulsepress_export_columns', function (array $columns): array {
+    FilterRegistry::addFilter('moonfarmer_reactions_lead_capture_export_columns', function (array $columns): array {
         $columns['esp_sync_status'] = [
             'label'  => 'ESP',
             'render' => static fn () => 'synced',
@@ -93,7 +93,7 @@ it('lets a filter add a column', function () {
 });
 
 it('skips columns with an invalid render callable', function () {
-    FilterRegistry::addFilter('pulsepress_export_columns', function (array $columns): array {
+    FilterRegistry::addFilter('moonfarmer_reactions_lead_capture_export_columns', function (array $columns): array {
         $columns['bad_column'] = ['label' => 'Bad', 'render' => 'not-a-callable'];
         return $columns;
     });
@@ -105,9 +105,9 @@ it('skips columns with an invalid render callable', function () {
     expect($lines[0])->not->toContain('Bad');
 });
 
-it('short-circuits via pulsepress_before_export RestException', function () {
-    FilterRegistry::addAction('pulsepress_before_export', function () {
-        throw new \PulsePress\Http\RestException(new \WP_Error('pulsepress_rate_limited', 'Too many', ['status' => 429]));
+it('short-circuits via moonfarmer_reactions_lead_capture_before_export RestException', function () {
+    FilterRegistry::addAction('moonfarmer_reactions_lead_capture_before_export', function () {
+        throw new \Moonfarmer\ReactionsLeadCapture\Http\RestException(new \WP_Error('moonfarmer_reactions_lead_capture_rate_limited', 'Too many', ['status' => 429]));
     });
 
     [$exporter] = pp_exporter();
@@ -116,7 +116,7 @@ it('short-circuits via pulsepress_before_export RestException', function () {
     try {
         $exporter->stream(function (string $line) use (&$lines) { $lines[] = $line; });
         $threw = false;
-    } catch (\PulsePress\Http\RestException $e) {
+    } catch (\Moonfarmer\ReactionsLeadCapture\Http\RestException $e) {
         $threw = true;
     }
 
@@ -136,11 +136,11 @@ it('issues chunked SELECT with LIMIT/OFFSET', function () {
     }
 
     $wpdb = new WpdbStub();
-    $wpdb->resultsByQuery['FROM wp_pulsepress_captures ORDER BY id ASC'] = $rows;
+    $wpdb->resultsByQuery['FROM wp_moonfarmer_reactions_lead_capture_captures ORDER BY id ASC'] = $rows;
     $exporter = new CaptureExporter($wpdb);
     $count = $exporter->stream(static fn () => null, ['chunk_size' => 50]);
 
     expect($count)->toBe(3);
-    $selects = array_filter($wpdb->queries, fn ($q) => str_contains($q, 'FROM wp_pulsepress_captures ORDER BY id ASC LIMIT'));
+    $selects = array_filter($wpdb->queries, fn ($q) => str_contains($q, 'FROM wp_moonfarmer_reactions_lead_capture_captures ORDER BY id ASC LIMIT'));
     expect($selects)->not->toBeEmpty();
 });

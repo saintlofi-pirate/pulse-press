@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-use PulsePress\View\Manifest;
+use Moonfarmer\ReactionsLeadCapture\View\Manifest;
 
 beforeEach(function () {
-    $this->tmpDir = sys_get_temp_dir() . '/pulsepress-manifest-' . uniqid();
+    $this->tmpDir = sys_get_temp_dir() . '/moonfarmer-reactions-lead-capture-manifest-' . uniqid();
     mkdir($this->tmpDir, 0o777, true);
     $this->manifestPath = $this->tmpDir . '/manifest.json';
-    $this->distUrl      = 'https://example.test/wp-content/plugins/pulse-press/dist/';
+    $this->distUrl      = 'https://example.test/wp-content/plugins/moonfarmer-reactions-lead-capture/dist/';
 });
 
 afterEach(function () {

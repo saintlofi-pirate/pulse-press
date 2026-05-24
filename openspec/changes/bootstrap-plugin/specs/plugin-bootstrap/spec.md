@@ -2,16 +2,16 @@
 
 ### Requirement: Plugin entry file defines version constants
 
-The plugin entry file `pulsepress.php` SHALL define `PULSEPRESS_VERSION`, `PULSEPRESS_FILE`, `PULSEPRESS_DIR`, and `PULSEPRESS_URL` constants as the only public globals exposed by the plugin. Every later module SHALL read these constants rather than recomputing paths.
+The plugin entry file `moonfarmer-reactions-lead-capture.php` SHALL define `MOONFARMER_REACTIONS_LEAD_CAPTURE_VERSION`, `MOONFARMER_REACTIONS_LEAD_CAPTURE_FILE`, `MOONFARMER_REACTIONS_LEAD_CAPTURE_DIR`, and `MOONFARMER_REACTIONS_LEAD_CAPTURE_URL` constants as the only public globals exposed by the plugin. Every later module SHALL read these constants rather than recomputing paths.
 
 #### Scenario: Constants exposed at bootstrap
 
-- **WHEN** WordPress loads `pulsepress.php`
-- **THEN** `defined('PULSEPRESS_VERSION')`, `defined('PULSEPRESS_FILE')`, `defined('PULSEPRESS_DIR')`, and `defined('PULSEPRESS_URL')` all return `true`
+- **WHEN** WordPress loads `moonfarmer-reactions-lead-capture.php`
+- **THEN** `defined('MOONFARMER_REACTIONS_LEAD_CAPTURE_VERSION')`, `defined('MOONFARMER_REACTIONS_LEAD_CAPTURE_FILE')`, `defined('MOONFARMER_REACTIONS_LEAD_CAPTURE_DIR')`, and `defined('MOONFARMER_REACTIONS_LEAD_CAPTURE_URL')` all return `true`
 
 #### Scenario: Version matches plugin header
 
-- **WHEN** a developer reads `PULSEPRESS_VERSION`
+- **WHEN** a developer reads `MOONFARMER_REACTIONS_LEAD_CAPTURE_VERSION`
 - **THEN** its value matches the `Version:` field in the plugin header comment
 
 ### Requirement: PHP and WP version guard
@@ -21,7 +21,7 @@ The plugin SHALL check `PHP_VERSION_ID >= 80100` and `global $wp_version` agains
 #### Scenario: PHP 8.0 host
 
 - **WHEN** the plugin loads on PHP 8.0
-- **THEN** no fatal error occurs, an admin notice tells the user "PulsePress requires PHP 8.1 or newer", and reactions/captures code does not register
+- **THEN** no fatal error occurs, an admin notice tells the user "Moonfarmer Reactions Lead Capture requires PHP 8.1 or newer", and reactions/captures code does not register
 
 #### Scenario: WP 6.1 host
 
@@ -33,13 +33,13 @@ The plugin SHALL check `PHP_VERSION_ID >= 80100` and `global $wp_version` agains
 - **WHEN** the plugin loads on PHP 8.1+ and WP 6.2+
 - **THEN** the bootstrap proceeds, the service provider is registered, and no notice is shown
 
-### Requirement: Composer PSR-4 autoload under PulsePress namespace
+### Requirement: Composer PSR-4 autoload under Moonfarmer Reactions Lead Capture namespace
 
-The plugin SHALL ship a `composer.json` declaring PSR-4 autoload `"PulsePress\\\\": "app/"` and a files autoload entry for `app/Helpers/functions.php`. All plugin classes SHALL live under the `PulsePress` namespace. No file in the PulsePress codebase SHALL contain the strings `WPPluginMatrix`, `WP_PLUGIN_MATRIX`, or `wp-plugin-matrix-starter`.
+The plugin SHALL ship a `composer.json` declaring PSR-4 autoload `"Moonfarmer\ReactionsLeadCapture\\\\": "app/"` and a files autoload entry for `app/Helpers/functions.php`. All plugin classes SHALL live under the `Moonfarmer Reactions Lead Capture` namespace. No file in the Moonfarmer Reactions Lead Capture codebase SHALL contain the strings `WPPluginMatrix`, `WP_PLUGIN_MATRIX`, or `wp-plugin-matrix-starter`.
 
 #### Scenario: Autoloader resolves a core class
 
-- **WHEN** PHP requests `PulsePress\Core\Application`
+- **WHEN** PHP requests `Moonfarmer\ReactionsLeadCapture\Core\Application`
 - **THEN** Composer's autoloader resolves it to `app/Core/Application.php`
 
 #### Scenario: No starter strings remain
@@ -49,7 +49,7 @@ The plugin SHALL ship a `composer.json` declaring PSR-4 autoload `"PulsePress\\\
 
 ### Requirement: Service-provider bootstrap with single AppServiceProvider
 
-The bootstrap SHALL instantiate a single container, register `PulsePress\Providers\AppServiceProvider`, and call `register()` then `boot()` in that order. The bootstrap SHALL NOT contain any feature wiring inline — every feature must be added through a service provider.
+The bootstrap SHALL instantiate a single container, register `Moonfarmer\ReactionsLeadCapture\Providers\AppServiceProvider`, and call `register()` then `boot()` in that order. The bootstrap SHALL NOT contain any feature wiring inline — every feature must be added through a service provider.
 
 #### Scenario: Provider boot order
 
@@ -59,21 +59,21 @@ The bootstrap SHALL instantiate a single container, register `PulsePress\Provide
 #### Scenario: Adding a feature later
 
 - **WHEN** Session 1 introduces schema migrations
-- **THEN** it adds a new `MigrationServiceProvider` registered from `AppServiceProvider::register()` rather than editing `pulsepress.php`
+- **THEN** it adds a new `MigrationServiceProvider` registered from `AppServiceProvider::register()` rather than editing `moonfarmer-reactions-lead-capture.php`
 
 ### Requirement: Activation hook stores version placeholder
 
-The activation hook SHALL call `update_option('pulsepress_db_version', '0', false)` and do nothing else. No tables SHALL be created, no defaults written, and no scheduled events registered in this slice. The `'0'` value signals to the future migration service that no schema has been applied.
+The activation hook SHALL call `update_option('moonfarmer_reactions_lead_capture_db_version', '0', false)` and do nothing else. No tables SHALL be created, no defaults written, and no scheduled events registered in this slice. The `'0'` value signals to the future migration service that no schema has been applied.
 
 #### Scenario: First activation
 
 - **WHEN** a site owner activates the plugin for the first time
-- **THEN** `get_option('pulsepress_db_version')` returns `'0'` and no custom tables exist
+- **THEN** `get_option('moonfarmer_reactions_lead_capture_db_version')` returns `'0'` and no custom tables exist
 
 #### Scenario: Re-activation
 
 - **WHEN** the plugin is deactivated and activated again
-- **THEN** `pulsepress_db_version` remains intact and is not overwritten unless its value is missing
+- **THEN** `moonfarmer_reactions_lead_capture_db_version` remains intact and is not overwritten unless its value is missing
 
 ### Requirement: Vite build with single widget entry
 
@@ -91,7 +91,7 @@ The build pipeline SHALL use Vite with exactly one entry point at `resources/wid
 
 ### Requirement: Tests scaffold with Pest
 
-The plugin SHALL ship a Pest scaffold at `tests/Pest.php` and `tests/TestCase.php`, plus at least one passing smoke test that asserts `PULSEPRESS_VERSION` is defined when the plugin entry is loaded. `composer test` SHALL run this test suite.
+The plugin SHALL ship a Pest scaffold at `tests/Pest.php` and `tests/TestCase.php`, plus at least one passing smoke test that asserts `MOONFARMER_REACTIONS_LEAD_CAPTURE_VERSION` is defined when the plugin entry is loaded. `composer test` SHALL run this test suite.
 
 #### Scenario: Smoke test passes
 
@@ -105,4 +105,4 @@ The plugin SHALL ship a `.distignore` that excludes `node_modules`, `tests`, `ph
 #### Scenario: Build a release zip
 
 - **WHEN** a packaging tool that respects `.distignore` builds a release zip
-- **THEN** the zip contains `pulsepress.php`, `app/`, `vendor/`, `dist/`, `resources/`, and `readme.txt`, and does NOT contain `tests/`, `node_modules/`, `openspec/`, or `docs/`
+- **THEN** the zip contains `moonfarmer-reactions-lead-capture.php`, `app/`, `vendor/`, `dist/`, `resources/`, and `readme.txt`, and does NOT contain `tests/`, `node_modules/`, `openspec/`, or `docs/`

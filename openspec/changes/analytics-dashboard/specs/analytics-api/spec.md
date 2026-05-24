@@ -1,12 +1,12 @@
 ## ADDED Requirements
 
-### Requirement: GET /pulsepress/v1/analytics/summary returns the metrics envelope
+### Requirement: GET /moonfarmer-reactions-lead-capture/v1/analytics/summary returns the metrics envelope
 
-The plugin SHALL register `GET /wp-json/pulsepress/v1/analytics/summary` returning a JSON object with the keys `from`, `to`, `clamped`, `totalReactions`, `positiveReactions`, `totalCaptures`, `sentimentRate`, `captureRate`, `dailySeries`, `topPosts`, `postTitles`, `positiveSet`. The endpoint SHALL require `current_user_can('manage_options')`. Query parameters `from` and `to` SHALL accept `Y-m-d` site-local dates; when missing or malformed, the endpoint SHALL default to the trailing 30 days. The endpoint SHALL clamp the window to 30 days maximum in Free.
+The plugin SHALL register `GET /wp-json/moonfarmer-reactions-lead-capture/v1/analytics/summary` returning a JSON object with the keys `from`, `to`, `clamped`, `totalReactions`, `positiveReactions`, `totalCaptures`, `sentimentRate`, `captureRate`, `dailySeries`, `topPosts`, `postTitles`, `positiveSet`. The endpoint SHALL require `current_user_can('manage_options')`. Query parameters `from` and `to` SHALL accept `Y-m-d` site-local dates; when missing or malformed, the endpoint SHALL default to the trailing 30 days. The endpoint SHALL clamp the window to 30 days maximum in Free.
 
 #### Scenario: Default window
 
-- **WHEN** an admin sends `GET /wp-json/pulsepress/v1/analytics/summary` with no query parameters
+- **WHEN** an admin sends `GET /wp-json/moonfarmer-reactions-lead-capture/v1/analytics/summary` with no query parameters
 - **THEN** the response is `200` with `from` 30 days before today (site-local) and `to` today (site-local), and `clamped: false`
 
 #### Scenario: Window larger than 30 days is clamped
@@ -63,7 +63,7 @@ The plugin SHALL register `GET /wp-json/pulsepress/v1/analytics/summary` returni
 
 #### Scenario: Filter overrides the positive set
 
-- **WHEN** `pulsepress_settings` filter changes `positive_reactions` mid-request
+- **WHEN** `moonfarmer_reactions_lead_capture_settings` filter changes `positive_reactions` mid-request
 - **THEN** the metrics use the filtered set, not the stored one
 
 ### Requirement: Capture rate formula
@@ -82,18 +82,18 @@ The plugin SHALL register `GET /wp-json/pulsepress/v1/analytics/summary` returni
 
 ### Requirement: Reads only from daily_agg + captures
 
-The analytics path SHALL NOT issue any SELECT against `pulsepress_reactions`. The repository SHALL only touch `pulsepress_daily_agg` and `pulsepress_captures`.
+The analytics path SHALL NOT issue any SELECT against `moonfarmer_reactions_lead_capture_reactions`. The repository SHALL only touch `moonfarmer_reactions_lead_capture_daily_agg` and `moonfarmer_reactions_lead_capture_captures`.
 
 #### Scenario: Codebase grep audit
 
-- **WHEN** running `grep -rE "FROM .+pulsepress_reactions" app/Analytics/` and `grep -rE "FROM .+pulsepress_reactions" app/Http/Controllers/AnalyticsController.php`
+- **WHEN** running `grep -rE "FROM .+moonfarmer_reactions_lead_capture_reactions" app/Analytics/` and `grep -rE "FROM .+moonfarmer_reactions_lead_capture_reactions" app/Http/Controllers/AnalyticsController.php`
 - **THEN** the search returns no matches
 
-### Requirement: pulsepress_analytics_window filter is the final say on window bounds
+### Requirement: moonfarmer_reactions_lead_capture_analytics_window filter is the final say on window bounds
 
-The controller SHALL apply `apply_filters('pulsepress_analytics_window', ['from' => $fromUtc, 'to' => $toUtc, 'clamped' => $clamped], $request)` after computing defaults and clamping. Filters MAY override bounds (Pro will extend Free's 30-day clamp to 12 months this way).
+The controller SHALL apply `apply_filters('moonfarmer_reactions_lead_capture_analytics_window', ['from' => $fromUtc, 'to' => $toUtc, 'clamped' => $clamped], $request)` after computing defaults and clamping. Filters MAY override bounds (Pro will extend Free's 30-day clamp to 12 months this way).
 
 #### Scenario: Pro extends to 12 months
 
-- **WHEN** a Pro plugin registers `add_filter('pulsepress_analytics_window', fn($w) => ['from' => $w['from']->modify('-12 months'), 'to' => $w['to'], 'clamped' => false], 10, 2)`
+- **WHEN** a Pro plugin registers `add_filter('moonfarmer_reactions_lead_capture_analytics_window', fn($w) => ['from' => $w['from']->modify('-12 months'), 'to' => $w['to'], 'clamped' => false], 10, 2)`
 - **THEN** the request honours a 12-month window and reports `clamped: false`

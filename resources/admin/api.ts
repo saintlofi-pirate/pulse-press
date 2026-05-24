@@ -20,7 +20,7 @@ function rootFor(restRoot: string): string {
 async function parseJson<T>(response: Response): Promise<T> {
   const body = await response.json().catch(() => ({}));
   if (!response.ok) {
-    const code = typeof body === 'object' && body && 'code' in body ? String((body as { code: unknown }).code) : 'pulsepress_request_failed';
+    const code = typeof body === 'object' && body && 'code' in body ? String((body as { code: unknown }).code) : 'moonfarmer_reactions_lead_capture_request_failed';
     const message = typeof body === 'object' && body && 'message' in body ? String((body as { message: unknown }).message) : response.statusText;
     throw new AdminRestError(code, message, response.status);
   }
@@ -68,11 +68,11 @@ export async function downloadCaptureCsv(restRoot: string, nonce: string): Promi
   });
   if (!response.ok) {
     const body = await response.text();
-    throw new AdminRestError('pulsepress_export_failed', body || response.statusText, response.status);
+    throw new AdminRestError('moonfarmer_reactions_lead_capture_export_failed', body || response.statusText, response.status);
   }
   const disposition = response.headers.get('Content-Disposition') || '';
   const match = /filename=([^;]+)/i.exec(disposition);
-  const filename = (match ? match[1].trim().replace(/^"(.*)"$/, '$1') : 'pulsepress-captures.csv');
+  const filename = (match ? match[1].trim().replace(/^"(.*)"$/, '$1') : 'moonfarmer-reactions-lead-capture-captures.csv');
   const blob = await response.blob();
   return { blob, filename };
 }

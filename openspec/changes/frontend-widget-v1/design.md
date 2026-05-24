@@ -1,6 +1,6 @@
 ## Context
 
-PulsePress is a public-page widget first and an admin tool second. Most installs will run on cached pages served by Cloudflare, LiteSpeed, or a host's edge cache. That constrains every design choice in this slice:
+Moonfarmer Reactions Lead Capture is a public-page widget first and an admin tool second. Most installs will run on cached pages served by Cloudflare, LiteSpeed, or a host's edge cache. That constrains every design choice in this slice:
 
 - The widget MUST work on a fully cached HTML page where PHP never runs for a given visitor. The counts endpoint stays cacheable (GET, public, no nonce); the write endpoint is the only PHP-touching request per visitor per post.
 - The JS bundle MUST stay small. The v1 plan commits to ≤ 15 KB gzipped with 8 KB as a stretch. That budget is tight enough that we cannot afford a framework runtime; Preact at ~3 KB gzipped is the largest dependency we'll accept.
@@ -27,7 +27,7 @@ The Vite manifest is the integration seam. Vite produces hashed filenames in `di
 - No Motion One or motion library. The 200ms scale animation from the v1 plan can be a CSS transition; the v1 plan listed Motion One but we don't need its API surface yet.
 - No Gutenberg block. Session 7.
 - No shortcode. Session 7.
-- No light/dark mode toggle. Session 11 will add `data-pulsepress-theme` with CSS custom properties; this slice just ships the custom-property scaffolding.
+- No light/dark mode toggle. Session 11 will add `data-moonfarmer-reactions-lead-capture-theme` with CSS custom properties; this slice just ships the custom-property scaffolding.
 - No multi-language icon labels beyond `wp_localize_script` text. Session 6 will introduce a settings page that exposes per-type label overrides.
 - No A/B test variant. Pro session 5–6.
 - No per-category reaction sets. Pro.
@@ -47,18 +47,18 @@ At ~3 KB gzipped runtime, Preact is well inside the budget. The 15 KB target lea
 
 **Alternative considered**: lit-html / vanilla-html-tagged-templates. Rejected — the second-developer cost is higher than the runtime cost saved.
 
-### D2. Mount points discovered via `data-pulsepress-widget` attribute
+### D2. Mount points discovered via `data-moonfarmer-reactions-lead-capture-widget` attribute
 
-`resources/widget/index.ts` runs `document.querySelectorAll('[data-pulsepress-widget]')` at `DOMContentLoaded` and mounts a Preact root into every match. Each match's `data-pulsepress-post-id` overrides `PulsePressData.postId` so a single page with multiple post excerpts (e.g., a "you might also like" widget) can host multiple independent reaction bars.
+`resources/widget/index.ts` runs `document.querySelectorAll('[data-moonfarmer-reactions-lead-capture-widget]')` at `DOMContentLoaded` and mounts a Preact root into every match. Each match's `data-moonfarmer-reactions-lead-capture-post-id` overrides `MoonfarmerReactionsLeadCaptureData.postId` so a single page with multiple post excerpts (e.g., a "you might also like" widget) can host multiple independent reaction bars.
 
-**Alternative considered**: an `id="pulsepress-widget"` singleton. Rejected — single-id locks us out of multi-post pages and is harder to test in the editor.
+**Alternative considered**: an `id="moonfarmer-reactions-lead-capture-widget"` singleton. Rejected — single-id locks us out of multi-post pages and is harder to test in the editor.
 
 ### D3. Asset enqueue on `is_singular('post')` only, with a filter
 
 ```php
 add_action('wp_enqueue_scripts', function () {
     if (is_admin() || !is_singular('post')) {
-        if (!apply_filters('pulsepress_widget_enqueue', false)) {
+        if (!apply_filters('moonfarmer_reactions_lead_capture_widget_enqueue', false)) {
             return;
         }
     }
@@ -66,19 +66,19 @@ add_action('wp_enqueue_scripts', function () {
 });
 ```
 
-Non-post pages pay zero asset cost. A site that wants the widget on Pages can `add_filter('pulsepress_widget_enqueue', '__return_true')`. Session 6's settings page will surface this as an admin toggle.
+Non-post pages pay zero asset cost. A site that wants the widget on Pages can `add_filter('moonfarmer_reactions_lead_capture_widget_enqueue', '__return_true')`. Session 6's settings page will surface this as an admin toggle.
 
 ### D4. Vite manifest reader caches via a 24-hour transient
 
-`PulsePress\View\Manifest::resolve($entry)` reads `dist/.vite/manifest.json` once, caches the parsed array in transient `pulsepress_vite_manifest_v1` for 24 hours. The cache key includes the manifest's `filemtime()` so a `npm run build` invalidates automatically (the next read sees a stale cache, mtime mismatch, and re-reads).
+`Moonfarmer\ReactionsLeadCapture\View\Manifest::resolve($entry)` reads `dist/.vite/manifest.json` once, caches the parsed array in transient `moonfarmer_reactions_lead_capture_vite_manifest_v1` for 24 hours. The cache key includes the manifest's `filemtime()` so a `npm run build` invalidates automatically (the next read sees a stale cache, mtime mismatch, and re-reads).
 
 **Alternative considered**: no caching, read every request. Rejected — for sites with object cache disabled and lots of traffic, a `file_get_contents` + `json_decode` per request is wasted work for a file that changes at most a few times per release.
 
 ### D5. `wp_localize_script` payload is a tight object
 
 ```js
-window.PulsePressData = {
-    root: 'https://example.com/wp-json/pulsepress/v1/',
+window.MoonfarmerReactionsLeadCaptureData = {
+    root: 'https://example.com/wp-json/moonfarmer-reactions-lead-capture/v1/',
     nonce: '<wp_create_nonce("wp_rest")>',
     postId: 209,
     reactions: ['love', 'insightful', 'funny', 'sad', 'surprised', 'angry'],
@@ -86,9 +86,9 @@ window.PulsePressData = {
 };
 ```
 
-The `reactions` list is passed through `apply_filters('pulsepress_reaction_types', Reactions::TYPES)` so JS and PHP stay in sync. Custom labels per type live in `i18n` for Session 6's settings.
+The `reactions` list is passed through `apply_filters('moonfarmer_reactions_lead_capture_reaction_types', Reactions::TYPES)` so JS and PHP stay in sync. Custom labels per type live in `i18n` for Session 6's settings.
 
-The whole config is filterable via `apply_filters('pulsepress_widget_data', $payload)` so Pro and integrations can inject additional context (e.g., A/B variant id) without re-implementing the bootstrap.
+The whole config is filterable via `apply_filters('moonfarmer_reactions_lead_capture_widget_data', $payload)` so Pro and integrations can inject additional context (e.g., A/B variant id) without re-implementing the bootstrap.
 
 ### D6. Optimistic update with rollback on failure
 
@@ -104,24 +104,24 @@ The 4-second error toast is rendered inside the widget's bounding box, not a glo
 
 ### D7. localStorage key is plain, namespaced, and post-scoped
 
-Key: `pulsepress:reaction:{postId}`. Value: the reaction type string. No JSON, no timestamps, no version. Two reasons:
+Key: `moonfarmer-reactions-lead-capture:reaction:{postId}`. Value: the reaction type string. No JSON, no timestamps, no version. Two reasons:
 
 - It's read on every widget mount; small payload, no parse cost.
-- If the contract evolves, a new key prefix (`pulsepress:reaction:v2:`) is cheaper than a migration.
+- If the contract evolves, a new key prefix (`moonfarmer-reactions-lead-capture:reaction:v2:`) is cheaper than a migration.
 
 ### D8. CSS uses custom properties only; no `:root` overrides
 
 ```css
-.pulsepress {
-    --pulsepress-accent: #6366f1;
-    --pulsepress-text: #111827;
-    --pulsepress-border: #e5e7eb;
-    --pulsepress-radius: 12px;
-    --pulsepress-gap: 0.5rem;
+.moonfarmer-reactions-lead-capture {
+    --moonfarmer-reactions-lead-capture-accent: #6366f1;
+    --moonfarmer-reactions-lead-capture-text: #111827;
+    --moonfarmer-reactions-lead-capture-border: #e5e7eb;
+    --moonfarmer-reactions-lead-capture-radius: 12px;
+    --moonfarmer-reactions-lead-capture-gap: 0.5rem;
 }
 ```
 
-Variables are scoped to `.pulsepress`, not `:root`, so the widget can't pollute or be polluted by site themes. Theme toggling in Session 11 will switch via `[data-pulsepress-theme="dark"]` on the same root.
+Variables are scoped to `.moonfarmer-reactions-lead-capture`, not `:root`, so the widget can't pollute or be polluted by site themes. Theme toggling in Session 11 will switch via `[data-moonfarmer-reactions-lead-capture-theme="dark"]` on the same root.
 
 ### D9. Six buttons, one inline SVG sprite per reaction
 
@@ -141,7 +141,7 @@ If Session 11 decides we need richer animation (e.g., a confetti burst on a mile
 
 ## Risks / Trade-offs
 
-- **Risk**: A site theme overrides our buttons with global `button { }` styles. → Mitigation: every widget selector starts with `.pulsepress` and uses high specificity. We don't `!important`; we use `.pulsepress button.pulsepress-reaction` which beats most theme defaults.
+- **Risk**: A site theme overrides our buttons with global `button { }` styles. → Mitigation: every widget selector starts with `.moonfarmer-reactions-lead-capture` and uses high specificity. We don't `!important`; we use `.moonfarmer-reactions-lead-capture button.moonfarmer-reactions-lead-capture-reaction` which beats most theme defaults.
 - **Risk**: A visitor's browser blocks third-party cookies or `localStorage`. → Mitigation: storage is wrapped in try/catch; on failure the widget operates statelessly (every click re-shows the full bar). Server-side replacement still works.
 - **Risk**: The page is served from a CDN with no JS execution (some text-mode caches). → Mitigation: no degradation; the static HTML container is just an empty `<div>`.
 - **Risk**: Bundle size creeps past 15 KB as Sessions 4/5/11 add inline capture and animation. → Mitigation: budget is published in `widget.css` size baseline and tested in CI (Session 11 will add a size-limit check). For now, manual `wc -c < dist/js/widget.*.js` after every change.
@@ -158,12 +158,12 @@ The deployment path:
 
 1. Land this change.
 2. `npm run build` to generate `dist/.vite/manifest.json` and hashed JS/CSS.
-3. On a wp_lab.test single-post URL, view source to confirm `window.PulsePressData` is emitted and the widget container exists after the content.
+3. On a wp_lab.test single-post URL, view source to confirm `window.MoonfarmerReactionsLeadCaptureData` is emitted and the widget container exists after the content.
 4. Open the page in a browser; click a reaction; confirm the count increments visually and persists across reload.
-5. Inspect `localStorage` and confirm `pulsepress:reaction:{postId}` key exists.
+5. Inspect `localStorage` and confirm `moonfarmer-reactions-lead-capture:reaction:{postId}` key exists.
 
 ## Open Questions
 
 - **Q1**: Should the widget show counts even when they're zero? → **Decided yes** for transparency. The count is the engagement signal; hiding zero would feel dishonest. Session 6's settings will add a "Hide zero counts" toggle for the count visibility decision in gap 8.
-- **Q2**: Should the active reaction be tinted with the accent colour, or just outlined? → **Decided tint with `var(--pulsepress-accent)`** for visual weight. Outline-only failed contrast checks in a quick local prototype.
+- **Q2**: Should the active reaction be tinted with the accent colour, or just outlined? → **Decided tint with `var(--moonfarmer-reactions-lead-capture-accent)`** for visual weight. Outline-only failed contrast checks in a quick local prototype.
 - **Q3**: Should clicking the active reaction "unreact"? → **Decided no** for this slice. The server has no DELETE/unreact endpoint yet (Session 2 D8 deferred it). Re-clicking is a no-op visually.

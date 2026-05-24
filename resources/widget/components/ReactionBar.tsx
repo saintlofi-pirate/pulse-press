@@ -9,14 +9,14 @@ import {
   setCapturedFlag,
   setStoredReaction,
 } from '../storage';
-import type { PulsePressData, ReactionType } from '../types';
+import type { MoonfarmerReactionsLeadCaptureData, ReactionType } from '../types';
 import type { CaptureForm as CaptureFormComponent } from './CaptureForm';
 
 type CaptureFormProps = Parameters<typeof CaptureFormComponent>[0];
 
 interface Props {
   postId: number;
-  data: PulsePressData;
+  data: MoonfarmerReactionsLeadCaptureData;
   initialCounts?: Record<string, number>;
   previewOnly?: boolean;
 }
@@ -188,7 +188,7 @@ export function ReactionBar({ postId, data, initialCounts, previewOnly = false }
 
   return (
     <div
-      class="pulsepress-bar"
+      class="moonfarmer-reactions-lead-capture-bar"
       data-loading={pending ? 'true' : 'false'}
       data-design={design}
       data-icon-style={data.iconStyle ?? 'classic'}
@@ -197,28 +197,28 @@ export function ReactionBar({ postId, data, initialCounts, previewOnly = false }
       data-preview={previewOnly ? 'true' : 'false'}
       data-guest-reactions={data.allowGuestReactions === false ? 'false' : 'true'}
       data-reacted={activeType !== null ? 'true' : 'false'}
-      style={data.primaryColor ? `--pulsepress-accent:${data.primaryColor}` : undefined}
+      style={data.primaryColor ? `--moonfarmer-reactions-lead-capture-accent:${data.primaryColor}` : undefined}
     >
       {design === 'clap_counter' ? (
-        <div class="pulsepress-clap" role="group" aria-label={data.i18n.groupLabel}>
+        <div class="moonfarmer-reactions-lead-capture-clap" role="group" aria-label={data.i18n.groupLabel}>
           <button
             ref={(node: HTMLButtonElement | null) => { ensureRef(clapType).current = node; }}
             type="button"
-            class="pulsepress-clap-button"
+            class="moonfarmer-reactions-lead-capture-clap-button"
             data-active={activeType === clapType ? 'true' : 'false'}
             aria-pressed={activeType === clapType ? 'true' : 'false'}
             aria-label={`Clap${shouldShowCount(clapCount) ? ', ' + clapCount : ''}${activeType === clapType ? data.i18n.activeSuffix : ''}`}
             disabled={reactionsDisabled}
             onClick={() => handleClick(clapType)}
           >
-            <span class="pulsepress-clap-icon" aria-hidden="true">👏</span>
-            {shouldShowCount(clapCount) && <span class="pulsepress-clap-count" aria-hidden="true">{formatCompactCount(clapCount)}</span>}
-            <span class="pulsepress-clap-label" aria-hidden="true">Claps recorded</span>
+            <span class="moonfarmer-reactions-lead-capture-clap-icon" aria-hidden="true">👏</span>
+            {shouldShowCount(clapCount) && <span class="moonfarmer-reactions-lead-capture-clap-count" aria-hidden="true">{formatCompactCount(clapCount)}</span>}
+            <span class="moonfarmer-reactions-lead-capture-clap-label" aria-hidden="true">Claps recorded</span>
           </button>
-          <p class="pulsepress-clap-helper">Press to celebrate this post</p>
+          <p class="moonfarmer-reactions-lead-capture-clap-helper">Press to celebrate this post</p>
         </div>
       ) : (
-        <div class="pulsepress-buttons" role="group" aria-label={data.i18n.groupLabel}>
+        <div class="moonfarmer-reactions-lead-capture-buttons" role="group" aria-label={data.i18n.groupLabel}>
           {data.reactions.map((type) => {
             const isActive = activeType === type;
             const count = counts[type] ?? 0;
@@ -229,30 +229,30 @@ export function ReactionBar({ postId, data, initialCounts, previewOnly = false }
                 key={type}
                 ref={(node: HTMLButtonElement | null) => { ref.current = node; }}
                 type="button"
-                class="pulsepress-reaction"
+                class="moonfarmer-reactions-lead-capture-reaction"
                 data-active={isActive ? 'true' : 'false'}
                 data-positive={isPositive(type, data) ? 'true' : 'false'}
                 aria-pressed={isActive ? 'true' : 'false'}
                 aria-label={`${labelFor(type)}${shouldShowCount(count) ? ', ' + count : ''}${isActive ? data.i18n.activeSuffix : ''}`}
                 disabled={reactionsDisabled}
                 onClick={() => handleClick(type)}
-                style={`--pulsepress-percent:${percent}%`}
+                style={`--moonfarmer-reactions-lead-capture-percent:${percent}%`}
               >
-                <span class="pulsepress-fill" aria-hidden="true" />
-                <span class="pulsepress-icon" dangerouslySetInnerHTML={{ __html: iconFor(type, data.iconStyle ?? 'classic') }} />
-                <span class="pulsepress-label-text" aria-hidden="true">{labelFor(type)}</span>
-                {shouldShowCount(count) && <span class="pulsepress-count" aria-hidden="true">{count}</span>}
+                <span class="moonfarmer-reactions-lead-capture-fill" aria-hidden="true" />
+                <span class="moonfarmer-reactions-lead-capture-icon" dangerouslySetInnerHTML={{ __html: iconFor(type, data.iconStyle ?? 'classic') }} />
+                <span class="moonfarmer-reactions-lead-capture-label-text" aria-hidden="true">{labelFor(type)}</span>
+                {shouldShowCount(count) && <span class="moonfarmer-reactions-lead-capture-count" aria-hidden="true">{count}</span>}
               </button>
             );
           })}
         </div>
       )}
-      <p class="pulsepress-sr-only" role="status" aria-live="polite" aria-atomic="true">{announcement}</p>
+      <p class="moonfarmer-reactions-lead-capture-sr-only" role="status" aria-live="polite" aria-atomic="true">{announcement}</p>
       {error !== null && (
-        <p class="pulsepress-error" role="alert">{error}</p>
+        <p class="moonfarmer-reactions-lead-capture-error" role="alert">{error}</p>
       )}
       {reactionsDisabled && (
-        <p class="pulsepress-login-required" role="status">Please sign in to react.</p>
+        <p class="moonfarmer-reactions-lead-capture-login-required" role="status">Please sign in to react.</p>
       )}
       {showCapture && activeType !== null && (
         LazyCaptureForm !== null ? (
@@ -266,7 +266,7 @@ export function ReactionBar({ postId, data, initialCounts, previewOnly = false }
           />
         ) : (
           <p
-            class="pulsepress-capture-loading"
+            class="moonfarmer-reactions-lead-capture-capture-loading"
             role="status"
             aria-live="polite"
           >

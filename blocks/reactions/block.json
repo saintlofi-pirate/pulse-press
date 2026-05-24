@@ -1,13 +1,13 @@
 {
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
-  "name": "pulsepress/reactions",
+  "name": "moonfarmer-reactions-lead-capture/reactions",
   "version": "1.0.0",
-  "title": "PulsePress reactions",
+  "title": "Moonfarmer Reactions Lead Capture reactions",
   "category": "widgets",
   "icon": "thumbs-up",
-  "description": "Insert the PulsePress reaction widget at this location.",
-  "keywords": ["reactions", "engagement", "pulsepress"],
+  "description": "Insert the Moonfarmer Reactions Lead Capture reaction widget at this location.",
+  "keywords": ["reactions", "engagement", "moonfarmer-reactions-lead-capture"],
   "supports": {
     "html": false,
     "align": ["wide", "full"]

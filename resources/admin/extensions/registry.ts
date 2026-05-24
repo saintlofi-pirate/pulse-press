@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'preact/hooks';
 import type { ExtensionKind, ExtensionRenderer } from '../types';
 
-const EVENT_NAME = 'pulsepress:extension-registered';
+const EVENT_NAME = 'moonfarmer-reactions-lead-capture:extension-registered';
 
 class ExtensionRegistry {
   private readonly tabs = new Map<string, ExtensionRenderer>();

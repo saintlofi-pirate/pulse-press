@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace PulsePress\Core;
+namespace Moonfarmer\ReactionsLeadCapture\Core;
 
 use Closure;
 use ReflectionClass;

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 import { AdminRestError, saveSettings } from '../api';
-import type { PulsePressAdminData, SettingsState } from '../types';
+import type { MoonfarmerReactionsLeadCaptureAdminData, SettingsState } from '../types';
 
 const PILL_VISIBLE_MS = 1500;
 const ERROR_VISIBLE_MS = 4000;
@@ -12,8 +12,8 @@ type Status = 'idle' | 'saving' | 'saved' | 'error';
 export interface UseSettingsState {
   settings: SettingsState;
   defaults: SettingsState;
-  choices: PulsePressAdminData['choices'];
-  reactions: PulsePressAdminData['reactions'];
+  choices: MoonfarmerReactionsLeadCaptureAdminData['choices'];
+  reactions: MoonfarmerReactionsLeadCaptureAdminData['reactions'];
   version: string;
   fieldStatus: Partial<Record<FieldKey, Status>>;
   errors: Partial<Record<FieldKey, string>>;
@@ -22,7 +22,7 @@ export interface UseSettingsState {
   resetFields: (keys: FieldKey[]) => Promise<void>;
 }
 
-export function useSettingsState(data: PulsePressAdminData): UseSettingsState {
+export function useSettingsState(data: MoonfarmerReactionsLeadCaptureAdminData): UseSettingsState {
   const [settings, setSettings] = useState<SettingsState>(data.settings);
   const [fieldStatus, setFieldStatus] = useState<Partial<Record<FieldKey, Status>>>({});
   const [errors, setErrors] = useState<Partial<Record<FieldKey, string>>>({});

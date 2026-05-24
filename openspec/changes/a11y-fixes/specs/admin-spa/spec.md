@@ -16,7 +16,7 @@
 
 ### Requirement: Tab panel container has a visible focus indicator
 
-The `.pulsepress-panel` element SHALL show a visible focus ring when reached via the keyboard (`:focus-visible`). The non-keyboard focused state SHALL remain unstyled.
+The `.moonfarmer-reactions-lead-capture-panel` element SHALL show a visible focus ring when reached via the keyboard (`:focus-visible`). The non-keyboard focused state SHALL remain unstyled.
 
 #### Scenario: Keyboard user lands on the panel
 - **GIVEN** an admin user tabs from the active tab button into the panel

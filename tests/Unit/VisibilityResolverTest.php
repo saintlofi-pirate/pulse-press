@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-use PulsePress\Settings\Settings;
-use PulsePress\Settings\SettingsRepository;
-use PulsePress\Visibility\VisibilityResolver;
+use Moonfarmer\ReactionsLeadCapture\Settings\Settings;
+use Moonfarmer\ReactionsLeadCapture\Settings\SettingsRepository;
+use Moonfarmer\ReactionsLeadCapture\Visibility\VisibilityResolver;
 use Tests\Stubs\FilterRegistry;
 use Tests\Stubs\OptionStore;
 use Tests\Stubs\PostMetaStore;
@@ -94,9 +94,9 @@ it('block + shortcode render even when post type is not in auto-insert list', fu
     expect(pp_resolver()->shouldRender(42, 'shortcode'))->toBeTrue();
 });
 
-it('pulsepress_visibility_mode filter can override the resolved mode', function () {
+it('moonfarmer_reactions_lead_capture_visibility_mode filter can override the resolved mode', function () {
     PostMetaStore::set(42, VisibilityResolver::META_KEY, 'auto');
-    FilterRegistry::addFilter('pulsepress_visibility_mode', fn () => 'off');
+    FilterRegistry::addFilter('moonfarmer_reactions_lead_capture_visibility_mode', fn () => 'off');
     expect(pp_resolver()->shouldRender(42, 'block'))->toBeFalse();
 });
 

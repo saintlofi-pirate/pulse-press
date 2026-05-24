@@ -1,19 +1,19 @@
-import type { MetricsEnvelope, PulsePressAdminData } from '../types';
+import type { MetricsEnvelope, MoonfarmerReactionsLeadCaptureAdminData } from '../types';
 
 interface Props {
   rows: MetricsEnvelope['topPosts'];
   titles: MetricsEnvelope['postTitles'];
-  i18n: PulsePressAdminData['i18n']['analytics'];
+  i18n: MoonfarmerReactionsLeadCaptureAdminData['i18n']['analytics'];
 }
 
 export function TopPostsTable({ rows, titles, i18n }: Props) {
   if (rows.length === 0) {
-    return <p class="pulsepress-empty-state">{i18n.emptyState}</p>;
+    return <p class="moonfarmer-reactions-lead-capture-empty-state">{i18n.emptyState}</p>;
   }
 
   return (
-    <table class="pulsepress-top-posts">
-      <caption class="pulsepress-sr-only">{i18n.topPostsCaption}</caption>
+    <table class="moonfarmer-reactions-lead-capture-top-posts">
+      <caption class="moonfarmer-reactions-lead-capture-sr-only">{i18n.topPostsCaption}</caption>
       <thead>
         <tr>
           <th scope="col">{i18n.topPostsColumns.post}</th>

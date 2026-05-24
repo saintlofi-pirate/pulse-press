@@ -13,7 +13,7 @@ function rootFor(data: { root: string }): string {
 async function parseJson<T>(response: Response): Promise<T> {
   const body = await response.json().catch(() => ({}));
   if (!response.ok) {
-    const code = typeof body === 'object' && body && 'code' in body ? String(body.code) : 'pulsepress_request_failed';
+    const code = typeof body === 'object' && body && 'code' in body ? String(body.code) : 'moonfarmer_reactions_lead_capture_request_failed';
     const message = typeof body === 'object' && body && 'message' in body ? String(body.message) : response.statusText;
     throw new RestError(code, message, response.status);
   }

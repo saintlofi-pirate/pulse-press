@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace PulsePress\Core;
+namespace Moonfarmer\ReactionsLeadCapture\Core;
 
 
 if (!defined('ABSPATH')) {
@@ -15,7 +15,7 @@ class Config
 
     public function load(string $file): void
     {
-        $filePath = PULSEPRESS_DIR . 'app/Config/' . $file . '.php';
+        $filePath = MOONFARMER_REACTIONS_LEAD_CAPTURE_DIR . 'app/Config/' . $file . '.php';
         if (!file_exists($filePath)) {
             return;
         }

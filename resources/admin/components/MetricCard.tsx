@@ -10,10 +10,10 @@ interface Props {
 export function MetricCard({ title, value, helper, emphasis = false }: Props) {
   const titleId = useId();
   return (
-    <section class="pulsepress-metric-card" data-emphasis={emphasis ? 'true' : 'false'} role="region" aria-labelledby={titleId}>
-      <h3 class="pulsepress-metric-card__title" id={titleId}>{title}</h3>
-      <p class="pulsepress-metric-card__value">{value}</p>
-      {helper ? <p class="pulsepress-metric-card__helper">{helper}</p> : null}
+    <section class="moonfarmer-reactions-lead-capture-metric-card" data-emphasis={emphasis ? 'true' : 'false'} role="region" aria-labelledby={titleId}>
+      <h3 class="moonfarmer-reactions-lead-capture-metric-card__title" id={titleId}>{title}</h3>
+      <p class="moonfarmer-reactions-lead-capture-metric-card__value">{value}</p>
+      {helper ? <p class="moonfarmer-reactions-lead-capture-metric-card__helper">{helper}</p> : null}
     </section>
   );
 }

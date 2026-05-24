@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace PulsePress\Database;
+namespace Moonfarmer\ReactionsLeadCapture\Database;
 
 use wpdb;
 
@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
 
 final class Migrator
 {
-    public const VERSION_OPTION = 'pulsepress_db_version';
+    public const VERSION_OPTION = 'moonfarmer_reactions_lead_capture_db_version';
 
     private wpdb $wpdb;
     private Schema $schema;

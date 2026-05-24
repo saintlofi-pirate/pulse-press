@@ -1,6 +1,6 @@
-# PulsePress Landing Page
+# Moonfarmer Reactions Lead Capture Landing Page
 
-Static marketing page for PulsePress.
+Static marketing page for Moonfarmer Reactions Lead Capture.
 
 ## Local preview
 

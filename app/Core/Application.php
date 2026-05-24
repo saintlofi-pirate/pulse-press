@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace PulsePress\Core;
+namespace Moonfarmer\ReactionsLeadCapture\Core;
 
 
 if (!defined('ABSPATH')) {
@@ -50,7 +50,7 @@ class Application extends Container
 
     public function pluginDir(): string
     {
-        return defined('PULSEPRESS_DIR') ? PULSEPRESS_DIR : dirname($this->pluginFile) . '/';
+        return defined('MOONFARMER_REACTIONS_LEAD_CAPTURE_DIR') ? MOONFARMER_REACTIONS_LEAD_CAPTURE_DIR : dirname($this->pluginFile) . '/';
     }
 
     protected function loadProviders(): void

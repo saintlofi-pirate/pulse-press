@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace PulsePress\Settings;
+namespace Moonfarmer\ReactionsLeadCapture\Settings;
 
 
 if (!defined('ABSPATH')) {
@@ -32,11 +32,11 @@ final class SettingsRepository
                 }
             }
         } else {
-            $base['delete_on_uninstall'] = get_option('pulsepress_delete_on_uninstall', '0') === '1';
-            $base['retention_days']      = (int) get_option('pulsepress_retention_days', '0');
+            $base['delete_on_uninstall'] = get_option('moonfarmer_reactions_lead_capture_delete_on_uninstall', '0') === '1';
+            $base['retention_days']      = (int) get_option('moonfarmer_reactions_lead_capture_retention_days', '0');
         }
 
-        $filtered = apply_filters('pulsepress_settings', $base);
+        $filtered = apply_filters('moonfarmer_reactions_lead_capture_settings', $base);
         $this->cached = is_array($filtered) ? $filtered : $base;
         return $this->cached;
     }
@@ -55,7 +55,7 @@ final class SettingsRepository
         update_option(Settings::OPTION_NAME, $persisted, true);
 
         $this->cached = $merged;
-        do_action('pulsepress_settings_saved', $merged, $previous);
+        do_action('moonfarmer_reactions_lead_capture_settings_saved', $merged, $previous);
 
         return $merged;
     }

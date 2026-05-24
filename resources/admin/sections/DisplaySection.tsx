@@ -5,11 +5,11 @@ import { RadioField } from '../components/fields/RadioField';
 import { TextField } from '../components/fields/TextField';
 import { StatusPill } from '../components/StatusPill';
 import type { UseSettingsState } from '../hooks/useSettingsState';
-import type { PulsePressAdminData } from '../types';
+import type { MoonfarmerReactionsLeadCaptureAdminData } from '../types';
 
 interface Props {
   state: UseSettingsState;
-  adminData: PulsePressAdminData;
+  adminData: MoonfarmerReactionsLeadCaptureAdminData;
 }
 
 export function DisplaySection({ state, adminData }: Props) {
@@ -24,13 +24,13 @@ export function DisplaySection({ state, adminData }: Props) {
     }));
 
   return (
-    <section class="pulsepress-section" aria-labelledby="pulsepress-section-display-title">
-      <header class="pulsepress-section__header">
-        <h2 id="pulsepress-section-display-title">{i18n.sections.displayTitle}</h2>
-        <p class="pulsepress-section__helper">{i18n.sections.displayHelper}</p>
+    <section class="moonfarmer-reactions-lead-capture-section" aria-labelledby="moonfarmer-reactions-lead-capture-section-display-title">
+      <header class="moonfarmer-reactions-lead-capture-section__header">
+        <h2 id="moonfarmer-reactions-lead-capture-section-display-title">{i18n.sections.displayTitle}</h2>
+        <p class="moonfarmer-reactions-lead-capture-section__helper">{i18n.sections.displayHelper}</p>
       </header>
 
-      <div class="pulsepress-section__body">
+      <div class="moonfarmer-reactions-lead-capture-section__body">
         <RadioField
           label={i18n.fields.countVisibilityLabel}
           helper={i18n.fields.countVisibilityHelper}
@@ -144,12 +144,12 @@ export function DisplaySection({ state, adminData }: Props) {
         />
 
         {Object.keys(choices.posts ?? {}).length > 0 && (
-          <label class="pulsepress-field">
-            <span class="pulsepress-field__head">
-              <span class="pulsepress-field__label">{i18n.fields.hideOnPostIdsSelectLabel}</span>
+          <label class="moonfarmer-reactions-lead-capture-field">
+            <span class="moonfarmer-reactions-lead-capture-field__head">
+              <span class="moonfarmer-reactions-lead-capture-field__label">{i18n.fields.hideOnPostIdsSelectLabel}</span>
             </span>
             <select
-              class="pulsepress-input"
+              class="moonfarmer-reactions-lead-capture-input"
               value=""
               onChange={(event) => {
                 const value = parseInt((event.target as HTMLSelectElement).value, 10);

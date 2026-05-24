@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useRef } from 'preact/hooks';
 import { getRegistry, useExtensionTick } from '../extensions/registry';
-import type { ExtensionKind, ExtensionRenderer, PulsePressAdminData } from '../types';
+import type { ExtensionKind, ExtensionRenderer, MoonfarmerReactionsLeadCaptureAdminData } from '../types';
 
 interface Props {
   kind: ExtensionKind;
   id: string;
-  adminData: PulsePressAdminData;
+  adminData: MoonfarmerReactionsLeadCaptureAdminData;
   data?: unknown;
   fallback?: string;
   ariaLabel?: string;
@@ -27,7 +27,7 @@ export function ExtensionMount({ kind, id, adminData, data, fallback, ariaLabel 
     try {
       cleanup = renderer(node, { id, kind, data, adminData });
     } catch (err) {
-      console.error(`[PulsePress] extension renderer for ${kind}:${id} threw on mount`, err);
+      console.error(`[Moonfarmer Reactions Lead Capture] extension renderer for ${kind}:${id} threw on mount`, err);
       node.innerHTML = '';
       return undefined;
     }
@@ -35,7 +35,7 @@ export function ExtensionMount({ kind, id, adminData, data, fallback, ariaLabel 
       try {
         if (typeof cleanup === 'function') cleanup();
       } catch (err) {
-        console.error(`[PulsePress] extension cleanup for ${kind}:${id} threw on unmount`, err);
+        console.error(`[Moonfarmer Reactions Lead Capture] extension cleanup for ${kind}:${id} threw on unmount`, err);
       }
       if (node) node.innerHTML = '';
     };
@@ -45,7 +45,7 @@ export function ExtensionMount({ kind, id, adminData, data, fallback, ariaLabel 
     const message = fallback ?? adminData.i18n.extension.fallback;
     return (
       <div
-        class="pulsepress-extension-fallback"
+        class="moonfarmer-reactions-lead-capture-extension-fallback"
         role="status"
         aria-live="polite"
         data-extension-id={id}
@@ -59,7 +59,7 @@ export function ExtensionMount({ kind, id, adminData, data, fallback, ariaLabel 
   return (
     <div
       ref={rootRef}
-      class="pulsepress-extension-mount"
+      class="moonfarmer-reactions-lead-capture-extension-mount"
       role="region"
       aria-label={ariaLabel ?? adminData.i18n.extension.sectionLabel}
       data-extension-id={id}

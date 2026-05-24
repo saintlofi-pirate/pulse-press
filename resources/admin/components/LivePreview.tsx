@@ -1,12 +1,12 @@
 import { useMemo } from 'preact/hooks';
 import { ReactionBar } from '../../widget/components/ReactionBar';
-import type { PulsePressData } from '../../widget/types';
-import type { PulsePressAdminData, SettingsState } from '../types';
+import type { MoonfarmerReactionsLeadCaptureData } from '../../widget/types';
+import type { MoonfarmerReactionsLeadCaptureAdminData, SettingsState } from '../types';
 import '../../widget/widget.css';
 
 interface Props {
   settings: SettingsState;
-  adminData: PulsePressAdminData;
+  adminData: MoonfarmerReactionsLeadCaptureAdminData;
 }
 
 const MOCK_COUNTS: Record<string, number> = {
@@ -21,7 +21,7 @@ const MOCK_COUNTS: Record<string, number> = {
 export function LivePreview({ settings, adminData }: Props) {
   const i18n = adminData.i18n;
 
-  const data = useMemo<PulsePressData>(() => {
+  const data = useMemo<MoonfarmerReactionsLeadCaptureData>(() => {
     return {
       root: adminData.restRoot,
       nonce: adminData.nonce,
@@ -62,16 +62,16 @@ export function LivePreview({ settings, adminData }: Props) {
   }, [adminData, settings.allow_guest_reactions, settings.animation_mode, settings.consent_text, settings.count_threshold, settings.count_visibility, settings.enabled_reactions, settings.icon_style, settings.positive_reactions, settings.primary_color, settings.theme_mode, settings.widget_design]);
 
   return (
-    <aside class="pulsepress-preview" aria-labelledby="pulsepress-preview-title" data-theme={settings.theme_mode} data-design={settings.widget_design} data-icon-style={settings.icon_style} data-animation={settings.animation_mode}>
-      <div class="pulsepress-preview__header">
-        <h2 id="pulsepress-preview-title" class="pulsepress-preview__title">{i18n.livePreviewLabel}</h2>
-        <p class="pulsepress-preview__helper">{i18n.livePreviewHelper}</p>
+    <aside class="moonfarmer-reactions-lead-capture-preview" aria-labelledby="moonfarmer-reactions-lead-capture-preview-title" data-theme={settings.theme_mode} data-design={settings.widget_design} data-icon-style={settings.icon_style} data-animation={settings.animation_mode}>
+      <div class="moonfarmer-reactions-lead-capture-preview__header">
+        <h2 id="moonfarmer-reactions-lead-capture-preview-title" class="moonfarmer-reactions-lead-capture-preview__title">{i18n.livePreviewLabel}</h2>
+        <p class="moonfarmer-reactions-lead-capture-preview__helper">{i18n.livePreviewHelper}</p>
       </div>
-      <div class="pulsepress-preview__stage">
-        <div class="pulsepress">
+      <div class="moonfarmer-reactions-lead-capture-preview__stage">
+        <div class="moonfarmer-reactions-lead-capture">
           <ReactionBar postId={0} data={{ ...data, postId: 0 }} initialCounts={MOCK_COUNTS} previewOnly />
         </div>
-        <div class="pulsepress-preview__overlay" aria-hidden="true" />
+        <div class="moonfarmer-reactions-lead-capture-preview__overlay" aria-hidden="true" />
       </div>
     </aside>
   );

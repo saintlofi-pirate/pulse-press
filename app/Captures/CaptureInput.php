@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace PulsePress\Captures;
+namespace Moonfarmer\ReactionsLeadCapture\Captures;
 
 use DateTimeImmutable;
 

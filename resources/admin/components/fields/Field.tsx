@@ -13,21 +13,21 @@ interface FieldShellProps {
 
 export function FieldShell({ label, helper, error, status, htmlFor, describedById, errorId, children }: FieldShellProps) {
   return (
-    <div class="pulsepress-field">
-      <div class="pulsepress-field__head">
+    <div class="moonfarmer-reactions-lead-capture-field">
+      <div class="moonfarmer-reactions-lead-capture-field__head">
         {htmlFor !== undefined ? (
-          <label class="pulsepress-field__label" for={htmlFor}>{label}</label>
+          <label class="moonfarmer-reactions-lead-capture-field__label" for={htmlFor}>{label}</label>
         ) : (
-          <span class="pulsepress-field__label">{label}</span>
+          <span class="moonfarmer-reactions-lead-capture-field__label">{label}</span>
         )}
         {status}
       </div>
       {children}
       {helper !== undefined && (
-        <p class="pulsepress-field__helper" id={describedById}>{helper}</p>
+        <p class="moonfarmer-reactions-lead-capture-field__helper" id={describedById}>{helper}</p>
       )}
       {error && (
-        <p class="pulsepress-field__error" id={errorId} role="alert">{error}</p>
+        <p class="moonfarmer-reactions-lead-capture-field__error" id={errorId} role="alert">{error}</p>
       )}
     </div>
   );

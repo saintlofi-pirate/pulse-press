@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace PulsePress\Providers;
+namespace Moonfarmer\ReactionsLeadCapture\Providers;
 
-use PulsePress\Captures\CaptureExporter;
-use PulsePress\Captures\CaptureRepository;
-use PulsePress\Captures\Captures;
-use PulsePress\Captures\FraudPurger;
-use PulsePress\Core\ServiceProvider;
-use PulsePress\Http\Controllers\CaptureController;
-use PulsePress\Http\Controllers\ExportController;
-use PulsePress\Reactions\Reactions;
+use Moonfarmer\ReactionsLeadCapture\Captures\CaptureExporter;
+use Moonfarmer\ReactionsLeadCapture\Captures\CaptureRepository;
+use Moonfarmer\ReactionsLeadCapture\Captures\Captures;
+use Moonfarmer\ReactionsLeadCapture\Captures\FraudPurger;
+use Moonfarmer\ReactionsLeadCapture\Core\ServiceProvider;
+use Moonfarmer\ReactionsLeadCapture\Http\Controllers\CaptureController;
+use Moonfarmer\ReactionsLeadCapture\Http\Controllers\ExportController;
+use Moonfarmer\ReactionsLeadCapture\Reactions\Reactions;
 
 
 if (!defined('ABSPATH')) {
@@ -19,8 +19,8 @@ if (!defined('ABSPATH')) {
 
 final class CaptureServiceProvider extends ServiceProvider
 {
-    public const REST_NAMESPACE = 'pulsepress/v1';
-    public const PURGE_HOOK     = 'pulsepress_purge_fraud_metadata';
+    public const REST_NAMESPACE = 'moonfarmer-reactions-lead-capture/v1';
+    public const PURGE_HOOK     = 'moonfarmer_reactions_lead_capture_purge_fraud_metadata';
 
     public function register(): void
     {

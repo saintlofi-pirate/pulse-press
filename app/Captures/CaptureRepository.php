@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace PulsePress\Captures;
+namespace Moonfarmer\ReactionsLeadCapture\Captures;
 
-use PulsePress\Database\Schema;
+use Moonfarmer\ReactionsLeadCapture\Database\Schema;
 use wpdb;
 
 

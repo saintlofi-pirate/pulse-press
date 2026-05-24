@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace PulsePress\Providers;
+namespace Moonfarmer\ReactionsLeadCapture\Providers;
 
-use PulsePress\Blocks\Shortcode;
-use PulsePress\Core\ServiceProvider;
+use Moonfarmer\ReactionsLeadCapture\Blocks\Shortcode;
+use Moonfarmer\ReactionsLeadCapture\Core\ServiceProvider;
 
 
 if (!defined('ABSPATH')) {
@@ -21,7 +21,7 @@ final class BlockServiceProvider extends ServiceProvider
     public function registerWordPressArtifacts(): void
     {
         if (function_exists('register_block_type')) {
-            register_block_type(PULSEPRESS_DIR . 'blocks/reactions');
+            register_block_type(MOONFARMER_REACTIONS_LEAD_CAPTURE_DIR . 'blocks/reactions');
         }
         if (function_exists('add_shortcode')) {
             add_shortcode(Shortcode::TAG, [Shortcode::class, 'render']);

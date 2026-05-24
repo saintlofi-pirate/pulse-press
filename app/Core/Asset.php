@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace PulsePress\Core;
+namespace Moonfarmer\ReactionsLeadCapture\Core;
 
 
 if (!defined('ABSPATH')) {
@@ -18,14 +18,14 @@ class Asset
 
     protected string $pluginSlug;
 
-    public function __construct(string $pluginSlug = 'pulsepress')
+    public function __construct(string $pluginSlug = 'moonfarmer-reactions-lead-capture')
     {
         $this->pluginSlug = $pluginSlug;
     }
 
     public function url(string $path): string
     {
-        return PULSEPRESS_URL . 'dist/' . ltrim($path, '/');
+        return MOONFARMER_REACTIONS_LEAD_CAPTURE_URL . 'dist/' . ltrim($path, '/');
     }
 
     public function registerScript(string $handle, string $path, array $deps = [], ?string $ver = null, bool $inFooter = true, string $context = 'both', ?callable $condition = null): self
@@ -34,7 +34,7 @@ class Asset
             'handle'    => $handle,
             'path'      => $path,
             'deps'      => $deps,
-            'ver'       => $ver ?? PULSEPRESS_VERSION,
+            'ver'       => $ver ?? MOONFARMER_REACTIONS_LEAD_CAPTURE_VERSION,
             'in_footer' => $inFooter,
             'context'   => $context,
             'condition' => $condition,
@@ -49,7 +49,7 @@ class Asset
             'handle'    => $handle,
             'path'      => $path,
             'deps'      => $deps,
-            'ver'       => $ver ?? PULSEPRESS_VERSION,
+            'ver'       => $ver ?? MOONFARMER_REACTIONS_LEAD_CAPTURE_VERSION,
             'media'     => $media,
             'context'   => $context,
             'condition' => $condition,

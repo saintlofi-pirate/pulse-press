@@ -29,7 +29,7 @@ export function TextareaField({ label, helper, value, onChange, status, error, r
     >
       <textarea
         id={id}
-        class="pulsepress-input pulsepress-textarea"
+        class="moonfarmer-reactions-lead-capture-input moonfarmer-reactions-lead-capture-textarea"
         rows={rows}
         maxLength={maxLength}
         value={value}

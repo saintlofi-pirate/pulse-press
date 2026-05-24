@@ -28,7 +28,7 @@ export function ToggleField({ label, helper, checked, onChange, status, error, l
       describedById={helpId}
       errorId={errId}
     >
-      <label class="pulsepress-toggle">
+      <label class="moonfarmer-reactions-lead-capture-toggle">
         <input
           id={id}
           type="checkbox"
@@ -38,8 +38,8 @@ export function ToggleField({ label, helper, checked, onChange, status, error, l
           aria-describedby={`${helpId}${error ? ' ' + errId : ''}`}
           onChange={(e) => onChange((e.target as HTMLInputElement).checked)}
         />
-        <span class="pulsepress-toggle__slider" aria-hidden="true" />
-        <span class="pulsepress-toggle__state">{checked ? onText : offText}</span>
+        <span class="moonfarmer-reactions-lead-capture-toggle__slider" aria-hidden="true" />
+        <span class="moonfarmer-reactions-lead-capture-toggle__state">{checked ? onText : offText}</span>
       </label>
     </FieldShell>
   );

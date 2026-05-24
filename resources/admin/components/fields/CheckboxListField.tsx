@@ -25,16 +25,16 @@ export function CheckboxListField({ label, helper, values, options, onChange, st
 
   return (
     <fieldset
-      class="pulsepress-field pulsepress-field--checklist"
+      class="moonfarmer-reactions-lead-capture-field moonfarmer-reactions-lead-capture-field--checklist"
       aria-describedby={`${helpId}${error ? ' ' + errId : ''}`}
     >
-      <div class="pulsepress-field__head">
-        <legend class="pulsepress-field__label">{label}</legend>
+      <div class="moonfarmer-reactions-lead-capture-field__head">
+        <legend class="moonfarmer-reactions-lead-capture-field__label">{label}</legend>
         {status}
       </div>
-      <div class="pulsepress-checklist">
+      <div class="moonfarmer-reactions-lead-capture-checklist">
         {options.map((opt) => (
-          <label key={opt.value} class="pulsepress-check">
+          <label key={opt.value} class="moonfarmer-reactions-lead-capture-check">
             <input
               type="checkbox"
               value={opt.value}
@@ -45,8 +45,8 @@ export function CheckboxListField({ label, helper, values, options, onChange, st
           </label>
         ))}
       </div>
-      {helper !== undefined && <p class="pulsepress-field__helper" id={helpId}>{helper}</p>}
-      {error && <p class="pulsepress-field__error" id={errId} role="alert">{error}</p>}
+      {helper !== undefined && <p class="moonfarmer-reactions-lead-capture-field__helper" id={helpId}>{helper}</p>}
+      {error && <p class="moonfarmer-reactions-lead-capture-field__error" id={errId} role="alert">{error}</p>}
     </fieldset>
   );
 }

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace PulsePress\Analytics;
+namespace Moonfarmer\ReactionsLeadCapture\Analytics;
 
 
 if (!defined('ABSPATH')) {

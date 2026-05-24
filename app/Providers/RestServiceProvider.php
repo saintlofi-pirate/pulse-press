@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace PulsePress\Providers;
+namespace Moonfarmer\ReactionsLeadCapture\Providers;
 
-use PulsePress\Core\ServiceProvider;
-use PulsePress\Http\Controllers\ReactionController;
-use PulsePress\Reactions\ReactionRepository;
-use PulsePress\Reactions\Reactions;
-use PulsePress\Settings\SettingsRepository;
+use Moonfarmer\ReactionsLeadCapture\Core\ServiceProvider;
+use Moonfarmer\ReactionsLeadCapture\Http\Controllers\ReactionController;
+use Moonfarmer\ReactionsLeadCapture\Reactions\ReactionRepository;
+use Moonfarmer\ReactionsLeadCapture\Reactions\Reactions;
+use Moonfarmer\ReactionsLeadCapture\Settings\SettingsRepository;
 
 
 if (!defined('ABSPATH')) {
@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
 
 final class RestServiceProvider extends ServiceProvider
 {
-    public const REST_NAMESPACE = 'pulsepress/v1';
+    public const REST_NAMESPACE = 'moonfarmer-reactions-lead-capture/v1';
 
     public function register(): void
     {
@@ -53,8 +53,8 @@ final class RestServiceProvider extends ServiceProvider
                     }
                     if (!$allowGuests && !is_user_logged_in()) {
                         return new \WP_Error(
-                            'pulsepress_login_required',
-                            __('Please sign in to react.', 'pulse-press'),
+                            'moonfarmer_reactions_lead_capture_login_required',
+                            __('Please sign in to react.', 'moonfarmer-reactions-lead-capture'),
                             ['status' => 401]
                         );
                     }

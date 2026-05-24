@@ -1,13 +1,13 @@
 ## D1. Separate Repo
 
-Pro lives in a private `pulsepress-pro` repo. This keeps WordPress.org Free packaging separate from paid distribution, license code, provider credentials, and private update plumbing.
+Pro lives in a private `moonfarmer-reactions-lead-capture-pro` repo. This keeps WordPress.org Free packaging separate from paid distribution, license code, provider credentials, and private update plumbing.
 
 ## D2. Reuse Contract
 
 Pro consumes the Free surface in `docs/hooks-and-filters.md`:
 
 - PHP filters/actions for settings, capture, analytics, exports, widgets, and lifecycle.
-- JS renderer registry exposed as `window.PulsePressAdmin.register*Renderer`.
+- JS renderer registry exposed as `window.MoonfarmerReactionsLeadCaptureAdmin.register*Renderer`.
 - Free constants only for version/path checks.
 
 Pro must not edit or monkey-patch Free files.

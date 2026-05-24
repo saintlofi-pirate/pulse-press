@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
 
-use PulsePress\Settings\Settings;
-use PulsePress\Settings\SettingsRepository;
+use Moonfarmer\ReactionsLeadCapture\Settings\Settings;
+use Moonfarmer\ReactionsLeadCapture\Settings\SettingsRepository;
 use Tests\Stubs\FilterRegistry;
 use Tests\Stubs\OptionStore;
 
@@ -25,9 +25,9 @@ it('merges stored option over defaults', function () {
     expect($settings['widget_design'])->toBe(Settings::DEFAULTS['widget_design']);
 });
 
-it('passes through pulsepress_settings filter after merge', function () {
+it('passes through moonfarmer_reactions_lead_capture_settings filter after merge', function () {
     OptionStore::set(Settings::OPTION_NAME, ['positive_reactions' => ['love'], '_version' => 1]);
-    FilterRegistry::addFilter('pulsepress_settings', function (array $s) {
+    FilterRegistry::addFilter('moonfarmer_reactions_lead_capture_settings', function (array $s) {
         $s['positive_reactions'] = ['angry'];
         return $s;
     });
@@ -51,7 +51,7 @@ it('memoises within a request', function () {
 it('save sanitises, persists, and fires action', function () {
     $repo = new SettingsRepository();
     $actionFired = [];
-    FilterRegistry::addAction('pulsepress_settings_saved', function ($new, $prev) use (&$actionFired) {
+    FilterRegistry::addAction('moonfarmer_reactions_lead_capture_settings_saved', function ($new, $prev) use (&$actionFired) {
         $actionFired[] = ['new' => $new, 'prev' => $prev];
     });
 

@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace PulsePress\Reactions;
+namespace Moonfarmer\ReactionsLeadCapture\Reactions;
 
 use DateTimeInterface;
-use PulsePress\Database\Schema;
+use Moonfarmer\ReactionsLeadCapture\Database\Schema;
 use wpdb;
 
 
@@ -112,6 +112,6 @@ final class ReactionRepository
 
     private function cacheKey(int $postId): string
     {
-        return 'pulsepress_counts_' . $postId;
+        return 'moonfarmer_reactions_lead_capture_counts_' . $postId;
     }
 }

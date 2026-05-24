@@ -1,6 +1,6 @@
 {
-    "name": "pulsepress/pulsepress",
-    "description": "PulsePress — reactions, inline email capture, and analytics for WordPress.",
+    "name": "moonfarmer/reactions-lead-capture",
+    "description": "Moonfarmer Reactions Lead Capture — reactions, inline email capture, and analytics for WordPress.",
     "type": "wordpress-plugin",
     "license": "GPL-2.0-or-later",
     "require": {
@@ -11,7 +11,7 @@
     },
     "autoload": {
         "psr-4": {
-            "PulsePress\\": "app/"
+            "Moonfarmer\\ReactionsLeadCapture\\": "app/"
         },
         "files": [
             "app/Helpers/functions.php"
